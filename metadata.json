@@ -1,0 +1,6 @@
+{
+  "name": "Sabil Water Cooler Locator",
+  "description": "A collaborative platform to map and share clean water coolers (Sabil) in Egypt, tracking water status, cup availability, and community contributor scores.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
