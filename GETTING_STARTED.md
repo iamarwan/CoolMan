@@ -19,8 +19,8 @@ Welcome to the Sabil Project! This guide provides a detailed operational map sep
   ```bash
   python -m venv venv
   ```
-- All required dependencies (`fastapi`, `uvicorn`, `sqlalchemy`, `asyncpg`, `geoalchemy2`, `pydantic`, `pydantic-settings`, `python-multipart`) have been installed in this environment.
-- Core table structures and initial Egyptian seed data (in Maadi, Cairo) have been successfully migration-mapped (`db_fix.py` and `seed.py` have been executed).
+- All required dependencies are listed in `backend/requirements.txt` (`fastapi`, `uvicorn`, `sqlalchemy`, `asyncpg`, `geoalchemy2`, `pydantic`, `python-multipart`) and have been installed in this environment.
+- Core table structures and initial Egyptian seed data (in Maadi, Cairo) have been successfully migration-mapped (`db_fix.py` and the seed script have been executed).
 
 ### 3. Flutter Client SDK & Package Setup
 - The Flutter SDK has been added to your system path.
@@ -48,22 +48,41 @@ Ensure the PostgreSQL server is running:
 ---
 
 ### 🐍 Step 2: Spin up the FastAPI Backend Server
-Open a terminal in the project root directory and execute:
+The backend now lives in the `backend/` folder. Open a terminal in the project root directory and execute:
 
 ```powershell
 # 1. Activate the Python Virtual Environment
 venv\Scripts\activate
 
-# 2. Set the local database connection URL
+# 2. Move into the backend folder (always start the server from here)
+cd backend
+
+# 3. (First time only, or after pulling changes) install the dependencies
+pip install -r requirements.txt
+
+# 4. Set the local database connection URL
 $env:SABIL_DATABASE_URL="postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_db?ssl=disable"
 
-# 3. Start the FastAPI development server with hot-reload enabled (excluding build and library folders to prevent lag)
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-exclude "venv" --reload-exclude "mobile" --reload-exclude "uploads"
+# 5. Start the FastAPI development server with hot-reload enabled
+uvicorn sabil.main:app --host 0.0.0.0 --port 8000 --reload --reload-exclude "uploads"
 ```
 
 > [!TIP]
-> - Once the server is running, you can access the interactive Swagger API documentation at: **`http://localhost:8000/docs`**
-> - If you ever need to reset or re-seed sample Egyptian coordinates (e.g. for testing Maadi Metro Station / Road 9 coolers), run `python seed.py` while the database is running.
+> - Once the server is running, you can access the interactive Swagger API documentation at: **`http://localhost:8000/docs`**. Routes are grouped by feature (`users`, `coolers`, `sponsors`, `admin`).
+> - If you ever need to reset or re-seed sample Egyptian coordinates (e.g. for testing Maadi Metro Station / Road 9 coolers), run `python -m scripts.seed` from the `backend` folder while the database is running.
+
+> [!IMPORTANT]
+> **If you already have uploaded photos:** they used to be saved in an `uploads/` folder in the project root. The server now looks for `uploads/` in the folder you start it from (`backend/`), so move your existing `uploads/` folder into `backend/`, otherwise old photos will 404.
+
+### ⚙️ Settings (environment variables)
+All settings are defined in `backend/sabil/core/config.py`. Set these in your terminal before starting the server; anything you do not set uses the default shown.
+
+| Variable | Default | What it is |
+| :--- | :--- | :--- |
+| `SABIL_DATABASE_URL` | local PostGIS on port 5433 | Database connection |
+| `SABIL_JWT_SECRET` | `change-me-in-production` | Signs login tokens. **Change it on any real server** |
+| `SABIL_ADMIN_USERNAME` / `SABIL_ADMIN_PASSWORD` | `admin` / `admin123` | In-app admin login. **Change the password on any real server** |
+| `SABIL_ADMIN_TOKEN_MIN` / `SABIL_USER_TOKEN_MIN` | `480` / `10080` | How long logins last, in minutes |
 
 ---
 

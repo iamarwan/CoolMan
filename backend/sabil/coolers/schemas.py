@@ -1,32 +1,14 @@
-# schemas.py
+# coolers/schemas.py
 
 import uuid
-import re
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from models import CoolerStatus, CupsType, PhotoCategory, SponsorType
-
-# Basic text sanitization regex to prevent basic XSS or script injections
-# Only allows letters, numbers, spaces, and basic punctuation.
-STRICT_TEXT_PATTERN = re.compile(r"^[\w\s.,!?'\"()-]*$")
-
-def sanitize_text(v: str) -> str:
-    if not v:
-        return v
-    v = v.strip()
-    if not STRICT_TEXT_PATTERN.match(v):
-        raise ValueError("Input contains invalid characters.")
-    return v
-
-
-class UserAuthResponse(BaseModel):
-    id: str
-    username: str
-    trust_score: int
-    access_token: str
+from sabil.coolers.models import CoolerStatus, CupsType, PhotoCategory
+from sabil.core.validation import sanitize_text
+from sabil.sponsors.schemas import SponsorRead
 
 
 class WaterCoolerCreate(BaseModel):
@@ -36,7 +18,6 @@ class WaterCoolerCreate(BaseModel):
     status: CoolerStatus = CoolerStatus.Working
     has_cups: Optional[bool] = None
     cups_type: Optional[CupsType] = None
-    is_wheelchair_accessible: Optional[bool] = None
 
     @field_validator("name")
     def validate_name(cls, v):
@@ -44,13 +25,14 @@ class WaterCoolerCreate(BaseModel):
 
 
 class WaterCoolerUpdate(BaseModel):
+    # NOT USED YET: no route edits a cooler's details. Kept until it is decided
+    # whether to build that edit endpoint or delete this class.
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     status: Optional[CoolerStatus] = None
     latitude: Optional[float] = Field(None, ge=-90, le=90)
     longitude: Optional[float] = Field(None, ge=-180, le=180)
     has_cups: Optional[bool] = None
     cups_type: Optional[CupsType] = None
-    is_wheelchair_accessible: Optional[bool] = None
 
     @field_validator("name")
     def validate_name(cls, v):
@@ -59,33 +41,9 @@ class WaterCoolerUpdate(BaseModel):
         return v
 
 
-class SponsorCreate(BaseModel):
-    name: str = Field(..., min_length=1, max_length=255)
-    sponsor_type: SponsorType
-    contact: Optional[str] = Field(None, max_length=255)
-
-    @field_validator("name", "contact")
-    def validate_text(cls, v):
-        if v is not None:
-            return sanitize_text(v)
-        return v
-
-
-class SponsorRead(BaseModel):
-    id: uuid.UUID
-    name: str
-    sponsor_type: SponsorType
-    contact: Optional[str] = None
-    verified: bool
-    views_count: int = 0
-    clicks_count: int = 0
-    created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class SponsorReadWithCount(SponsorRead):
-    cooler_count: int = 0
+class StatusUpdate(BaseModel):
+    """Body of PATCH /coolers/{id}/status and PATCH /admin/coolers/{id}/force-status."""
+    status: CoolerStatus
 
 
 class CoolerPhotoRead(BaseModel):
@@ -112,12 +70,8 @@ class WaterCoolerRead(BaseModel):
     pending_status: str | None = None
     has_cups: bool | None = None
     cups_type: CupsType | None = None
-    
-    # New functionality fields
-    is_wheelchair_accessible: bool | None = None
+
     iot_weight_kg: float | None = None
-    needs_urgent_refill: bool = False
-    taste_reports: int = 0
 
     user_id: uuid.UUID | None = None          # who submitted it
     pending_status_user_id: uuid.UUID | None = None

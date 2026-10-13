@@ -1,19 +1,26 @@
-# models.py
+# coolers/models.py
+#
+# The `water_coolers` and `cooler_photos` tables, plus the choice lists (enums)
+# they use.
 
-import uuid
 import enum
+import uuid
 from datetime import datetime, timezone
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import String, Enum as SAEnum, DateTime, Numeric, Boolean, ForeignKey, Integer, Index
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from geoalchemy2 import Geometry
+from sqlalchemy import Boolean, DateTime, Enum as SAEnum, ForeignKey, Index, Numeric, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from database import Base
+from sabil.core.database import Base
+
+if TYPE_CHECKING:
+    from sabil.sponsors.models import Sponsor
+    from sabil.users.models import User
 
 
 # ─────────────────────────────────────────────
-# ENUMS
+# ENUMS  (a fixed list of allowed values)
 # ─────────────────────────────────────────────
 
 class CoolerStatus(str, enum.Enum):
@@ -32,54 +39,9 @@ class PhotoCategory(str, enum.Enum):
     Cups = "Cups"
 
 
-class SponsorType(str, enum.Enum):
-    Business = "Business"
-    Mosque = "Mosque"
-    Individual = "Individual"
-    NGO = "NGO"
-
-
 # ─────────────────────────────────────────────
 # MODELS
 # ─────────────────────────────────────────────
-
-class User(Base):
-    __tablename__ = "users"
-
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    username: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
-    hashed_password: Mapped[str] = mapped_column(String(256), nullable=False)
-    trust_score: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
-    )
-
-    badges: Mapped[Optional[str]] = mapped_column(String(512), nullable=True) # JSON array string of badges
-
-    coolers: Mapped[list["WaterCooler"]] = relationship(
-        "WaterCooler",
-        back_populates="user",
-        foreign_keys="[WaterCooler.user_id]",
-    )
-    photos: Mapped[list["CoolerPhoto"]] = relationship("CoolerPhoto", back_populates="user")
-
-
-class Sponsor(Base):
-    __tablename__ = "sponsors"
-
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
-    sponsor_type: Mapped[SponsorType] = mapped_column(SAEnum(SponsorType), nullable=False)
-    contact: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    verified: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
-    views_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
-    clicks_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
-    )
-
-    coolers: Mapped[list["WaterCooler"]] = relationship("WaterCooler", back_populates="sponsor")
-
 
 class WaterCooler(Base):
     __tablename__ = "water_coolers"
@@ -109,12 +71,9 @@ class WaterCooler(Base):
     pending_status: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     has_cups: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     cups_type: Mapped[Optional[CupsType]] = mapped_column(SAEnum(CupsType), nullable=True)
-    
-    # New functionality fields
-    is_wheelchair_accessible: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+
+    # Reserved for the IoT roadmap (see BUSINESS_STRATEGY.md); nothing writes it yet.
     iot_weight_kg: Mapped[Optional[float]] = mapped_column(Numeric(5, 2), nullable=True)
-    needs_urgent_refill: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
-    taste_reports: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
     user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True

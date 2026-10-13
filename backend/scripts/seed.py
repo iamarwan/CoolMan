@@ -1,9 +1,16 @@
-# seed.py
+# scripts/seed.py
+#
+# Inserts 5 sample coolers in Maadi, Cairo so the map is not empty.
+# Run from the backend/ folder while the database is running:
+#
+#     python -m scripts.seed
+
 import asyncio
-from sqlalchemy import text
+
 from geoalchemy2.elements import WKTElement
-from database import engine, Base, AsyncSessionLocal
-from models import WaterCooler, CoolerStatus
+
+from sabil.coolers.models import CoolerStatus, WaterCooler
+from sabil.core.database import AsyncSessionLocal, init_db
 
 SAMPLE_COOLERS = [
     {"name": "Maadi Metro Station Cooler", "latitude": 29.9596, "longitude": 31.2575, "status": CoolerStatus.Working},
@@ -13,10 +20,9 @@ SAMPLE_COOLERS = [
     {"name": "Maadi Sporting Club Cooler", "latitude": 29.9719, "longitude": 31.2498, "status": CoolerStatus.Working},
 ]
 
+
 async def seed():
-    async with engine.begin() as conn:
-        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
-        await conn.run_sync(Base.metadata.create_all)
+    await init_db()
 
     async with AsyncSessionLocal() as session:
         for data in SAMPLE_COOLERS:
@@ -31,6 +37,7 @@ async def seed():
             )
             session.add(cooler)
         await session.commit()
+
 
 if __name__ == "__main__":
     asyncio.run(seed())
