@@ -20,6 +20,7 @@ from sabil.core.config import (
     PHOTO_RATE_LIMIT_WINDOW_SECONDS,
     RATE_LIMIT_MAX_REQUESTS,
     RATE_LIMIT_WINDOW_SECONDS,
+    STATUS_REPORT_COOLDOWN_SECONDS,
 )
 
 # ─────────────────────────────────────────────
@@ -114,3 +115,25 @@ def reset_confirm_cooldown(cooler_id: uuid.UUID) -> None:
     """Forget every confirmation of a cooler (its status just changed)."""
     for key in [k for k in _last_confirm if k[1] == cooler_id]:
         del _last_confirm[key]
+
+
+# ─────────────────────────────────────────────
+# 3) STATUS-REPORT COOLDOWN  (per user + cooler)
+# ─────────────────────────────────────────────
+
+_last_status_report: dict[tuple[uuid.UUID, uuid.UUID], float] = {}
+
+
+def check_status_cooldown(user_id: uuid.UUID, cooler_id: uuid.UUID) -> None:
+    """Raise 429 if this user reported a status for this cooler too recently."""
+    elapsed = time.time() - _last_status_report.get((user_id, cooler_id), 0.0)
+    if elapsed < STATUS_REPORT_COOLDOWN_SECONDS:
+        remaining = max(1, int((STATUS_REPORT_COOLDOWN_SECONDS - elapsed) / 60))
+        raise HTTPException(
+            status_code=429,
+            detail=f"You already reported this cooler. Try again in {remaining} minute{'s' if remaining != 1 else ''}.",
+        )
+
+
+def record_status_report(user_id: uuid.UUID, cooler_id: uuid.UUID) -> None:
+    _last_status_report[(user_id, cooler_id)] = time.time()

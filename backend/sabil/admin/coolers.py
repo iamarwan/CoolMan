@@ -17,7 +17,7 @@ from sabil.core.lookup import get_or_404
 from sabil.core.rate_limit import reset_confirm_cooldown
 from sabil.media.storage import delete_image
 from sabil.users.models import User
-from sabil.users.trust import APPROVE_REWARD, REJECT_PENALTY, reward
+from sabil.users.trust import APPROVE_REWARD, REJECT_PENALTY, STATUS_UPDATE_REWARD, reward
 
 router = APIRouter()
 
@@ -48,6 +48,13 @@ async def approve_cooler(cooler_id: uuid.UUID, db: AsyncSession = Depends(get_db
     cooler = await get_or_404(db, WaterCooler, cooler_id, "Cooler")
 
     if cooler.pending_status:
+        reporter = (
+            await db.get(User, cooler.pending_status_user_id)
+            if cooler.pending_status_user_id
+            else None
+        )
+        if reporter:
+            reward(reporter, STATUS_UPDATE_REWARD)  # paid now that it is approved
         cooler.status = cooler.pending_status
         cooler.pending_status = None
         cooler.pending_status_user_id = None

@@ -30,6 +30,8 @@ from sabil.coolers.access import can_view_cooler
 from sabil.core.dependencies import Viewer, get_current_user, get_viewer
 from sabil.core.lookup import get_or_404
 from sabil.core.rate_limit import (
+    check_status_cooldown,
+    record_status_report,
     check_confirm_cooldown,
     photo_rate_limiter,
     rate_limiter,
@@ -152,7 +154,16 @@ async def update_cooler_status(
     current_user: User = Depends(get_current_user),
 ):
     """Report a new status. Trusted users change it at once; others wait for an admin."""
+    check_status_cooldown(current_user.id, cooler_id)
+
     cooler = await get_or_404(db, WaterCooler, cooler_id, "Cooler")
+    if not cooler.is_approved:
+        raise HTTPException(status_code=400, detail="Cooler is not yet approved.")
+    if payload.status == cooler.status and not cooler.pending_status:
+        raise HTTPException(
+            status_code=400,
+            detail="The cooler already has this status. Use \"Still working\" to confirm it.",
+        )
 
     if is_trusted(current_user):
         cooler.status = payload.status
@@ -160,12 +171,13 @@ async def update_cooler_status(
         cooler.pending_status_user_id = None
         cooler.last_verified_at = datetime.now(timezone.utc)
         reset_confirm_cooldown(cooler_id)
+        reward(current_user, STATUS_UPDATE_REWARD)  # applied at once, so paid at once
     else:
+        # Points for this are paid when an admin approves it (admin/coolers.py).
         cooler.pending_status = payload.status.value
         cooler.pending_status_user_id = current_user.id
 
-    reward(current_user, STATUS_UPDATE_REWARD)
-
+    record_status_report(current_user.id, cooler_id)
     await db.commit()
     await db.refresh(cooler)
     return cooler

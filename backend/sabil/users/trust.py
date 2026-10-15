@@ -8,7 +8,8 @@
 #
 #   +50   a cooler of yours is approved (by an admin, or automatically if you are trusted)
 #   -100  a cooler of yours is rejected (the score never drops below 0)
-#   +10   you report a status change
+#   +10   a status change you reported is approved (at once if you are trusted;
+#         one report per cooler every 10 minutes)
 #   +5    you press "Still working" on a cooler
 #
 # Change a number here and it changes everywhere.

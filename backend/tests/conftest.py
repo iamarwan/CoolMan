@@ -44,7 +44,7 @@ def reset_limits() -> None:
     rate_limit._last_confirm.clear()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def client():
     with TestClient(app) as c:
         yield c

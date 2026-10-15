@@ -55,6 +55,10 @@ UPLOAD_ROOT = "uploads"                       # served publicly at /uploads
 PHOTO_DIR = os.path.join(UPLOAD_ROOT, "photos")
 PHOTO_URL_PREFIX = "/uploads/photos"          # what gets stored in the database
 
+# Largest accepted upload. The app shrinks photos to about 1920 px before
+# sending, which is far below this.
+MAX_UPLOAD_BYTES = 8 * 1024 * 1024  # 8 MB
+
 # Browser/phone-reported content type -> file extension we save it with.
 ALLOWED_IMAGE_TYPES = {
     "image/jpeg": "jpg",
@@ -79,6 +83,10 @@ PHOTO_RATE_LIMIT_WINDOW_SECONDS = 60.0
 # Counted separately from the submission limit above.
 AUTH_RATE_LIMIT_MAX_ATTEMPTS = int(os.getenv("SABIL_AUTH_MAX_ATTEMPTS", "10"))
 AUTH_RATE_LIMIT_WINDOW_SECONDS = 60.0
+
+# A user may report a status change on the same cooler once per this many
+# seconds (stops point-farming by repeating the same report).
+STATUS_REPORT_COOLDOWN_SECONDS = 600.0        # 10 minutes
 
 # A user may press "Still working" on the same cooler once per this many seconds.
 CONFIRM_COOLDOWN_SECONDS = 3600.0             # 1 hour
