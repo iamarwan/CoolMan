@@ -13,6 +13,8 @@ from collections import defaultdict
 from fastapi import HTTPException, Request
 
 from sabil.core.config import (
+    AUTH_RATE_LIMIT_MAX_ATTEMPTS,
+    AUTH_RATE_LIMIT_WINDOW_SECONDS,
     CONFIRM_COOLDOWN_SECONDS,
     RATE_LIMIT_MAX_REQUESTS,
     RATE_LIMIT_WINDOW_SECONDS,
@@ -25,18 +27,46 @@ from sabil.core.config import (
 
 _requests_by_ip: dict[str, list[float]] = defaultdict(list)
 
+# Login / register attempts (per IP). Separate from the submission limit so a
+# person adding a cooler is never blocked from logging in, and vice versa.
+_auth_attempts_by_ip: dict[str, list[float]] = defaultdict(list)
 
-async def rate_limiter(request: Request) -> None:
+
+def _check_ip_limit(
+    store: dict[str, list[float]],
+    request: Request,
+    max_requests: int,
+    window_seconds: float,
+    message: str,
+) -> None:
     host = request.client.host if request.client else "unknown"
     now = time.time()
-    window_start = now - RATE_LIMIT_WINDOW_SECONDS
-    _requests_by_ip[host] = [t for t in _requests_by_ip[host] if t > window_start]
-    if len(_requests_by_ip[host]) >= RATE_LIMIT_MAX_REQUESTS:
-        raise HTTPException(
-            status_code=429,
-            detail="Too many requests. Please wait before submitting again.",
-        )
-    _requests_by_ip[host].append(now)
+    window_start = now - window_seconds
+    store[host] = [t for t in store[host] if t > window_start]
+    if len(store[host]) >= max_requests:
+        raise HTTPException(status_code=429, detail=message)
+    store[host].append(now)
+
+
+async def rate_limiter(request: Request) -> None:
+    _check_ip_limit(
+        _requests_by_ip,
+        request,
+        RATE_LIMIT_MAX_REQUESTS,
+        RATE_LIMIT_WINDOW_SECONDS,
+        "Too many requests. Please wait before submitting again.",
+    )
+
+
+async def auth_rate_limiter(request: Request) -> None:
+    """Use on login/register routes to slow down password guessing."""
+    _check_ip_limit(
+        _auth_attempts_by_ip,
+        request,
+        AUTH_RATE_LIMIT_MAX_ATTEMPTS,
+        AUTH_RATE_LIMIT_WINDOW_SECONDS,
+        "Too many login attempts. Please wait a minute and try again.",
+    )
 
 
 # ─────────────────────────────────────────────

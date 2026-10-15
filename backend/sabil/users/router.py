@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from sabil.core.database import get_db
 from sabil.core.dependencies import get_current_user
+from sabil.core.rate_limit import auth_rate_limiter
 from sabil.core.security import create_user_token, hash_password, verify_password
 from sabil.users.models import User
 from sabil.users.schemas import UserAuthResponse, UserCreate, UserRead
@@ -25,7 +26,12 @@ def _auth_response(user: User) -> dict:
     }
 
 
-@router.post("/auth/register", response_model=UserAuthResponse, status_code=201)
+@router.post(
+    "/auth/register",
+    response_model=UserAuthResponse,
+    status_code=201,
+    dependencies=[Depends(auth_rate_limiter)],
+)
 async def register(payload: UserCreate, db: AsyncSession = Depends(get_db)):
     existing = await db.execute(select(User).where(User.username == payload.username))
     if existing.scalars().first():
@@ -41,7 +47,11 @@ async def register(payload: UserCreate, db: AsyncSession = Depends(get_db)):
     return _auth_response(user)
 
 
-@router.post("/auth/login", response_model=UserAuthResponse)
+@router.post(
+    "/auth/login",
+    response_model=UserAuthResponse,
+    dependencies=[Depends(auth_rate_limiter)],
+)
 async def user_login(payload: UserCreate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.username == payload.username))
     user = result.scalars().first()

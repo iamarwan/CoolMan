@@ -21,7 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from sabil.admin.router import login_router as admin_login_router
 from sabil.admin.router import router as admin_router
 from sabil.coolers.router import router as coolers_router
-from sabil.core.config import UPLOAD_ROOT
+from sabil.core.config import UPLOAD_ROOT, check_settings
 from sabil.core.database import init_db
 from sabil.media.storage import ensure_upload_dirs
 from sabil.sponsors.router import router as sponsors_router
@@ -30,6 +30,7 @@ from sabil.users.router import router as users_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    check_settings()  # production: refuse to start with default secrets
     await init_db()  # runs once at startup: PostGIS extension + create missing tables
     yield
 

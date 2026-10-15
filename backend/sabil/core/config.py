@@ -8,6 +8,12 @@
 # used when the variable is not set.
 
 import os
+import logging
+
+# SABIL_ENV=production makes the server REFUSE to start with unsafe settings
+# (see check_settings at the bottom). Anything else counts as development.
+ENVIRONMENT = os.getenv("SABIL_ENV", "development").strip().lower()
+IS_PRODUCTION = ENVIRONMENT == "production"
 
 # ─────────────────────────────────────────────
 # DATABASE
@@ -24,7 +30,8 @@ DATABASE_URL = os.getenv(
 
 # WARNING: the defaults below are for local development only.
 # Set SABIL_JWT_SECRET / SABIL_ADMIN_PASSWORD in any real deployment.
-JWT_SECRET = os.getenv("SABIL_JWT_SECRET", "change-me-in-production")
+DEFAULT_JWT_SECRET = "change-me-in-production"
+JWT_SECRET = os.getenv("SABIL_JWT_SECRET", DEFAULT_JWT_SECRET)
 JWT_ISSUER = "sabil-api"
 
 JWT_AUDIENCE_ADMIN = "sabil-admin"
@@ -34,7 +41,8 @@ JWT_AUDIENCE_USER = "sabil-user"
 JWT_EXPIRES_USER_MINUTES = int(os.getenv("SABIL_USER_TOKEN_MIN", "10080"))        # 7 days
 
 ADMIN_USERNAME = os.getenv("SABIL_ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.getenv("SABIL_ADMIN_PASSWORD", "admin123")
+DEFAULT_ADMIN_PASSWORD = "admin123"
+ADMIN_PASSWORD = os.getenv("SABIL_ADMIN_PASSWORD", DEFAULT_ADMIN_PASSWORD)
 
 PASSWORD_HASH_ITERATIONS = 260_000
 
@@ -62,5 +70,45 @@ ALLOWED_IMAGE_TYPES = {
 RATE_LIMIT_MAX_REQUESTS = 3
 RATE_LIMIT_WINDOW_SECONDS = 60.0
 
+# Login protection: at most N login/register attempts per IP per window.
+# Counted separately from the submission limit above.
+AUTH_RATE_LIMIT_MAX_ATTEMPTS = int(os.getenv("SABIL_AUTH_MAX_ATTEMPTS", "10"))
+AUTH_RATE_LIMIT_WINDOW_SECONDS = 60.0
+
 # A user may press "Still working" on the same cooler once per this many seconds.
 CONFIRM_COOLDOWN_SECONDS = 3600.0             # 1 hour
+
+
+# ─────────────────────────────────────────────
+# STARTUP SAFETY CHECK
+# ─────────────────────────────────────────────
+
+MIN_SECRET_LENGTH = 32
+
+
+def settings_problems() -> list[str]:
+    """Return a list of unsafe settings (empty list = all good)."""
+    problems = []
+    if JWT_SECRET == DEFAULT_JWT_SECRET or len(JWT_SECRET) < MIN_SECRET_LENGTH:
+        problems.append(
+            f"SABIL_JWT_SECRET must be set to a random value of at least "
+            f"{MIN_SECRET_LENGTH} characters."
+        )
+    if ADMIN_PASSWORD == DEFAULT_ADMIN_PASSWORD:
+        problems.append("SABIL_ADMIN_PASSWORD must be set (the default is public).")
+    return problems
+
+
+def check_settings() -> None:
+    """Called once at startup. Production: refuse to start. Development: warn."""
+    problems = settings_problems()
+    if not problems:
+        return
+    if IS_PRODUCTION:
+        raise RuntimeError(
+            "Refusing to start with unsafe settings:\n  - " + "\n  - ".join(problems)
+        )
+    logging.getLogger("sabil").warning(
+        "Unsafe default settings (fine for local development only): %s",
+        " ".join(problems),
+    )

@@ -80,6 +80,8 @@ All settings are defined in `backend/sabil/core/config.py`. Set these in your te
 | Variable | Default | What it is |
 | :--- | :--- | :--- |
 | `SABIL_DATABASE_URL` | local PostGIS on port 5433 | Database connection |
+| `SABIL_ENV` | `development` | Set to `production` on a real server: the server then **refuses to start** unless `SABIL_JWT_SECRET` (32+ random characters) and `SABIL_ADMIN_PASSWORD` are set |
+| `SABIL_AUTH_MAX_ATTEMPTS` | `10` | Login/register attempts allowed per IP per minute |
 | `SABIL_JWT_SECRET` | `change-me-in-production` | Signs login tokens. **Change it on any real server** |
 | `SABIL_ADMIN_USERNAME` / `SABIL_ADMIN_PASSWORD` | `admin` / `admin123` | In-app admin login. **Change the password on any real server** |
 | `SABIL_ADMIN_TOKEN_MIN` / `SABIL_USER_TOKEN_MIN` | `480` / `10080` | How long logins last, in minutes |

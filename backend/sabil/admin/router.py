@@ -13,12 +13,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sabil.admin import coolers, photos, sponsors
 from sabil.admin.schemas import AdminLoginRequest
 from sabil.core.dependencies import require_admin
+from sabil.core.rate_limit import auth_rate_limiter
 from sabil.core.security import authenticate_admin, create_admin_token
 
 login_router = APIRouter(tags=["admin"])
 
 
-@login_router.post("/auth/admin/login")
+@login_router.post("/auth/admin/login", dependencies=[Depends(auth_rate_limiter)])
 async def admin_login(payload: AdminLoginRequest):
     if not authenticate_admin(payload.username, payload.password):
         raise HTTPException(status_code=401, detail="Invalid credentials.")
