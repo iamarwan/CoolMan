@@ -17,7 +17,7 @@ import 'admin/sponsor_assign_sheet.dart';
 import 'admin/sponsors_tab.dart';
 
 class AdminScreen extends StatefulWidget {
-  const AdminScreen();
+  const AdminScreen({super.key});
 
   @override
   State<AdminScreen> createState() => _AdminScreenState();

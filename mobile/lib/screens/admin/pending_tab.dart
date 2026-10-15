@@ -80,7 +80,7 @@ class AdminSwipeablePendingCard extends StatelessWidget {
   final VoidCallback onReject;
   final VoidCallback onViewPhotos;
 
-  const AdminSwipeablePendingCard({super.key, 
+  const AdminSwipeablePendingCard({
     super.key,
     required this.cooler,
     required this.onApprove,
