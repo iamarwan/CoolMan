@@ -111,3 +111,16 @@ flutter run
 | **Flutter app cannot fetch results** | Server not running / IP config error | Ensure the FastAPI server is running on port 8000. Verify the emulator uses `10.0.2.2` in `api_service.dart`. |
 | **JWT credentials rejected** | Out-of-sync session token | Tap **Logout** in the profile screen to clear tokens, or run `flutter clean` to wipe build caches. |
 | **Cannot fetch current location** | Emulator location services disabled | Toggle location settings inside the emulator's extended settings (`...` menu). |
+
+---
+
+### Running the tests (backend)
+
+From `backend/`, with an empty throw-away PostGIS database:
+
+```
+pip install -r requirements-dev.txt
+SABIL_DATABASE_URL="postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_test?ssl=disable" python -m pytest tests -q
+```
+
+Note: uploaded photos are no longer open static files. `/uploads/photos/<file>` is served by a route that only shows unapproved photos to admins and to the person who uploaded them.

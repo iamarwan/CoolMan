@@ -222,6 +222,7 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
           child: InteractiveViewer(
             child: Image.network(
               url,
+              headers: ApiService.adminImageHeaders,
               fit: BoxFit.contain,
               errorBuilder: (_, __, ___) => const Icon(
                 Icons.broken_image_outlined,
@@ -354,6 +355,7 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
                                       borderRadius: BorderRadius.circular(14),
                                       child: Image.network(
                                         url,
+                                        headers: ApiService.adminImageHeaders,
                                         fit: BoxFit.cover,
                                         errorBuilder: (_, __, ___) => Container(
                                           decoration: BoxDecoration(

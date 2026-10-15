@@ -97,8 +97,13 @@ class WaterCooler(Base):
     sponsor: Mapped[Optional["Sponsor"]] = relationship(
         "Sponsor", back_populates="coolers", lazy="selectin"
     )
+    # cascade: deleting a cooler also deletes its photo rows (the files on disk
+    # are removed by the admin delete route).
     photos: Mapped[list["CoolerPhoto"]] = relationship(
-        "CoolerPhoto", back_populates="cooler", lazy="selectin"
+        "CoolerPhoto",
+        back_populates="cooler",
+        lazy="selectin",
+        cascade="all, delete-orphan",
     )
 
 

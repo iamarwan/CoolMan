@@ -37,6 +37,10 @@ class ApiService with AuthApi, CoolersApi, SponsorsApi, AdminApi {
       SessionStore.setUserToken(token);
   static Future<void> clearUserToken() => SessionStore.clearUserToken();
 
+  /// Sent with image requests in the admin screens: unapproved photos are only
+  /// served to an admin (or the uploader), so the admin's login token must go along.
+  static Map<String, String> get adminImageHeaders => SessionStore.adminHeaders();
+
   /// Call once at app start: restores a saved login if it is still valid.
   static Future<void> restoreSession() =>
       SessionStore.restoreSession(() => AuthApi().getUserProfile());

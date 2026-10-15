@@ -70,6 +70,11 @@ ALLOWED_IMAGE_TYPES = {
 RATE_LIMIT_MAX_REQUESTS = 3
 RATE_LIMIT_WINDOW_SECONDS = 60.0
 
+# Photo uploads have their own, higher limit: adding one cooler with 5 photos
+# is 1 create + 5 uploads, and the photos must not be refused halfway.
+PHOTO_RATE_LIMIT_MAX_REQUESTS = 20
+PHOTO_RATE_LIMIT_WINDOW_SECONDS = 60.0
+
 # Login protection: at most N login/register attempts per IP per window.
 # Counted separately from the submission limit above.
 AUTH_RATE_LIMIT_MAX_ATTEMPTS = int(os.getenv("SABIL_AUTH_MAX_ATTEMPTS", "10"))

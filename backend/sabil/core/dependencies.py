@@ -9,6 +9,7 @@
 # error the route never runs.
 
 import uuid
+from dataclasses import dataclass
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -65,3 +66,34 @@ async def get_current_user(
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found.")
     return user
+
+
+# ─────────────────────────────────────────────
+# "WHO IS ASKING?" (for pages that anyone may open, but show more to some people)
+# ─────────────────────────────────────────────
+
+@dataclass
+class Viewer:
+    """The person making a request. Both fields empty = an anonymous visitor."""
+
+    user_id: uuid.UUID | None = None
+    is_admin: bool = False
+
+
+def get_viewer(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+) -> Viewer:
+    """Identify the caller if a valid token was sent. Never raises: a missing
+    or bad token simply means "anonymous"."""
+    if credentials is None or credentials.scheme.lower() != "bearer":
+        return Viewer()
+    token = credentials.credentials
+    try:
+        decode_admin_token(token)
+        return Viewer(is_admin=True)
+    except TokenError:
+        pass
+    try:
+        return Viewer(user_id=uuid.UUID(decode_user_token(token).get("sub")))
+    except (TokenError, ValueError, TypeError, AttributeError):
+        return Viewer()

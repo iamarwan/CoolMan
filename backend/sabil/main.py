@@ -16,13 +16,13 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from sabil.admin.router import login_router as admin_login_router
 from sabil.admin.router import router as admin_router
 from sabil.coolers.router import router as coolers_router
-from sabil.core.config import UPLOAD_ROOT, check_settings
+from sabil.core.config import check_settings
 from sabil.core.database import init_db
+from sabil.media.router import router as media_router
 from sabil.media.storage import ensure_upload_dirs
 from sabil.sponsors.router import router as sponsors_router
 from sabil.users.router import router as users_router
@@ -46,12 +46,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Uploaded photos are served as static files at /uploads/...
+# Uploaded photos are served by media_router at /uploads/photos/<file>, with an
+# approval check (not as open static files).
 ensure_upload_dirs()
-app.mount("/uploads", StaticFiles(directory=UPLOAD_ROOT), name="uploads")
 
 app.include_router(users_router)
 app.include_router(coolers_router)
 app.include_router(sponsors_router)
 app.include_router(admin_login_router)
 app.include_router(admin_router)
+app.include_router(media_router)

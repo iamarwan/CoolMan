@@ -16,6 +16,8 @@ from sabil.core.config import (
     AUTH_RATE_LIMIT_MAX_ATTEMPTS,
     AUTH_RATE_LIMIT_WINDOW_SECONDS,
     CONFIRM_COOLDOWN_SECONDS,
+    PHOTO_RATE_LIMIT_MAX_REQUESTS,
+    PHOTO_RATE_LIMIT_WINDOW_SECONDS,
     RATE_LIMIT_MAX_REQUESTS,
     RATE_LIMIT_WINDOW_SECONDS,
 )
@@ -26,6 +28,9 @@ from sabil.core.config import (
 # ─────────────────────────────────────────────
 
 _requests_by_ip: dict[str, list[float]] = defaultdict(list)
+
+# Photo uploads (per IP), separate from creating coolers.
+_photo_uploads_by_ip: dict[str, list[float]] = defaultdict(list)
 
 # Login / register attempts (per IP). Separate from the submission limit so a
 # person adding a cooler is never blocked from logging in, and vice versa.
@@ -55,6 +60,16 @@ async def rate_limiter(request: Request) -> None:
         RATE_LIMIT_MAX_REQUESTS,
         RATE_LIMIT_WINDOW_SECONDS,
         "Too many requests. Please wait before submitting again.",
+    )
+
+
+async def photo_rate_limiter(request: Request) -> None:
+    _check_ip_limit(
+        _photo_uploads_by_ip,
+        request,
+        PHOTO_RATE_LIMIT_MAX_REQUESTS,
+        PHOTO_RATE_LIMIT_WINDOW_SECONDS,
+        "Too many photo uploads. Please wait a minute and try again.",
     )
 
 

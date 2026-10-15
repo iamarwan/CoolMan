@@ -190,6 +190,7 @@ class _MapScreenState extends State<MapScreen> {
         cupsType: request.cupsType,
       );
 
+      var failedPhotos = 0;
       for (final p in request.photos) {
         try {
           await _api.uploadPhoto(
@@ -197,9 +198,19 @@ class _MapScreenState extends State<MapScreen> {
             imageFile: File(p.file.path),
             photoCategory: p.category,
           );
-        } catch (_) {}
+        } catch (_) {
+          failedPhotos++;
+        }
       }
-      _showSnackbar('Cooler submitted successfully! +50 Trust pending.');
+      if (failedPhotos == 0) {
+        _showSnackbar('Cooler submitted successfully! +50 Trust pending.');
+      } else {
+        _showSnackbar(
+          'Cooler submitted, but $failedPhotos of ${request.photos.length} '
+          'photo(s) could not be uploaded. Open the cooler to add them again.',
+          isError: true,
+        );
+      }
       await _fetchCoolers();
     } catch (e) {
       _showSnackbar('$e', isError: true);

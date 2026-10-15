@@ -15,6 +15,7 @@ from sabil.coolers.schemas import StatusUpdate, WaterCoolerRead
 from sabil.core.database import get_db
 from sabil.core.lookup import get_or_404
 from sabil.core.rate_limit import reset_confirm_cooldown
+from sabil.media.storage import delete_image
 from sabil.users.models import User
 from sabil.users.trust import APPROVE_REWARD, REJECT_PENALTY, reward
 
@@ -110,6 +111,9 @@ async def admin_force_status(
 @router.delete("/coolers/{cooler_id}")
 async def delete_cooler(cooler_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     cooler = await get_or_404(db, WaterCooler, cooler_id, "Cooler")
+    photo_paths = [p.file_path for p in cooler.photos]
     await db.delete(cooler)
     await db.commit()
+    for path in photo_paths:  # remove the image files too, after the rows are gone
+        delete_image(path)
     return {"message": "Deleted"}

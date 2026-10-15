@@ -26,10 +26,12 @@ from sabil.coolers.schemas import (
     WaterCoolerRead,
 )
 from sabil.core.database import get_db
-from sabil.core.dependencies import get_current_user
+from sabil.coolers.access import can_view_cooler
+from sabil.core.dependencies import Viewer, get_current_user, get_viewer
 from sabil.core.lookup import get_or_404
 from sabil.core.rate_limit import (
     check_confirm_cooldown,
+    photo_rate_limiter,
     rate_limiter,
     record_confirm,
     reset_confirm_cooldown,
@@ -109,13 +111,28 @@ async def search_coolers(
 
 
 @router.get("/{cooler_id}", response_model=WaterCoolerRead)
-async def get_cooler(cooler_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
-    return await get_or_404(db, WaterCooler, cooler_id, "Cooler")
+async def get_cooler(
+    cooler_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    viewer: Viewer = Depends(get_viewer),
+):
+    """Public for approved coolers; unapproved ones only for admins and the submitter."""
+    cooler = await get_or_404(db, WaterCooler, cooler_id, "Cooler")
+    if not can_view_cooler(cooler, viewer):
+        raise HTTPException(status_code=404, detail="Cooler not found")
+    return cooler
 
 
 @router.get("/{cooler_id}/photos", response_model=list[CoolerPhotoRead])
-async def get_cooler_photos_public(cooler_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def get_cooler_photos_public(
+    cooler_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    viewer: Viewer = Depends(get_viewer),
+):
     """Approved photos only. Used by the app to show a cooler's gallery."""
+    cooler = await get_or_404(db, WaterCooler, cooler_id, "Cooler")
+    if not can_view_cooler(cooler, viewer):
+        raise HTTPException(status_code=404, detail="Cooler not found")
     stmt = select(CoolerPhoto).where(
         CoolerPhoto.cooler_id == cooler_id,
         CoolerPhoto.is_approved == True,  # noqa: E712
@@ -228,7 +245,7 @@ async def create_cooler(
     "/{cooler_id}/photos",
     response_model=CoolerPhotoRead,
     status_code=201,
-    dependencies=[Depends(rate_limiter)],
+    dependencies=[Depends(photo_rate_limiter)],
 )
 async def upload_cooler_photo(
     cooler_id: uuid.UUID,
