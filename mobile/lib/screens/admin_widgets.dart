@@ -38,7 +38,7 @@ class _SponsorsTab extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
-              side: const BorderSide(color: Color(0xFFE2E8F0))),
+              side: const BorderSide(color: AppColors.slate200)),
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Column(
@@ -49,10 +49,10 @@ class _SponsorsTab extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: const BoxDecoration(
-                        color: Color(0xFFEFF6FF),
+                        color: AppColors.infoTint,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.volunteer_activism_rounded, color: Color(0xFF3B82F6)),
+                      child: const Icon(Icons.volunteer_activism_rounded, color: AppColors.info),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -60,24 +60,24 @@ class _SponsorsTab extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(sponsor.name,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.slate800)),
                           const SizedBox(height: 4),
                           Text('${sponsor.sponsorType} · ${sponsor.coolerCount} Coolers Maintained',
-                              style: const TextStyle(color: Color(0xFF64748B), fontSize: 13, fontWeight: FontWeight.w600)),
+                              style: const TextStyle(color: AppColors.slate500, fontSize: 13, fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),
                     if (sponsor.verified)
-                      const Icon(Icons.verified_rounded, color: Color(0xFF10B981))
+                      const Icon(Icons.verified_rounded, color: AppColors.success)
                   ],
                 ),
                 if (sponsor.contact != null) ...[
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      const Icon(Icons.link, size: 14, color: Color(0xFF94A3B8)),
+                      const Icon(Icons.link, size: 14, color: AppColors.slate400),
                       const SizedBox(width: 8),
-                      Text(sponsor.contact!, style: const TextStyle(color: Color(0xFF334155), fontSize: 13)),
+                      Text(sponsor.contact!, style: const TextStyle(color: AppColors.slate700, fontSize: 13)),
                     ],
                   ),
                 ],
@@ -99,8 +99,8 @@ class _SponsorsTab extends StatelessWidget {
                         icon: const Icon(Icons.verified_rounded, size: 16),
                         label: const Text('Verify'),
                         style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFF10B981),
-                            side: const BorderSide(color: Color(0xFF10B981)),
+                            foregroundColor: AppColors.success,
+                            side: const BorderSide(color: AppColors.success),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                       ),
                     const SizedBox(width: 8),
@@ -117,8 +117,8 @@ class _SponsorsTab extends StatelessWidget {
                       icon: const Icon(Icons.delete_outline_rounded, size: 16),
                       label: const Text('Delete'),
                       style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFFEF4444),
-                          side: const BorderSide(color: Color(0xFFEF4444)),
+                          foregroundColor: AppColors.danger,
+                          side: const BorderSide(color: AppColors.danger),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                     ),
                   ],
@@ -143,7 +143,6 @@ class _PhotoGallerySheet extends StatefulWidget {
 }
 
 class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
-  static const _base = 'http://10.0.2.2:8000';
   List<CoolerPhoto> _photos = [];
   bool _loading = true;
   String? _error;
@@ -265,7 +264,7 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
             child: Row(
               children: [
                 const Icon(Icons.photo_library_outlined,
-                    color: Color(0xFF0F766E), size: 20),
+                    color: AppColors.primary, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -280,26 +279,26 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE2F1F0),
+                      color: AppColors.primaryTint,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       '${_photos.length} item${_photos.length == 1 ? '' : 's'}',
                       style: const TextStyle(
                           fontSize: 11,
-                          color: Color(0xFF0F766E),
+                          color: AppColors.primary,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
               ],
             ),
           ),
-          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+          const Divider(height: 1, color: AppColors.slate100),
           Flexible(
             child: _loading
                 ? const Padding(
                     padding: EdgeInsets.all(40),
-                    child: Center(child: CircularProgressIndicator(color: Color(0xFF0F766E))),
+                    child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
                   )
                 : _error != null
                     ? Padding(
@@ -345,7 +344,7 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
                             itemCount: _photos.length,
                             itemBuilder: (_, i) {
                               final photo = _photos[i];
-                              final url = '$_base${photo.filePath}';
+                              final url = '${ApiConfig.baseUrl}${photo.filePath}';
                               return GestureDetector(
                                 onTap: () => _openFullscreen(context, url),
                                 child: Stack(
@@ -387,7 +386,7 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
                                         child: Container(
                                           padding: const EdgeInsets.all(4),
                                           decoration: BoxDecoration(
-                                              color: const Color(0xFF10B981),
+                                              color: AppColors.success,
                                               shape: BoxShape.circle,
                                               border: Border.all(
                                                   color: Colors.white,
@@ -426,7 +425,7 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
                                               onTap: () => _deletePhoto(photo),
                                               child: const Icon(
                                                   Icons.delete_outline,
-                                                  color: Color(0xFFF87171),
+                                                  color: AppColors.dangerLight,
                                                   size: 22),
                                             ),
                                           ],
@@ -535,7 +534,7 @@ class _SponsorAssignSheetState extends State<_SponsorAssignSheet> {
             child: Row(
               children: [
                 const Icon(Icons.volunteer_activism_outlined,
-                    color: Color(0xFF0F766E), size: 20),
+                    color: AppColors.primary, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -550,7 +549,7 @@ class _SponsorAssignSheetState extends State<_SponsorAssignSheet> {
               ],
             ),
           ),
-          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+          const Divider(height: 1, color: AppColors.slate100),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -561,19 +560,19 @@ class _SponsorAssignSheetState extends State<_SponsorAssignSheet> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE2F1F0),
+                        color: AppColors.primaryTint,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
                         children: [
                           const Icon(Icons.volunteer_activism_rounded,
-                              color: Color(0xFF0F766E)),
+                              color: AppColors.primary),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               sponsor.name,
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F766E)),
+                                  fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.primary),
                             ),
                           ),
                         ],
@@ -583,7 +582,7 @@ class _SponsorAssignSheetState extends State<_SponsorAssignSheet> {
                     const Text(
                       'Sponsor represents verified status sadaka. Removing Association will orphan this cooler.',
                       style: TextStyle(
-                          fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+                          fontSize: 12, color: AppColors.slate500, height: 1.4),
                     ),
                     const Spacer(),
                     if (_error != null) ...[
@@ -605,7 +604,7 @@ class _SponsorAssignSheetState extends State<_SponsorAssignSheet> {
                   ] else ...[
                     const Text(
                       'Select sponsor profile from records:',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF475569)),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.slate600),
                     ),
                     const SizedBox(height: 12),
                     Expanded(
@@ -666,17 +665,17 @@ class _PendingTab extends StatelessWidget {
       children: [
         Container(
           width: double.infinity,
-          color: const Color(0xFFE2F1F0),
+          color: AppColors.primaryTint,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: const Row(
             children: [
-              Icon(Icons.swipe_rounded, size: 14, color: Color(0xFF0F766E)),
+              Icon(Icons.swipe_rounded, size: 14, color: AppColors.primary),
               SizedBox(width: 8),
               Text(
                 'Swipe right to approve · Swipe left to reject',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF0F766E),
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -730,13 +729,13 @@ class _SwipeablePendingCard extends StatelessWidget {
         }
       },
       background: const _SwipeBg(
-        color: Color(0xFF10B981),
+        color: AppColors.success,
         icon: Icons.check_circle_rounded,
         label: 'Approve',
         alignment: Alignment.centerLeft,
       ),
       secondaryBackground: const _SwipeBg(
-        color: Color(0xFFEF4444),
+        color: AppColors.danger,
         icon: Icons.cancel_rounded,
         label: 'Reject',
         alignment: Alignment.centerRight,
@@ -819,9 +818,9 @@ class _PendingCard extends StatelessWidget {
   bool get _isNewProposal => !cooler.isApproved;
 
   Color get _typeColor {
-    if (_isStatusUpdate) return const Color(0xFFF59E0B);
+    if (_isStatusUpdate) return AppColors.warning;
     if (_isNewProposal) return const Color(0xFF4F46E5);
-    return const Color(0xFF0F766E);
+    return AppColors.primary;
   }
 
   IconData get _typeIcon {
@@ -852,12 +851,12 @@ class _PendingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.05),
+            color: AppColors.slate900.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: AppColors.slate200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -892,7 +891,7 @@ class _PendingCard extends StatelessWidget {
               children: [
                 Text(cooler.name,
                     style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                        fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.slate800)),
                 const SizedBox(height: 12),
                 _AdminMetaRow(
                   icon: Icons.location_on_outlined,
@@ -908,17 +907,17 @@ class _PendingCard extends StatelessWidget {
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      _StatusPill(
+                      StatusPill(
                           label: cooler.status,
-                          color: _statusColor(cooler.status)),
+                          color: statusColor(cooler.status)),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8),
                         child: Icon(Icons.arrow_forward_rounded,
                             size: 16, color: Colors.grey),
                       ),
-                      _StatusPill(
+                      StatusPill(
                         label: cooler.pendingStatus!,
-                        color: _statusColor(cooler.pendingStatus!),
+                        color: statusColor(cooler.pendingStatus!),
                         isPending: true,
                       ),
                     ],
@@ -934,9 +933,9 @@ class _PendingCard extends StatelessWidget {
                         : 'View ${cooler.photos.length} item${cooler.photos.length == 1 ? '' : 's'}',
                   ),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF0F766E),
+                    foregroundColor: AppColors.primary,
                     side: BorderSide(
-                        color: const Color(0xFF0F766E).withValues(alpha: 0.5)),
+                        color: AppColors.primary.withValues(alpha: 0.5)),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     padding: const EdgeInsets.symmetric(
@@ -954,9 +953,9 @@ class _PendingCard extends StatelessWidget {
                         icon: const Icon(Icons.close_rounded, size: 16),
                         label: const Text('Reject'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFFEF4444),
+                          foregroundColor: AppColors.danger,
                           side: BorderSide(
-                              color: const Color(0xFFEF4444).withValues(alpha: 0.5)),
+                              color: AppColors.danger.withValues(alpha: 0.5)),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(vertical: 11),
@@ -970,7 +969,7 @@ class _PendingCard extends StatelessWidget {
                         icon: const Icon(Icons.check_rounded, size: 16),
                         label: const Text('Approve'),
                         style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF0F766E),
+                          backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(vertical: 11),
@@ -1052,7 +1051,7 @@ class _LiveCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _statusColor(cooler.status);
+    final color = statusColor(cooler.status);
     final verified = DateTime.tryParse(cooler.lastVerifiedAt);
 
     final formattedDate = verified != null
@@ -1066,12 +1065,12 @@ class _LiveCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+            color: AppColors.slate900.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
         ],
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: AppColors.slate200),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -1088,7 +1087,7 @@ class _LiveCard extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child:
-                      Icon(_statusIcon(cooler.status), color: color, size: 20),
+                      Icon(statusIcon(cooler.status), color: color, size: 20),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -1098,7 +1097,7 @@ class _LiveCard extends StatelessWidget {
                       Text(
                         cooler.name,
                         style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                            fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.slate800),
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
@@ -1106,16 +1105,16 @@ class _LiveCard extends StatelessWidget {
                         children: [
                           Flexible(
                               child:
-                                  _StatusPill(label: cooler.status, color: color)),
+                                  StatusPill(label: cooler.status, color: color)),
                           const SizedBox(width: 8),
                           const Icon(Icons.calendar_today_outlined,
-                              size: 11, color: Color(0xFF94A3B8)),
+                              size: 11, color: AppColors.slate400),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               formattedDate,
                               style: const TextStyle(
-                                  fontSize: 11, color: Color(0xFF64748B)),
+                                  fontSize: 11, color: AppColors.slate500),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
@@ -1129,10 +1128,10 @@ class _LiveCard extends StatelessWidget {
                 IconButton(
                   onPressed: onAddPhoto,
                   icon: const Icon(Icons.add_a_photo_outlined),
-                  color: const Color(0xFF3B82F6),
+                  color: AppColors.info,
                   tooltip: 'Admin Add Photo',
                   style: IconButton.styleFrom(
-                    backgroundColor: const Color(0xFFEFF6FF),
+                    backgroundColor: AppColors.infoTint,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -1150,7 +1149,7 @@ class _LiveCard extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(3),
                             decoration: const BoxDecoration(
-                                color: Color(0xFF0F766E), shape: BoxShape.circle),
+                                color: AppColors.primary, shape: BoxShape.circle),
                             child: Text(
                               '${cooler.photos.length}',
                               style: const TextStyle(
@@ -1162,10 +1161,10 @@ class _LiveCard extends StatelessWidget {
                         ),
                     ],
                   ),
-                  color: const Color(0xFF0F766E),
+                  color: AppColors.primary,
                   tooltip: 'Inspect Gallery',
                   style: IconButton.styleFrom(
-                    backgroundColor: const Color(0xFFE2F1F0),
+                    backgroundColor: AppColors.primaryTint,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
@@ -1173,17 +1172,17 @@ class _LiveCard extends StatelessWidget {
                 IconButton(
                   onPressed: onDelete,
                   icon: const Icon(Icons.delete_outline_rounded),
-                  color: const Color(0xFFEF4444),
+                  color: AppColors.danger,
                   tooltip: 'Spam cleanup',
                   style: IconButton.styleFrom(
-                    backgroundColor: const Color(0xFFFEF2F2),
+                    backgroundColor: AppColors.dangerTint,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert_rounded,
-                      color: Color(0xFF94A3B8)),
+                      color: AppColors.slate400),
                   tooltip: 'Audit status options',
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
@@ -1195,10 +1194,10 @@ class _LiveCard extends StatelessWidget {
                     }
                   },
                   itemBuilder: (_) => [
-                    _forceMenuItem('Working', const Color(0xFF10B981), Icons.water_drop),
+                    _forceMenuItem('Working', AppColors.success, Icons.water_drop),
                     _forceMenuItem(
-                        'Empty', const Color(0xFF64748B), Icons.water_drop_outlined),
-                    _forceMenuItem('Broken', const Color(0xFFEF4444), Icons.report),
+                        'Empty', AppColors.slate500, Icons.water_drop_outlined),
+                    _forceMenuItem('Broken', AppColors.danger, Icons.report),
                     const PopupMenuDivider(),
                     PopupMenuItem<String>(
                       value: '__sponsor__',
@@ -1207,12 +1206,12 @@ class _LiveCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(6),
                             decoration: const BoxDecoration(
-                              color: Color(0xFFE2F1F0),
+                              color: AppColors.primaryTint,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
                                 Icons.volunteer_activism_outlined,
-                                color: Color(0xFF0F766E),
+                                color: AppColors.primary,
                                 size: 16),
                           ),
                           const SizedBox(width: 10),
@@ -1222,7 +1221,7 @@ class _LiveCard extends StatelessWidget {
                                 : 'Map Sponsor',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF0F766E),
+                              color: AppColors.primary,
                               fontSize: 13,
                             ),
                           ),
@@ -1239,22 +1238,22 @@ class _LiveCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF4),
+                  color: AppColors.successTint,
                   borderRadius: BorderRadius.circular(10),
                   border:
-                      Border.all(color: const Color(0xFFBBF7D0)),
+                      Border.all(color: AppColors.successBorder),
                 ),
                 child: Row(
                   children: [
                     const Icon(Icons.volunteer_activism_rounded,
-                        color: Color(0xFF16A34A), size: 14),
+                        color: AppColors.successDark, size: 14),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         'Sponsored Sadie: ${cooler.sponsor!.name}',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF16A34A),
+                          color: AppColors.successDark,
                           fontWeight: FontWeight.bold,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -1262,7 +1261,7 @@ class _LiveCard extends StatelessWidget {
                     ),
                     if (cooler.sponsor!.verified)
                       const Icon(Icons.verified_rounded,
-                          size: 14, color: Color(0xFF16A34A)),
+                          size: 14, color: AppColors.successDark),
                   ],
                 ),
               ),
@@ -1295,55 +1294,6 @@ class _LiveCard extends StatelessWidget {
   }
 }
 
-Color _statusColor(String status) => switch (status) {
-      'Working' => const Color(0xFF10B981),
-      'Empty' => const Color(0xFF64748B),
-      'Broken' => const Color(0xFFEF4444),
-      _ => Colors.blue,
-    };
-
-IconData _statusIcon(String status) => switch (status) {
-      'Working' => Icons.water_drop,
-      'Empty' => Icons.water_drop_outlined,
-      'Broken' => Icons.report,
-      _ => Icons.help_outline,
-    };
-
-class _StatusPill extends StatelessWidget {
-  final String label;
-  final Color color;
-  final bool isPending;
-
-  const _StatusPill({
-    required this.label,
-    required this.color,
-    this.isPending = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: isPending ? 0.15 : 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: color.withValues(alpha: isPending ? 0.6 : 0.3),
-          width: isPending ? 1.5 : 1,
-        ),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
 class _AdminMetaRow extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -1354,11 +1304,11 @@ class _AdminMetaRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 13, color: const Color(0xFF94A3B8)),
+        Icon(icon, size: 13, color: AppColors.slate400),
         const SizedBox(width: 8),
         Expanded(
           child: Text(text,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 12, color: AppColors.slate500, fontWeight: FontWeight.w500),
               overflow: TextOverflow.ellipsis),
         ),
       ],
@@ -1377,7 +1327,7 @@ class _CountBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
-        color: color ?? const Color(0xFFF59E0B),
+        color: color ?? AppColors.warning,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text('$count',
@@ -1392,7 +1342,7 @@ class _Loader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      const Center(child: CircularProgressIndicator(color: Color(0xFF0F766E)));
+      const Center(child: CircularProgressIndicator(color: AppColors.primary));
 }
 
 class _EmptyState extends StatelessWidget {
@@ -1414,14 +1364,14 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 72, color: const Color(0xFF0F766E).withValues(alpha: 0.2)),
+            Icon(icon, size: 72, color: AppColors.primary.withValues(alpha: 0.2)),
             const SizedBox(height: 16),
             Text(title,
                 style: const TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                    fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.slate800)),
             const SizedBox(height: 8),
             Text(subtitle,
-                style: const TextStyle(fontSize: 14, color: Color(0xFF94A3B8), fontWeight: FontWeight.w500),
+                style: const TextStyle(fontSize: 14, color: AppColors.slate400, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center),
           ],
         ),

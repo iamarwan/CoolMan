@@ -1,5 +1,6 @@
 // lib/main.dart
 
+import 'core/theme.dart';
 import 'services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'screens/map_screen.dart';
@@ -23,11 +24,7 @@ class SabilApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sabil',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: const Color(0xFF0F766E), // Elegant Ocean Teal
-        useMaterial3: true,
-        brightness: Brightness.light,
-      ),
+      theme: AppTheme.light,
       home: showOnboarding ? const OnboardingScreen() : const MapScreen(),
     );
   }

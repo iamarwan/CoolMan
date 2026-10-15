@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/water_cooler.dart';
 import '../services/api_service.dart';
+import '../core/theme.dart';
 
 class MySubmissionsScreen extends StatefulWidget {
   const MySubmissionsScreen({super.key});
@@ -33,14 +34,14 @@ class _MySubmissionsScreenState extends State<MySubmissionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Ultra soft slate-white
+      backgroundColor: AppColors.slate50, // Ultra soft slate-white
       appBar: AppBar(
         title: const Text(
           'My Submissions',
           style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, letterSpacing: -0.5),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF0F766E),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -54,7 +55,7 @@ class _MySubmissionsScreenState extends State<MySubmissionsScreen> {
       body: _loading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Color(0xFF0F766E),
+                color: AppColors.primary,
               ),
             )
           : _error != null
@@ -75,7 +76,7 @@ class _MySubmissionsScreenState extends State<MySubmissionsScreen> {
                         const SizedBox(height: 16),
                         Text(
                           _error!,
-                          style: const TextStyle(color: Color(0xFF475569), fontWeight: FontWeight.w600, fontSize: 15),
+                          style: const TextStyle(color: AppColors.slate600, fontWeight: FontWeight.w600, fontSize: 15),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 18),
@@ -84,7 +85,7 @@ class _MySubmissionsScreenState extends State<MySubmissionsScreen> {
                           icon: const Icon(Icons.refresh_rounded, size: 18),
                           label: const Text('Retry'),
                           style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF0F766E),
+                            backgroundColor: AppColors.primary,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                         ),
@@ -102,25 +103,25 @@ class _MySubmissionsScreenState extends State<MySubmissionsScreen> {
                             Container(
                               padding: const EdgeInsets.all(24),
                               decoration: const BoxDecoration(
-                                color: Color(0xFFE2F1F0),
+                                color: AppColors.primaryTint,
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
                                 Icons.add_location_alt_rounded,
                                 size: 48,
-                                color: Color(0xFF0F766E),
+                                color: AppColors.primary,
                               ),
                             ),
                             const SizedBox(height: 24),
                             const Text(
                               'No Submissions Yet',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.slate800),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 10),
                             const Text(
                               'Find clean water points in Egypt and report them by long-pressing on the home map view.',
-                              style: TextStyle(color: Color(0xFF64748B), fontSize: 14, height: 1.5),
+                              style: TextStyle(color: AppColors.slate500, fontSize: 14, height: 1.5),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -153,23 +154,23 @@ class _SubmissionCard extends StatelessWidget {
 
     if (isRejected) {
       statusLabel = 'Rejected';
-      statusColor = const Color(0xFFEF4444); // Slate Red
+      statusColor = AppColors.danger; // Slate Red
       statusIcon = Icons.cancel_rounded;
       pointsText = '-100 Trust';
-      pointsColor = const Color(0xFFEF4444);
+      pointsColor = AppColors.danger;
     } else if (isApproved) {
       statusLabel = 'Approved';
-      statusColor = const Color(0xFF10B981); // Emerald Green
+      statusColor = AppColors.success; // Emerald Green
       statusIcon = Icons.check_circle_rounded;
       pointsText = '+50 Trust';
-      pointsColor = const Color(0xFF10B981);
+      pointsColor = AppColors.success;
     } else if (cooler.pendingStatus != null) {
       statusLabel = 'Status Pending';
-      statusColor = const Color(0xFF3B82F6); // Deep Blue
+      statusColor = AppColors.info; // Deep Blue
       statusIcon = Icons.swap_horiz_rounded;
     } else {
       statusLabel = 'Under Review';
-      statusColor = const Color(0xFFF59E0B); // Amber
+      statusColor = AppColors.warning; // Amber
       statusIcon = Icons.hourglass_empty_rounded;
     }
 
@@ -185,13 +186,13 @@ class _SubmissionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+            color: AppColors.slate900.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
         border: Border.all(
-          color: const Color(0xFFE2E8F0),
+          color: AppColors.slate200,
           width: 0.8,
         ),
       ),
@@ -223,7 +224,7 @@ class _SubmissionCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF1E293B),
+                            color: AppColors.slate800,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -283,20 +284,20 @@ class _SubmissionCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEFF6FF),
+                        color: AppColors.infoTint,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.info_outline_rounded, size: 12, color: Color(0xFF1D4ED8)),
+                          const Icon(Icons.info_outline_rounded, size: 12, color: AppColors.infoDark),
                           const SizedBox(width: 6),
                           Text(
                             'Status Update: Mark as ${cooler.pendingStatus}',
                             style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF1D4ED8),
+                              color: AppColors.infoDark,
                             ),
                           ),
                         ],

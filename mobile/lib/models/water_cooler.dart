@@ -1,58 +1,13 @@
 // lib/models/water_cooler.dart
 
-class CoolerPhoto {
-  final String id;
-  final String coolerId;
-  final String filePath;
-  final String uploadedAt;
-  final bool isApproved;
-  final String photoCategory;
+import 'cooler_photo.dart';
+import 'sponsor.dart';
 
-  const CoolerPhoto({
-    required this.id,
-    required this.coolerId,
-    required this.filePath,
-    required this.uploadedAt,
-    required this.isApproved,
-    this.photoCategory = 'Cooler',
-  });
-
-  factory CoolerPhoto.fromJson(Map<String, dynamic> json) => CoolerPhoto(
-        id: json['id'] as String,
-        coolerId: json['cooler_id'] as String,
-        filePath: json['file_path'] as String,
-        uploadedAt: json['uploaded_at'] as String,
-        isApproved: json['is_approved'] as bool? ?? false,
-        photoCategory: json['photo_category'] as String? ?? 'Cooler',
-      );
-}
-
-class Sponsor {
-  final String id;
-  final String name;
-  final String sponsorType;
-  final String? contact;
-  final bool verified;
-  final int coolerCount;
-
-  const Sponsor({
-    required this.id,
-    required this.name,
-    required this.sponsorType,
-    this.contact,
-    required this.verified,
-    this.coolerCount = 0,
-  });
-
-  factory Sponsor.fromJson(Map<String, dynamic> json) => Sponsor(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        sponsorType: json['sponsor_type'] as String,
-        contact: json['contact'] as String?,
-        verified: json['verified'] as bool? ?? false,
-        coolerCount: json['cooler_count'] as int? ?? 0,
-      );
-}
+// CoolerPhoto and Sponsor used to live in this file. They are re-exported so
+// screens that only import water_cooler.dart keep working; new code can import
+// cooler_photo.dart / sponsor.dart directly.
+export 'cooler_photo.dart';
+export 'sponsor.dart';
 
 class WaterCooler {
   final String id;

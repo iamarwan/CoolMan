@@ -9,9 +9,13 @@ import 'package:image_picker/image_picker.dart';
 import '../models/water_cooler.dart';
 import '../services/api_service.dart';
 import '../services/location_service.dart';
+import '../widgets/app_snackbar.dart';
+import '../widgets/photo_pickers.dart';
+import '../widgets/status_style.dart';
 import 'admin_screen.dart';
 import 'profile_screen.dart';
 import 'sponsor_screen.dart';
+import '../core/theme.dart';
 
 class _PhotoDraft {
   final XFile file;
@@ -244,89 +248,11 @@ class _MapScreenState extends State<MapScreen> {
     final ok = await _ensureLoggedIn();
     if (!ok || !mounted) return;
 
-    final category = await showModalBottomSheet<String>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2)),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Categorize Photo Attachment',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B)),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              ListTile(
-                leading: const Icon(Icons.water_drop_outlined, color: Color(0xFF0F766E)),
-                title: const Text('Entire Cooler Unit'),
-                subtitle: const Text('Verify physical address and condition'),
-                onTap: () => Navigator.pop(ctx, 'Cooler'),
-              ),
-              ListTile(
-                leading: const Icon(Icons.coffee_outlined, color: Color(0xFF0F766E)),
-                title: const Text('Cups Rack Stock'),
-                subtitle: const Text('Refill status of disposable stock'),
-                onTap: () => Navigator.pop(ctx, 'Cups'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    final category = await pickPhotoCategory(context);
 
     if (category == null || !mounted) return;
     
-    final source = await showModalBottomSheet<ImageSource>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2)),
-              ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt_outlined, color: Color(0xFF0F766E)),
-                title: const Text('Capture with Device Camera'),
-                onTap: () => Navigator.pop(ctx, ImageSource.camera),
-              ),
-              ListTile(
-                leading:
-                    const Icon(Icons.photo_library_outlined, color: Color(0xFF0F766E)),
-                title: const Text('Import from Photo Stream'),
-                onTap: () => Navigator.pop(ctx, ImageSource.gallery),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    final source = await pickImageSource(context);
     if (source == null) return;
 
     final picked = await _imagePicker.pickImage(
@@ -392,7 +318,7 @@ class _MapScreenState extends State<MapScreen> {
                     const SizedBox(height: 18),
                     const Text(
                       'Does it have clean cups?',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.slate800),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -400,7 +326,7 @@ class _MapScreenState extends State<MapScreen> {
                         _CupsToggleChip(
                           label: 'Yes',
                           icon: Icons.coffee_rounded,
-                          color: const Color(0xFF10B981),
+                          color: AppColors.success,
                           selected: hasCups == true,
                           onTap: () => setDialog(() {
                             hasCups = true;
@@ -410,7 +336,7 @@ class _MapScreenState extends State<MapScreen> {
                         _CupsToggleChip(
                           label: 'No',
                           icon: Icons.coffee_outlined,
-                          color: const Color(0xFFEF4444),
+                          color: AppColors.danger,
                           selected: hasCups == false,
                           onTap: () => setDialog(() {
                             hasCups = false;
@@ -421,7 +347,7 @@ class _MapScreenState extends State<MapScreen> {
                         _CupsToggleChip(
                           label: 'Unsure',
                           icon: Icons.help_outline_rounded,
-                          color: const Color(0xFF64748B),
+                          color: AppColors.slate500,
                           selected: hasCups == null,
                           onTap: () => setDialog(() {
                             hasCups = null;
@@ -435,7 +361,7 @@ class _MapScreenState extends State<MapScreen> {
                     const Text(
                       'Attach verification photos (Recommended)',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.slate800),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -525,7 +451,7 @@ class _MapScreenState extends State<MapScreen> {
                                     onTap: () => setDialog(() => pickedPhotos.removeAt(i)),
                                     child: const CircleAvatar(
                                       radius: 12,
-                                      backgroundColor: Color(0xFFEF4444),
+                                      backgroundColor: AppColors.danger,
                                       child: Icon(Icons.close_rounded, size: 13, color: Colors.white),
                                     ),
                                   ),
@@ -575,7 +501,7 @@ class _MapScreenState extends State<MapScreen> {
                   );
                 }
               },
-              style: FilledButton.styleFrom(backgroundColor: const Color(0xFF0F766E)),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
               child: const Text('Propose Location'),
             ),
           ],
@@ -607,13 +533,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _showSnackbar(String message, {bool isError = false}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(message, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-      backgroundColor: isError ? const Color(0xFFEF4444) : const Color(0xFF0F766E),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-    ));
+    showAppSnackbar(context, message, isError: isError);
   }
 
   void _showCoolerSheet(WaterCooler cooler) {
@@ -653,7 +573,7 @@ class _MapScreenState extends State<MapScreen> {
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
-                          ?.copyWith(fontWeight: FontWeight.w900, color: const Color(0xFF1E293B), letterSpacing: -0.5)),
+                          ?.copyWith(fontWeight: FontWeight.w900, color: AppColors.slate800, letterSpacing: -0.5)),
                 ),
                 const SizedBox(width: 10),
                 IconButton.filled(
@@ -661,15 +581,15 @@ class _MapScreenState extends State<MapScreen> {
                   icon: const Icon(Icons.directions_rounded),
                   tooltip: 'Navigate',
                   style: IconButton.styleFrom(
-                      backgroundColor: const Color(0xFF0F766E),
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white),
                 ),
               ],
             ),
             const SizedBox(height: 18),
             _InfoRow(
-              icon: _statusIcon(cooler.status),
-              iconColor: _statusColor(cooler.status),
+              icon: statusIcon(cooler.status),
+              iconColor: statusColor(cooler.status),
               label: 'Operational Status',
               value: cooler.status,
             ),
@@ -697,7 +617,7 @@ class _MapScreenState extends State<MapScreen> {
                         icon: const Icon(Icons.verified_rounded, size: 18),
                         label: const Text('Report: Still Working'),
                         style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF10B981),
+                          backgroundColor: AppColors.success,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14)),
@@ -709,8 +629,8 @@ class _MapScreenState extends State<MapScreen> {
                         icon: const Icon(Icons.timer_outlined, size: 18),
                         label: Text('Verified (${60 - diff.inMinutes}m left for point reward)'),
                         style: FilledButton.styleFrom(
-                          disabledBackgroundColor: const Color(0xFFF1F5F9),
-                          disabledForegroundColor: const Color(0xFF94A3B8),
+                          disabledBackgroundColor: AppColors.slate100,
+                          disabledForegroundColor: AppColors.slate400,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14)),
                           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -720,14 +640,14 @@ class _MapScreenState extends State<MapScreen> {
               const SizedBox(height: 14),
             ],
             const Text('Change reported status',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF475569))),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.slate600)),
             const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
                   child: _StatusButton(
                     label: 'Working',
-                    color: const Color(0xFF10B981),
+                    color: AppColors.success,
                     icon: Icons.water_drop,
                     isActive: cooler.status == 'Working',
                     onTap: () => _updateCoolerStatus(cooler, 'Working'),
@@ -737,7 +657,7 @@ class _MapScreenState extends State<MapScreen> {
                 Expanded(
                   child: _StatusButton(
                     label: 'Empty',
-                    color: const Color(0xFF64748B),
+                    color: AppColors.slate500,
                     icon: Icons.water_drop_outlined,
                     isActive: cooler.status == 'Empty',
                     onTap: () => _updateCoolerStatus(cooler, 'Empty'),
@@ -747,7 +667,7 @@ class _MapScreenState extends State<MapScreen> {
                 Expanded(
                   child: _StatusButton(
                     label: 'Broken',
-                    color: const Color(0xFFEF4444),
+                    color: AppColors.danger,
                     icon: Icons.report,
                     isActive: cooler.status == 'Broken',
                     onTap: () => _updateCoolerStatus(cooler, 'Broken'),
@@ -763,8 +683,8 @@ class _MapScreenState extends State<MapScreen> {
                 icon: const Icon(Icons.camera_alt_outlined, size: 18),
                 label: const Text('Add Status Evidence Photo'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF0F766E),
-                  side: const BorderSide(color: Color(0xFF0F766E)),
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.primary),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -840,7 +760,7 @@ class _MapScreenState extends State<MapScreen> {
                     style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20, letterSpacing: -0.5)),
               ),
         centerTitle: !_searchMode,
-        backgroundColor: const Color(0xFF0F766E),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
           if (_searchMode) ...[
@@ -878,7 +798,7 @@ class _MapScreenState extends State<MapScreen> {
                 ApiService.isLoggedIn
                     ? Icons.account_circle_rounded
                     : Icons.account_circle_outlined,
-                color: ApiService.isLoggedIn ? const Color(0xFF2DD4BF) : null,
+                color: ApiService.isLoggedIn ? AppColors.teal400 : null,
               ),
               tooltip: ApiService.isLoggedIn ? 'Profile Panel' : 'User Verification',
               onPressed: () async {
@@ -909,7 +829,7 @@ class _MapScreenState extends State<MapScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _recenterOnUser,
-        backgroundColor: const Color(0xFF0F766E),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         tooltip: 'Recenter GPS',
         child: const Icon(Icons.my_location_rounded),
@@ -946,7 +866,7 @@ class _MapScreenState extends State<MapScreen> {
                       popupBuilder: (_, marker) => const SizedBox.shrink(),
                     ),
                     markers: _activeMarkers.map((cooler) {
-                      final color = _statusColor(cooler.status);
+                      final color = statusColor(cooler.status);
                       final stalenessDays = DateTime.now()
                           .difference(
                               DateTime.tryParse(cooler.lastVerifiedAt) ??
@@ -974,7 +894,7 @@ class _MapScreenState extends State<MapScreen> {
                                     ),
                                   ],
                                 ),
-                                child: Icon(_statusIcon(cooler.status),
+                                child: Icon(statusIcon(cooler.status),
                                     color: Colors.white, size: 20),
                               ),
                               if (stalenessDays > 14)
@@ -986,8 +906,8 @@ class _MapScreenState extends State<MapScreen> {
                                     height: 12,
                                     decoration: BoxDecoration(
                                       color: stalenessDays > 30
-                                          ? const Color(0xFFEF4444)
-                                          : const Color(0xFFF59E0B),
+                                          ? AppColors.danger
+                                          : AppColors.warning,
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                           color: Colors.white, width: 1.5),
@@ -1002,12 +922,12 @@ class _MapScreenState extends State<MapScreen> {
                     builder: (context, markers) {
                       return Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0F766E),
+                          color: AppColors.primary,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF0F766E).withValues(alpha: 0.4),
+                              color: AppColors.primary.withValues(alpha: 0.4),
                               blurRadius: 8,
                               spreadRadius: 1,
                             ),
@@ -1045,7 +965,7 @@ class _MapScreenState extends State<MapScreen> {
                       SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF0F766E))),
+                          child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary)),
                       SizedBox(width: 12),
                       Text('Searching database records…'),
                     ],
@@ -1098,7 +1018,7 @@ class _MapScreenState extends State<MapScreen> {
                           Text(
                             '${_searchResults.length} index matches',
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF475569)),
+                                fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.slate600),
                           ),
                           const Spacer(),
                           GestureDetector(
@@ -1110,16 +1030,16 @@ class _MapScreenState extends State<MapScreen> {
                         ],
                       ),
                     ),
-                    const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                    const Divider(height: 1, color: AppColors.slate100),
                     Expanded(
                       child: ListView.separated(
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         itemCount: _searchResults.length,
                         separatorBuilder: (_, __) => const Divider(
-                            height: 1, indent: 16, endIndent: 16, color: Color(0xFFF1F5F9)),
+                            height: 1, indent: 16, endIndent: 16, color: AppColors.slate100),
                         itemBuilder: (_, i) {
                           final cooler = _searchResults[i];
-                          final color = _statusColor(cooler.status);
+                          final color = statusColor(cooler.status);
                           return ListTile(
                             leading: Container(
                               width: 38,
@@ -1128,13 +1048,13 @@ class _MapScreenState extends State<MapScreen> {
                                 color: color.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(_statusIcon(cooler.status),
+                              child: Icon(statusIcon(cooler.status),
                                   color: color, size: 18),
                             ),
                             title: Text(cooler.name,
                                 style: const TextStyle(
                                     fontSize: 14,
-                                    fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                                    fontWeight: FontWeight.bold, color: AppColors.slate800),
                                 overflow: TextOverflow.ellipsis),
                             subtitle: Text('Status: ${cooler.status}',
                                 style: TextStyle(
@@ -1250,8 +1170,8 @@ class _AuthDialogState extends State<_AuthDialog>
             TabBar(
               controller: _tabs,
               tabs: const [Tab(text: 'Login'), Tab(text: 'Register')],
-              labelColor: const Color(0xFF0F766E),
-              indicatorColor: const Color(0xFF0F766E),
+              labelColor: AppColors.primary,
+              indicatorColor: AppColors.primary,
               unselectedLabelColor: Colors.grey,
               labelStyle: const TextStyle(fontWeight: FontWeight.bold),
             ),
@@ -1343,7 +1263,7 @@ class _AuthDialogState extends State<_AuthDialog>
             child: const Text('Cancel')),
         FilledButton(
           onPressed: _loading ? null : _submit,
-          style: FilledButton.styleFrom(backgroundColor: const Color(0xFF0F766E)),
+          style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
           child: _loading
               ? const SizedBox(
                   width: 16,
@@ -1357,26 +1277,14 @@ class _AuthDialogState extends State<_AuthDialog>
   }
 }
 
-Color _statusColor(String status) => switch (status) {
-      'Working' => const Color(0xFF10B981),
-      'Empty' => const Color(0xFF64748B),
-      'Broken' => const Color(0xFFEF4444),
-      _ => Colors.blue,
-    };
-IconData _statusIcon(String status) => switch (status) {
-      'Working' => Icons.water_drop,
-      'Empty' => Icons.water_drop_outlined,
-      'Broken' => Icons.report,
-      _ => Icons.help_outline,
-    };
 IconData _cupsIcon(bool? hasCups) {
   if (hasCups == null) return Icons.help_outline_rounded;
   return hasCups ? Icons.coffee_rounded : Icons.coffee_outlined;
 }
 
 Color _cupsColor(bool? hasCups) {
-  if (hasCups == null) return const Color(0xFF64748B);
-  return hasCups ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+  if (hasCups == null) return AppColors.slate500;
+  return hasCups ? AppColors.success : AppColors.danger;
 }
 
 String _cupsLabel(bool? hasCups, String? cupsType) {
@@ -1394,13 +1302,13 @@ _StalenessInfo _stalenessInfo(String lastVerifiedAt) {
   if (days <= 3) {
     return _StalenessInfo(
         days == 0 ? 'Verified today' : 'Verified $days day${days == 1 ? '' : 's'} ago',
-        const Color(0xFF10B981));
+        AppColors.success);
   }
-  if (days <= 14) return _StalenessInfo('Stale: $days days ago', const Color(0xFFF59E0B));
-  if (days <= 30) return _StalenessInfo('Stale: $days days ago', const Color(0xFFEF4444));
+  if (days <= 14) return _StalenessInfo('Stale: $days days ago', AppColors.warning);
+  if (days <= 30) return _StalenessInfo('Stale: $days days ago', AppColors.danger);
   final weeks = (days / 7).floor();
   return _StalenessInfo(
-      '$weeks weeks ago — requires fresh verification', const Color(0xFFEF4444));
+      '$weeks weeks ago — requires fresh verification', AppColors.danger);
 }
 
 class _StalenessInfo {
@@ -1449,10 +1357,10 @@ class _InfoRow extends StatelessWidget {
         const SizedBox(width: 10),
         Text('$label: ',
             style:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF475569))),
+                const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.slate600)),
         Expanded(
             child: Text(value,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.slate800),
                 overflow: TextOverflow.ellipsis)),
       ],
     );
@@ -1477,11 +1385,11 @@ class _Legend extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          _LegendItem(color: Color(0xFF10B981), label: 'Working'),
+          _LegendItem(color: AppColors.success, label: 'Working'),
           SizedBox(height: 6),
-          _LegendItem(color: Color(0xFF64748B), label: 'Empty'),
+          _LegendItem(color: AppColors.slate500, label: 'Empty'),
           SizedBox(height: 6),
-          _LegendItem(color: Color(0xFFEF4444), label: 'Broken'),
+          _LegendItem(color: AppColors.danger, label: 'Broken'),
         ],
       ),
     );
@@ -1503,7 +1411,7 @@ class _LegendItem extends StatelessWidget {
             decoration:
                 BoxDecoration(color: color, shape: BoxShape.circle)),
         const SizedBox(width: 8),
-        Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+        Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.slate600)),
       ],
     );
   }
@@ -1579,11 +1487,11 @@ class _PhotoCategoryChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: selected
-              ? const Color(0xFF0F766E).withValues(alpha: 0.1)
+              ? AppColors.primary.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? const Color(0xFF0F766E) : Colors.grey.shade300,
+            color: selected ? AppColors.primary : Colors.grey.shade300,
             width: selected ? 1.5 : 1,
           ),
         ),
@@ -1592,7 +1500,7 @@ class _PhotoCategoryChip extends StatelessWidget {
           children: [
             Icon(icon,
                 size: 18,
-                color: selected ? const Color(0xFF0F766E) : Colors.grey.shade500),
+                color: selected ? AppColors.primary : Colors.grey.shade500),
             const SizedBox(height: 4),
             Text(
               label,
@@ -1600,7 +1508,7 @@ class _PhotoCategoryChip extends StatelessWidget {
                 fontSize: 12,
                 fontWeight:
                     selected ? FontWeight.bold : FontWeight.normal,
-                color: selected ? const Color(0xFF0F766E) : Colors.grey.shade600,
+                color: selected ? AppColors.primary : Colors.grey.shade600,
               ),
             ),
           ],
@@ -1667,14 +1575,14 @@ class _SponsorBadge extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFFE2F1F0),
+          color: AppColors.primaryTint,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF0F766E).withValues(alpha: 0.2)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
             const Icon(Icons.volunteer_activism_rounded,
-                color: Color(0xFF0F766E), size: 20),
+                color: AppColors.primary, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -1685,18 +1593,18 @@ class _SponsorBadge extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F766E),
+                      color: AppColors.primary,
                     ),
                   ),
                   if (sponsor.verified)
                     const Row(
                       children: [
                         Icon(Icons.verified_rounded,
-                            size: 11, color: Color(0xFF0F766E)),
+                            size: 11, color: AppColors.primary),
                         SizedBox(width: 4),
                         Text(
                           'Verified Sponsor Sadaka',
-                          style: TextStyle(fontSize: 11, color: Color(0xFF0F766E), fontWeight: FontWeight.w600),
+                          style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
@@ -1704,7 +1612,7 @@ class _SponsorBadge extends StatelessWidget {
               ),
             ),
             const Icon(Icons.chevron_right_rounded,
-                color: Color(0xFF0F766E)),
+                color: AppColors.primary),
           ],
         ),
       ),

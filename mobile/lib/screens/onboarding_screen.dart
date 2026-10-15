@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'map_screen.dart';
+import '../core/theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -19,21 +20,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: 'Find Clean Water,\nSimple and Free',
       body:
           'Sabil keeps you hydrated by locating community-reported public water coolers across Egypt, with accurate, real-time status updates.',
-      gradientColors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+      gradientColors: [AppColors.primary, Color(0xFF14B8A6)],
     ),
     _OnboardingPage(
       emoji: '📍',
       title: 'Pinpoint and Share\nCoolers Around You',
       body:
           'Spotted a new public water cooler? Long-press on the map to list it. See one that\'s empty or broken? Flag it instantly to keep others informed.',
-      gradientColors: [Color(0xFF0D9488), Color(0xFF2DD4BF)],
+      gradientColors: [AppColors.teal600, AppColors.teal400],
     ),
     _OnboardingPage(
       emoji: '🏆',
       title: 'Earn Community Trust\nand Level Up',
       body:
           'Report coolers to earn +50 Trust Points. Reach a Trust Score of 500 points to unlock instant auto-approvals for all your submissions!',
-      gradientColors: [Color(0xFF115E59), Color(0xFF0F766E)],
+      gradientColors: [Color(0xFF115E59), AppColors.primary],
     ),
   ];
 
@@ -68,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: const Text(
                     'Skip',
                     style: TextStyle(
-                      color: Color(0xFF0F766E),
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
                     ),
@@ -99,8 +100,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         height: 8,
                         decoration: BoxDecoration(
                           color: _currentPage == i
-                              ? const Color(0xFF0F766E)
-                              : const Color(0xFFCCFBF1),
+                              ? AppColors.primary
+                              : AppColors.teal100,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -117,11 +118,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 curve: Curves.easeInOutCubic,
                               ),
                       style: FilledButton.styleFrom(
-                        backgroundColor: const Color(0xFF0F766E),
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         elevation: 2,
-                        shadowColor: const Color(0xFF0F766E).withValues(alpha: 0.3),
+                        shadowColor: AppColors.primary.withValues(alpha: 0.3),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16)),
                       ),
@@ -197,7 +198,7 @@ class _OnboardingPage extends StatelessWidget {
               fontSize: 26,
               fontWeight: FontWeight.w900,
               height: 1.25,
-              color: Color(0xFF1E293B),
+              color: AppColors.slate800,
               letterSpacing: -0.5,
             ),
           ),
@@ -209,7 +210,7 @@ class _OnboardingPage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 15,
-                color: Color(0xFF64748B),
+                color: AppColors.slate500,
                 height: 1.6,
                 fontWeight: FontWeight.w500,
               ),

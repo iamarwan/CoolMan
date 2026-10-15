@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/water_cooler.dart';
+import '../core/theme.dart';
 
 class SponsorScreen extends StatelessWidget {
   final Sponsor sponsor;
@@ -54,14 +55,14 @@ class SponsorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.slate50,
       appBar: AppBar(
         title: const Text(
           'Sponsor Profile',
           style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF0F766E),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -72,14 +73,14 @@ class SponsorScreen extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF0F766E), Color(0xFF0D9488)],
+                colors: [AppColors.primary, AppColors.teal600],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0F766E).withValues(alpha: 0.25),
+                  color: AppColors.primary.withValues(alpha: 0.25),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -203,12 +204,12 @@ class SponsorScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+                  color: AppColors.slate900.withValues(alpha: 0.03),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
               ],
-              border: Border.all(color: const Color(0xFFF1F5F9)),
+              border: Border.all(color: AppColors.slate100),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,11 +217,11 @@ class SponsorScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFF0FDF4),
+                    color: AppColors.successTint,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.volunteer_activism_rounded,
-                      color: Color(0xFF16A34A), size: 24),
+                      color: AppColors.successDark, size: 24),
                 ),
                 const SizedBox(width: 16),
                 const Expanded(
@@ -230,13 +231,13 @@ class SponsorScreen extends StatelessWidget {
                       Text(
                         'Sadaka Jariya (On-going Charity)',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B)),
+                            fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.slate800),
                       ),
                       SizedBox(height: 6),
                       Text(
                         'Providing free access to cool drinking water is of significant communal value. This sponsor funds refills, cup stock, maintenance, and repairs for the assigned coolers.',
                         style: TextStyle(
-                            fontSize: 13, color: Color(0xFF475569), height: 1.5),
+                            fontSize: 13, color: AppColors.slate600, height: 1.5),
                       ),
                     ],
                   ),
@@ -255,7 +256,7 @@ class SponsorScreen extends StatelessWidget {
                 icon: const Icon(Icons.phone_rounded, size: 18),
                 label: const Text('Contact Sponsor'),
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF0F766E),
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   elevation: 1,

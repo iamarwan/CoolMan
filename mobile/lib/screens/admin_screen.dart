@@ -3,7 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/water_cooler.dart';
+import '../core/config.dart';
 import '../services/api_service.dart';
+import '../widgets/app_snackbar.dart';
+import '../widgets/photo_pickers.dart';
+import '../widgets/status_style.dart';
+import '../core/theme.dart';
 part 'admin_widgets.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -181,89 +186,11 @@ class _AdminScreenState extends State<AdminScreen>
   }
 
   Future<void> _uploadPhotoAdmin(WaterCooler cooler) async {
-    final category = await showModalBottomSheet<String>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2)),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'What are you photographing?',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B)),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              ListTile(
-                leading: const Icon(Icons.water_drop_outlined, color: Color(0xFF0F766E)),
-                title: const Text('The Cooler'),
-                subtitle: const Text('Overall view of the unit'),
-                onTap: () => Navigator.pop(ctx, 'Cooler'),
-              ),
-              ListTile(
-                leading: const Icon(Icons.coffee_outlined, color: Color(0xFF0F766E)),
-                title: const Text('The Cups'),
-                subtitle: const Text('Cup availability and condition'),
-                onTap: () => Navigator.pop(ctx, 'Cups'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    final category = await pickPhotoCategory(context);
 
     if (category == null || !mounted) return;
     
-    final source = await showModalBottomSheet<ImageSource>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2)),
-              ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt_outlined, color: Color(0xFF0F766E)),
-                title: const Text('Take dynamic photo'),
-                onTap: () => Navigator.pop(ctx, ImageSource.camera),
-              ),
-              ListTile(
-                leading:
-                    const Icon(Icons.photo_library_outlined, color: Color(0xFF0F766E)),
-                title: const Text('Select from Local Album'),
-                onTap: () => Navigator.pop(ctx, ImageSource.gallery),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    final source = await pickImageSource(context);
     if (source == null) return;
 
     final picked = await _imagePicker.pickImage(
@@ -395,7 +322,7 @@ class _AdminScreenState extends State<AdminScreen>
                         _snack('Failed to create sponsor: $e', isError: true);
                       }
                     },
-              style: FilledButton.styleFrom(backgroundColor: const Color(0xFF0F766E)),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
               child: loading
                   ? const SizedBox(
                       width: 16,
@@ -414,15 +341,7 @@ class _AdminScreenState extends State<AdminScreen>
 
   void _snack(String message, {bool isError = false}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red.shade700 : const Color(0xFF0F766E),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      ),
-    );
+    showAppSnackbar(context, message, isError: isError);
   }
 
   bool _handleAdminAuthError(Object e) {
@@ -514,7 +433,7 @@ class _AdminScreenState extends State<AdminScreen>
                         });
                       }
                     },
-              style: FilledButton.styleFrom(backgroundColor: const Color(0xFF0F766E)),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
               child: loading
                   ? const SizedBox(
                       width: 16,
@@ -548,12 +467,12 @@ class _AdminScreenState extends State<AdminScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.slate50,
       appBar: AppBar(
         title: const Text('Administration Controller',
             style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5)),
         centerTitle: true,
-        backgroundColor: const Color(0xFF0F766E),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -636,7 +555,7 @@ class _AdminScreenState extends State<AdminScreen>
                           const SizedBox(width: 6),
                           _CountBadge(
                               count: _current.length,
-                              color: const Color(0xFF10B981)),
+                              color: AppColors.success),
                         ],
                       ],
                     ),
@@ -650,7 +569,7 @@ class _AdminScreenState extends State<AdminScreen>
                           const SizedBox(width: 6),
                           _CountBadge(
                               count: _sponsors.length,
-                              color: const Color(0xFF3B82F6)),
+                              color: AppColors.info),
                         ],
                       ],
                     ),

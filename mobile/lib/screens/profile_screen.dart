@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
 import 'my_submissions_screen.dart';
+import '../core/theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -93,14 +94,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.slate50,
       appBar: AppBar(
         title: const Text(
           'My Profile',
           style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.5),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF0F766E),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -112,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       body: RefreshIndicator(
-        color: const Color(0xFF0F766E),
+        color: AppColors.primary,
         onRefresh: () async {
           await Future.wait([_fetchProfile(), _fetchLeaderboard()]);
         },
@@ -135,10 +136,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
+          border: Border.all(color: AppColors.slate100),
         ),
         child: const Center(
-          child: CircularProgressIndicator(color: Color(0xFF0F766E)),
+          child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );
     }
@@ -167,14 +168,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF0F766E), Color(0xFF0D9488)],
+          colors: [AppColors.primary, AppColors.teal600],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F766E).withValues(alpha: 0.25),
+            color: AppColors.primary.withValues(alpha: 0.25),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -322,12 +323,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+            color: AppColors.slate900.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: AppColors.slate100),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,23 +338,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Row(
               children: [
                 const Icon(Icons.leaderboard_rounded,
-                    color: Color(0xFF0F766E), size: 22),
+                    color: AppColors.primary, size: 22),
                 const SizedBox(width: 8),
                 const Text(
                   'Community Leaderboard',
                   style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                      fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.slate800),
                 ),
                 const Spacer(),
                 if (_loadingLeaderboard)
                   const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF0F766E))),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary)),
               ],
             ),
           ),
-          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+          const Divider(height: 1, color: AppColors.slate100),
           if (_leaderboardError != null)
             Padding(
               padding: const EdgeInsets.all(24),
@@ -374,7 +375,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: _leaderboard.length,
               separatorBuilder: (_, __) =>
-                  const Divider(height: 1, indent: 20, endIndent: 20, color: Color(0xFFF1F5F9)),
+                  const Divider(height: 1, indent: 20, endIndent: 20, color: AppColors.slate100),
               itemBuilder: (_, i) {
                 final entry = _leaderboard[i];
                 final isMe = _profile?.username == entry.username;
@@ -417,12 +418,12 @@ class _LeaderboardRow extends StatelessWidget {
         ? Text(_rankEmoji(entry.rank), style: const TextStyle(fontSize: 22))
         : Text(
             '#${entry.rank}',
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8)),
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.slate400),
           );
 
     return Container(
       color:
-          isCurrentUser ? const Color(0xFF0F766E).withValues(alpha: 0.04) : null,
+          isCurrentUser ? AppColors.primary.withValues(alpha: 0.04) : null,
       padding:
           const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -440,8 +441,8 @@ class _LeaderboardRow extends StatelessWidget {
             height: 38,
             decoration: BoxDecoration(
               color: isCurrentUser
-                  ? const Color(0xFFCCFBF1)
-                  : const Color(0xFFF1F5F9),
+                  ? AppColors.teal100
+                  : AppColors.slate100,
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -452,8 +453,8 @@ class _LeaderboardRow extends StatelessWidget {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: isCurrentUser
-                        ? const Color(0xFF0F766E)
-                        : const Color(0xFF475569),
+                        ? AppColors.primary
+                        : AppColors.slate600,
                     fontSize: 15),
               ),
             ),
@@ -468,8 +469,8 @@ class _LeaderboardRow extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                     color: isCurrentUser
-                        ? const Color(0xFF0F766E)
-                        : const Color(0xFF334155),
+                        ? AppColors.primary
+                        : AppColors.slate700,
                   ),
                 ),
                 if (isCurrentUser) ...[
@@ -478,13 +479,13 @@ class _LeaderboardRow extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFCCFBF1),
+                      color: AppColors.teal100,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text('You',
                         style: TextStyle(
                             fontSize: 10,
-                            color: Color(0xFF0F766E),
+                            color: AppColors.primary,
                             fontWeight: FontWeight.bold)),
                   ),
                 ],
@@ -496,7 +497,7 @@ class _LeaderboardRow extends StatelessWidget {
             style: const TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 14,
-                color: Color(0xFF0F766E)),
+                color: AppColors.primary),
           ),
         ],
       ),

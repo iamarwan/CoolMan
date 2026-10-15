@@ -11,7 +11,7 @@ been changed yet unless the Status says so.
 **Severity:** High = security or data loss · Medium = wrong behaviour users can hit ·
 Low = clutter or polish
 
-Last updated after **Phase 1 (backend)**. Branch: `restructure`.
+Last updated after **Phase 2 (mobile foundations)**. Branch: `restructure`.
 
 ---
 
@@ -64,14 +64,14 @@ Last updated after **Phase 1 (backend)**. Branch: `restructure`.
 
 | ID | Sev | Finding | Status |
 |---|---|---|---|
-| MB-01 | Medium | Add-cooler flow swallows photo-upload failures (`catch (_) {}`) and shows "submitted successfully" even when a photo was refused (pairs with BE-01). | VERIFY |
-| MB-02 | Low | `_statusColor` / `_statusIcon` copy-pasted in `map_screen.dart` and the admin screens. | VERIFY (Phase 2) |
-| MB-03 | Low | Photo-category sheet and camera/gallery sheet copy-pasted in map and admin screens. | VERIFY (Phase 2) |
-| MB-04 | Low | Two snackbar helpers (`_snack`, `_showSnackbar`) and a duplicated `_StatusPill`. | VERIFY (Phase 2) |
-| MB-05 | Low | Base URL `http://10.0.2.2:8000` hard-coded in two files; teal `0xFF0F766E` and other colours typed out hundreds of times. | VERIFY (Phase 2) |
+| MB-01 | Medium | Add-cooler flow swallows photo-upload failures (`catch (_) {}`) and shows "submitted successfully" even when a photo was refused (pairs with BE-01). Confirmed in `map_screen.dart` (`catch (_) {}` in the add-cooler flow). | CONFIRMED, not yet fixed |
+| MB-02 | Low | `_statusColor` / `_statusIcon` copy-pasted in `map_screen.dart` and the admin screens. | FIXED in Phase 2 (one `statusColor`/`statusIcon` in `widgets/status_style.dart`) |
+| MB-03 | Low | Photo-category sheet and camera/gallery sheet copy-pasted in map and admin screens. | FIXED in Phase 2 (`widgets/photo_pickers.dart`). The admin screen now shows the map screen's wording instead of its own. |
+| MB-04 | Low | Two snackbar helpers (`_snack`, `_showSnackbar`) and a duplicated `_StatusPill`. | FIXED in Phase 2 (`widgets/app_snackbar.dart`, `StatusPill`). Admin errors are now the shared red instead of `red.shade700`. |
+| MB-05 | Low | Base URL `http://10.0.2.2:8000` hard-coded in two files; teal `0xFF0F766E` and other colours typed out hundreds of times. | FIXED in Phase 2 (`ApiConfig.baseUrl`, `AppColors`). 9 one-off colours were left as literals (trust-level colours in `profile_screen.dart`, two onboarding gradient shades, `34D399` and `4F46E5` in `admin_widgets.dart`). Still needs one `baseUrl` change for a real phone or release build. |
 | MB-06 | Low | `map_screen.dart` (1,713 lines) and `admin_widgets.dart` (1,431) + `admin_screen.dart` (695) are too big to navigate. | Planned (Phases 3-4) |
 | MB-07 | Medium | "Still working" availability is decided in the app from the cooler's shared `last_verified_at`, but the server uses a per-user cooldown, so the button can disagree with the server. | VERIFY |
-| MB-08 | Low | Hard-coded "+50 Trust" on submissions and the "+50 / -100" chips in My Submissions are fixed text, not real data (wrong for trusted users, who get +50 immediately, and for pending items). | VERIFY (Phase 4) |
+| MB-08 | Low | Hard-coded "+50 Trust" on submissions and the "+50 / -100" chips in My Submissions are fixed text, not real data (wrong for trusted users, who get +50 immediately, and for pending items). | CONFIRMED (hard-coded "+50 Trust pending" in `map_screen.dart`), fix in Phase 4 |
 | MB-09 | Low | Trust levels (Newcomer to Champion) exist only in the profile screen; the thresholds are not shared with the server's rules. | VERIFY |
 | MB-10 | Low | Admin area is reached by tapping the title 5 times (hidden, not secured beyond the admin login). | VERIFY |
 
@@ -112,8 +112,19 @@ the local remote still points at the old URL (works, but update it when convenie
 | Phase | Scope | State |
 |---|---|---|
 | 1 | Backend split, verify, docs | Done (commit `e582504`) |
-| 2 | Mobile foundations: theme, config, shared widgets, split models and API files | Not started |
+| 2 | Mobile foundations: theme, config, shared widgets, split models and API files | Done, but **not compiled** (no Flutter SDK here): run `flutter analyze` |
 | 3 | Mobile: split `map_screen.dart` | Not started |
 | 4 | Mobile: split `admin_screen.dart`, `admin_widgets.dart`, other screens | Not started |
 | 5 | Cleanup deletions (section 4, after your approval) and docs refresh | Not started |
 | After | Work through sections 2 and 3 of this log | Not started |
+
+### Temporary compatibility shims (remove in Phase 5)
+
+- `mobile/lib/models/water_cooler.dart` re-exports `cooler_photo.dart` and `sponsor.dart`.
+- `mobile/lib/services/api_service.dart` re-exports `user_profile.dart` and `leaderboard_entry.dart`.
+
+They keep the old imports in the screens working. Once the screens import the specific files, the re-exports can go.
+
+### Static check limits (Phase 2)
+
+A script checked that every import, export and `part` resolves, that braces balance (`sponsor_screen.dart` was already off by one parenthesis before my changes, a quirk of the checker's string handling), and that shared names are imported. It is not a compiler, so `flutter analyze` is the real test.
