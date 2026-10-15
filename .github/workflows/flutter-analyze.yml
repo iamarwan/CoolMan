@@ -1,0 +1,23 @@
+# Runs `flutter analyze` on every push, so the Flutter code is checked
+# automatically even when nobody has Flutter installed locally.
+name: Flutter analyze
+
+on:
+  push:
+    paths: ['mobile/**', '.github/workflows/flutter-analyze.yml']
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
