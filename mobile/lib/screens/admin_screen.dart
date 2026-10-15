@@ -3,16 +3,21 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/water_cooler.dart';
-import '../core/config.dart';
 import '../services/api_service.dart';
 import '../widgets/app_snackbar.dart';
 import '../widgets/photo_pickers.dart';
-import '../widgets/status_style.dart';
 import '../core/theme.dart';
-part 'admin_widgets.dart';
+import 'admin/admin_common.dart';
+import 'admin/admin_login_dialog.dart';
+import 'admin/create_sponsor_dialog.dart';
+import 'admin/current_tab.dart';
+import 'admin/pending_tab.dart';
+import 'admin/photo_gallery_sheet.dart';
+import 'admin/sponsor_assign_sheet.dart';
+import 'admin/sponsors_tab.dart';
 
 class AdminScreen extends StatefulWidget {
-  const AdminScreen({super.key});
+  const AdminScreen();
 
   @override
   State<AdminScreen> createState() => _AdminScreenState();
@@ -219,7 +224,7 @@ class _AdminScreenState extends State<AdminScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _PhotoGallerySheet(cooler: cooler, api: _api),
+      builder: (_) => AdminPhotoGallerySheet(cooler: cooler, api: _api),
     );
   }
 
@@ -228,7 +233,7 @@ class _AdminScreenState extends State<AdminScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _SponsorAssignSheet(
+      builder: (_) => AdminSponsorAssignSheet(
         cooler: cooler,
         api: _api,
         sponsors: _sponsors,
@@ -244,100 +249,6 @@ class _AdminScreenState extends State<AdminScreen>
     );
   }
 
-  Future<void> _showCreateSponsorDialog() async {
-    final nameCtrl = TextEditingController();
-    final contactCtrl = TextEditingController();
-
-    String selectedType = 'Business';
-    final formKey = GlobalKey<FormState>();
-    bool loading = false;
-
-    await showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialog) => AlertDialog(
-          title: const Text('Create New Sponsor',
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Sponsor Entity Name', border: OutlineInputBorder()),
-                  validator: (v) =>
-                      v == null || v.trim().isEmpty ? 'Required' : null,
-                  enabled: !loading,
-                ),
-                const SizedBox(height: 14),
-                DropdownButtonFormField<String>(
-                  initialValue: selectedType,
-                  decoration: const InputDecoration(
-                      labelText: 'Sponsor Category', border: OutlineInputBorder()),
-                  items: ['Business', 'Mosque', 'Individual', 'NGO']
-                      .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                      .toList(),
-                  onChanged: loading
-                      ? null
-                      : (v) => setDialog(() => selectedType = v!),
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: contactCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'Contact Information',
-                      border: OutlineInputBorder()),
-                  enabled: !loading,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: loading ? null : () => Navigator.of(ctx).pop(),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: loading
-                  ? null
-                  : () async {
-                      if (!formKey.currentState!.validate()) return;
-                      setDialog(() => loading = true);
-                      try {
-                        await _api.createSponsor(
-                          name: nameCtrl.text.trim(),
-                          sponsorType: selectedType,
-                          contact: contactCtrl.text.trim().isEmpty
-                              ? null
-                              : contactCtrl.text.trim(),
-                        );
-                        if (ctx.mounted) Navigator.of(ctx).pop();
-                        _snack('✓ Sponsor successfully created.');
-                        _fetchSponsors(); 
-                      } catch (e) {
-                        setDialog(() => loading = false);
-                        _snack('Failed to create sponsor: $e', isError: true);
-                      }
-                    },
-              style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-              child: loading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white))
-                  : const Text('Create'),
-            ),
-          ],
-        ),
-      ),
-    );
-    nameCtrl.dispose();
-    contactCtrl.dispose();
-  }
 
   void _snack(String message, {bool isError = false}) {
     if (!mounted) return;
@@ -357,7 +268,7 @@ class _AdminScreenState extends State<AdminScreen>
 
   Future<void> _authorizeAndLoad() async {
     if (!mounted) return;
-    final ok = await _showAdminLoginDialog();
+    final ok = await showAdminLoginDialog(context, _api);
     if (!mounted) return;
     if (!ok) {
       Navigator.of(context).maybePop();
@@ -369,88 +280,6 @@ class _AdminScreenState extends State<AdminScreen>
     await _fetchSponsors();
   }
 
-  Future<bool> _showAdminLoginDialog() async {
-    final usernameController = TextEditingController();
-    final passwordController = TextEditingController();
-    bool loading = false;
-    String? error;
-
-    final success = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialog) => AlertDialog(
-          title: const Text('Verify Administrative Account'),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: usernameController,
-                decoration: const InputDecoration(labelText: 'Admin Username', border: OutlineInputBorder()),
-                enabled: !loading,
-              ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: passwordController,
-                decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
-                obscureText: true,
-                enabled: !loading,
-              ),
-              if (error != null) ...[
-                const SizedBox(height: 10),
-                Text(error!,
-                    style: TextStyle(color: Colors.red.shade700, fontSize: 12, fontWeight: FontWeight.bold)),
-              ],
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: loading ? null : () => Navigator.of(ctx).pop(false),
-              child: const Text('Back'),
-            ),
-            FilledButton(
-              onPressed: loading
-                  ? null
-                  : () async {
-                      final user = usernameController.text.trim();
-                      final pass = passwordController;
-                      if (user.isEmpty || pass.text.isEmpty) {
-                        setDialog(() => error = 'Credentials required.');
-                        return;
-                      }
-                      setDialog(() {
-                        loading = true;
-                        error = null;
-                      });
-                      try {
-                        await _api.adminLogin(username: user, password: pass.text);
-                        if (ctx.mounted) Navigator.of(ctx).pop(true);
-                      } catch (_) {
-                        setDialog(() {
-                          loading = false;
-                          error = 'Invalid administrative credentials.';
-                        });
-                      }
-                    },
-              style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-              child: loading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Text('Authenticate'),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    usernameController.dispose();
-    passwordController.dispose();
-    return success == true;
-  }
 
   List<WaterCooler> get _filteredPending => _query.isEmpty
       ? _pending
@@ -479,7 +308,8 @@ class _AdminScreenState extends State<AdminScreen>
           IconButton(
             icon: const Icon(Icons.domain_add_rounded),
             tooltip: 'Add Sponsor Profile',
-            onPressed: _showCreateSponsorDialog,
+            onPressed: () => showCreateSponsorDialog(context,
+                api: _api, notify: _snack, onCreated: _fetchSponsors),
           ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
@@ -541,7 +371,7 @@ class _AdminScreenState extends State<AdminScreen>
                         const Text('Review Queue'),
                         if (_pending.isNotEmpty) ...[
                           const SizedBox(width: 6),
-                          _CountBadge(count: _pending.length),
+                          AdminCountBadge(count: _pending.length),
                         ],
                       ],
                     ),
@@ -553,7 +383,7 @@ class _AdminScreenState extends State<AdminScreen>
                         const Text('Live Map'),
                         if (_current.isNotEmpty) ...[
                           const SizedBox(width: 6),
-                          _CountBadge(
+                          AdminCountBadge(
                               count: _current.length,
                               color: AppColors.success),
                         ],
@@ -567,7 +397,7 @@ class _AdminScreenState extends State<AdminScreen>
                         const Text('Sponsors'),
                         if (_sponsors.isNotEmpty) ...[
                           const SizedBox(width: 6),
-                          _CountBadge(
+                          AdminCountBadge(
                               count: _sponsors.length,
                               color: AppColors.info),
                         ],
@@ -583,14 +413,14 @@ class _AdminScreenState extends State<AdminScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _PendingTab(
+          AdminPendingTab(
             loading: _loadingPending,
             coolers: _filteredPending,
             onApprove: _approve,
             onReject: _reject,
             onViewPhotos: (c) => _showPhotoGallery(context, c),
           ),
-          _CurrentTab(
+          AdminCurrentTab(
             loading: _loadingCurrent,
             coolers: _filteredCurrent,
             onDelete: _deleteSpam,
@@ -599,7 +429,7 @@ class _AdminScreenState extends State<AdminScreen>
             onViewPhotos: (c) => _showPhotoGallery(context, c),
             onManageSponsor: (c) => _showSponsorSheet(context, c),
           ),
-          _SponsorsTab(
+          AdminSponsorsTab(
             loading: _loadingSponsors,
             sponsors: _filteredSponsors,
             api: _api,
