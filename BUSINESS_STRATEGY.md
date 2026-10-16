@@ -71,6 +71,6 @@ To maintain user retention and avoid overloading the application, we deploy feat
 ```
 
 ### Future Growth Vectors:
-1.  **AI Image Moderation**: Automatically pass photo uploads through Gemini Vision model checks to reject non-cooler photos immediately, alleviating the admin's queue review fatigue.
+1.  **AI Image Moderation**: Automatically pass photo uploads through Gemini Vision model checks to reject non-cooler photos immediately, alleviating the admin's queue review fatigue. *(Status: planned; to be built from scratch once the app is up and running. See `docs/FINDINGS_LOG.md` section 8.)*
 2.  **IoT Weight Monitors**: Sell low-power battery-operated IoT weights to sponsors that slip under the bottle, auto-reporting status updates when weight drops below 5kg.
 3.  **Beverage Brand Alliances**: Large mineral water bottling entities can distribute bio-degradable paper cups bearing their brand directly to our highly-ranked sponsor locations.

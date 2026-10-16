@@ -1,126 +1,188 @@
-# 🚀 SABIL (CoolMan) Project Runbook & Getting Started
+# Getting Sabil running on a laptop (step by step)
 
-Welcome to the Sabil Project! This guide provides a detailed operational map separating what has **already been set up once** from what you need to run **every single time** you start a development session.
+This guide takes you from "nothing installed" to "the app is running on an emulator". Commands are for **Windows PowerShell**; Mac/Linux differences are noted.
 
----
+**Short answer to "do I still use Docker?"** Yes, but **only for the database**. Docker runs PostgreSQL + PostGIS. The server (FastAPI) and the app (Flutter) run directly on your laptop, not in Docker.
 
-## ✅ Part 1: Tasks Done ONCE (Completed Setup)
+You need three things running, each in its own terminal:
 
-> [!NOTE]
-> **These steps have already been successfully completed on your machine.** You do **NOT** need to run these commands again unless you reinstall your environment or clone to a clean machine.
-
-### 1. Database & Spatial Extensions Setup
-- PostgreSQL is installed locally.
-- The `sabil_db` database is created with owner `sabil` (password: `sabil_pass`).
-- PostGIS spatial extensions are enabled.
-
-### 2. Backend Environment Configuration
-- A Python virtual environment has been created inside the project root:
-  ```bash
-  python -m venv venv
-  ```
-- All required dependencies are listed in `backend/requirements.txt` (`fastapi`, `uvicorn`, `sqlalchemy`, `asyncpg`, `geoalchemy2`, `pydantic`, `python-multipart`) and have been installed in this environment.
-- Core table structures and initial Egyptian seed data (in Maadi, Cairo) have been successfully migration-mapped (`db_fix.py` and the seed script have been executed).
-
-### 3. Flutter Client SDK & Package Setup
-- The Flutter SDK has been added to your system path.
-- Android Studio is configured along with the Android SDK licenses.
-- Project packages have been successfully pulled:
-  ```bash
-  cd mobile
-  flutter pub get
-  ```
+| # | What | Where it runs | Command |
+|---|---|---|---|
+| 1 | Database | Docker | `docker compose up -d` |
+| 2 | Server (backend) | Your laptop, in `backend/` | `uvicorn sabil.main:app --reload` |
+| 3 | App | Android emulator | `flutter run` (in `mobile/`) |
 
 ---
 
-## 💻 Part 2: Tasks to Do EVERY TIME (Session Runbook)
+## Part 1: One-time setup
 
-Follow this precise order of actions every time you start a development session to test the app locally.
+### 1. Install the tools
+- **Git**: https://git-scm.com/downloads
+- **Docker Desktop**: https://www.docker.com/products/docker-desktop (start it once; wait until it says "running")
+- **Python 3.11 or newer**: https://www.python.org/downloads (tick **"Add python.exe to PATH"** in the installer)
+- **Flutter SDK** and **Android Studio** (for the emulator): https://docs.flutter.dev/get-started/install. Afterwards run `flutter doctor` and fix anything marked with a red cross.
+- **Antigravity** (Google's AI code editor): install it from Google's site. It works like VS Code.
 
-### 🗄️ Step 1: Start the PostgreSQL Database Service
-Ensure the PostgreSQL server is running:
-- **Windows (Native)**: Open `services.msc`, locate **PostgreSQL**, and ensure the status is set to **Running** (or start it via the services window).
-- **If using Docker (Alternative)**:
-  ```powershell
-  docker start sabil-postgis
-  ```
-
----
-
-### 🐍 Step 2: Spin up the FastAPI Backend Server
-The backend now lives in the `backend/` folder. Open a terminal in the project root directory and execute:
-
+Check they work (each should print a version):
 ```powershell
-# 1. Activate the Python Virtual Environment
-venv\Scripts\activate
-
-# 2. Move into the backend folder (always start the server from here)
-cd backend
-
-# 3. (First time only, or after pulling changes) install the dependencies
-pip install -r requirements.txt
-
-# 4. Set the local database connection URL
-$env:SABIL_DATABASE_URL="postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_db?ssl=disable"
-
-# 5. Start the FastAPI development server with hot-reload enabled
-uvicorn sabil.main:app --host 0.0.0.0 --port 8000 --reload --reload-exclude "uploads"
+git --version
+docker --version
+python --version
+flutter --version
 ```
 
-> [!TIP]
-> - Once the server is running, you can access the interactive Swagger API documentation at: **`http://localhost:8000/docs`**. Routes are grouped by feature (`users`, `coolers`, `sponsors`, `admin`).
-> - If you ever need to reset or re-seed sample Egyptian coordinates (e.g. for testing Maadi Metro Station / Road 9 coolers), run `python -m scripts.seed` from the `backend` folder while the database is running.
+### 2. Get the code from GitHub
+Pick a folder (for example `C:\Projects`) and run:
+```powershell
+cd C:\Projects
+git clone https://github.com/iamarwan/CoolMan.git
+cd CoolMan
+git checkout restructure
+```
+`restructure` is the branch with all the new work (`main` is still the old layout). If you already have an old copy of the project, **do not clone over it**: rename the old folder first, or clone into a new one.
 
-> [!IMPORTANT]
-> **If you already have uploaded photos:** they used to be saved in an `uploads/` folder in the project root. The server now looks for `uploads/` in the folder you start it from (`backend/`), so move your existing `uploads/` folder into `backend/`, otherwise old photos will 404.
+If Git asks you to sign in, use your GitHub account (a browser window opens).
 
-### ⚙️ Settings (environment variables)
-All settings are defined in `backend/sabil/core/config.py`. Set these in your terminal before starting the server; anything you do not set uses the default shown.
+### 3. Open it in Antigravity
+1. Start Antigravity.
+2. **File > Open Folder** and choose the `CoolMan` folder (the one containing `backend`, `mobile`, `docker-compose.yml`).
+3. Install the extensions it suggests, or open the Extensions panel and install **Python** and **Dart** + **Flutter**.
+4. Open its built-in terminal (**Terminal > New Terminal**). You will use this for the commands below; open extra terminal tabs with the **+** button.
 
-| Variable | Default | What it is |
-| :--- | :--- | :--- |
-| `SABIL_DATABASE_URL` | local PostGIS on port 5433 | Database connection |
-| `SABIL_ENV` | `development` | Set to `production` on a real server: the server then **refuses to start** unless `SABIL_JWT_SECRET` (32+ random characters) and `SABIL_ADMIN_PASSWORD` are set |
-| `SABIL_AUTH_MAX_ATTEMPTS` | `10` | Login/register attempts allowed per IP per minute |
-| `SABIL_JWT_SECRET` | `change-me-in-production` | Signs login tokens. **Change it on any real server** |
-| `SABIL_ADMIN_USERNAME` / `SABIL_ADMIN_PASSWORD` | `admin` / `admin123` | In-app admin login. **Change the password on any real server** |
-| `SABIL_ADMIN_TOKEN_MIN` / `SABIL_USER_TOKEN_MIN` | `480` / `10080` | How long logins last, in minutes |
+You can also use any other terminal; Antigravity is only the editor.
+
+### 4. Create the Python environment (once)
+```powershell
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+(Mac/Linux: `source venv/bin/activate`.) Your prompt now starts with `(venv)`.
+
+Tell Antigravity to use it: press `Ctrl+Shift+P`, type **Python: Select Interpreter**, choose the one inside `backend\venv`.
+
+> The repo contains `.vscode/settings.json` pointing at an old `venv\Scripts\python.exe` in the repo root. It is out of date: ignore it and select the interpreter as above.
+
+### 5. Get the Flutter packages (once)
+```powershell
+cd ..\mobile
+flutter pub get
+cd ..
+```
 
 ---
 
-### 📱 Step 3: Launch Android Emulator & Connect the Client App
-1. Open your Android Emulator (via Android Studio, VS Code device selector, or CLI).
-2. Set the emulator's mock GPS location to Cairo, Egypt (e.g. `29.9596, 31.2575` in Maadi) to see the seeded coolers on the map.
-3. Open a second terminal window, navigate to the `mobile` directory, and run the client:
+## Part 2: Every time you work on the app
 
+### Step 1: Start the database (Docker)
+Make sure Docker Desktop is running, then from the repo root (the folder with `docker-compose.yml`):
+```powershell
+docker compose up -d
+```
+This starts a container called `sabil-postgis` (PostGIS 16) on **port 5433**, user `sabil`, password `sabil_pass`, database `sabil_db`. Your data is kept in a Docker volume, so it survives restarts. Stop it with `docker compose down` (data stays; add `-v` only if you want to erase it).
+
+### Step 2: Start the server
+In a new terminal:
+```powershell
+cd backend
+venv\Scripts\activate
+uvicorn sabil.main:app --reload --host 0.0.0.0 --port 8000 --reload-exclude "uploads"
+```
+- Always start it **from the `backend` folder**, and use `sabil.main:app`. The old `main.py` in the project root no longer exists.
+- Tables are created automatically on first start.
+- Open http://localhost:8000/docs to see and try every endpoint.
+- **First time only:** to put sample coolers in the (empty) database, run in another terminal in `backend` with the venv active: `python -m scripts.seed`
+
+### Step 3: Start the app
+1. In Android Studio open **Device Manager** and start an emulator (or run `flutter emulators --launch <id>`).
+2. In the emulator's **... > Location** panel set a point in Cairo, for example latitude `29.9596`, longitude `31.2575` (Maadi), so the seeded coolers appear.
+3. In a new terminal:
 ```powershell
 cd mobile
 flutter run
 ```
+The emulator reaches your laptop's server at `10.0.2.2:8000`; that is already set in `mobile/lib/core/config.dart`.
 
-> [!IMPORTANT]
-> The Flutter application connects to the local computer server using the dedicated loopback bridge IP **`10.0.2.2:8000`** (defined in `api_service.dart`). Do not change this unless you are deploying to a physical device on the same local Wi-Fi.
+### Using a real phone instead of the emulator
+1. Phone and laptop on the same Wi-Fi.
+2. Find the laptop's IP: `ipconfig` (look for IPv4, e.g. `192.168.1.20`).
+3. Edit `mobile/lib/core/config.dart` and change `baseUrl` to `http://192.168.1.20:8000`.
+4. Keep the server started with `--host 0.0.0.0` (as in Step 2) and allow Python through the Windows firewall if asked.
+5. `flutter run` with the phone plugged in (USB debugging on).
 
----
-
-## 🛠️ Troubleshooting Cheat Sheet
-
-| Symptom | Root Cause | Immediate Action |
-| :--- | :--- | :--- |
-| **ST_DWithin function not found** | PostGIS extension is missing | Run database console and execute: <br> `CREATE EXTENSION IF NOT EXISTS postgis;` |
-| **Flutter app cannot fetch results** | Server not running / IP config error | Ensure the FastAPI server is running on port 8000. Verify the emulator uses `10.0.2.2` in `api_service.dart`. |
-| **JWT credentials rejected** | Out-of-sync session token | Tap **Logout** in the profile screen to clear tokens, or run `flutter clean` to wipe build caches. |
-| **Cannot fetch current location** | Emulator location services disabled | Toggle location settings inside the emulator's extended settings (`...` menu). |
+### Admin screen
+In the app, tap the app title 5 times to open the admin login. In development the login is `admin` / `admin123`.
 
 ---
 
-### Running the tests (backend)
+## What changed compared to before
 
-From `backend/`, with an empty throw-away PostGIS database:
+| Before | Now |
+|---|---|
+| `main.py`, `models.py`, etc. in the repo root | Everything in `backend/sabil/`, split by feature |
+| `uvicorn main:app` | `uvicorn sabil.main:app` run **from `backend/`** |
+| Photos in `uploads/` in the root | `backend/uploads/` (move old photos there, otherwise they show as missing) |
+| Photos open to anyone with the link | Unapproved photos/coolers only visible to admin and the person who added them |
+| `db_fix.py` for DB changes | Removed. There are no migrations yet (see below) |
+| Settings hard-coded | Environment variables (table below) |
 
+### Your existing database
+The tables are created if missing, but **existing tables are never altered**. Your old database still has three columns the code no longer uses (`taste_reports`, `is_wheelchair_accessible`, `needs_urgent_refill`). They are harmless. If you ever hit a "column does not exist" error, or want a clean start, the simplest fix is to erase the database and re-seed:
+```powershell
+docker compose down -v
+docker compose up -d
 ```
+then restart the server and run `python -m scripts.seed`. (If you used a natively installed PostgreSQL before, you can stop using it: Docker replaces it.)
+
+---
+
+## Settings (environment variables)
+
+Set them in the terminal **before** starting the server, e.g. `$env:SABIL_ENV="production"` (PowerShell). Anything unset uses the default.
+
+| Variable | Default | What it is |
+|---|---|---|
+| `SABIL_DATABASE_URL` | `postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_db?ssl=disable` | Database connection (matches `docker-compose.yml`) |
+| `SABIL_ENV` | `development` | Set to `production` on a real server: it then **refuses to start** unless `SABIL_JWT_SECRET` (32+ random characters) and `SABIL_ADMIN_PASSWORD` are set |
+| `SABIL_JWT_SECRET` | `change-me-in-production` | Signs login tokens. Change on any real server |
+| `SABIL_ADMIN_USERNAME` / `SABIL_ADMIN_PASSWORD` | `admin` / `admin123` | In-app admin login. Change the password on any real server |
+| `SABIL_ADMIN_TOKEN_MIN` / `SABIL_USER_TOKEN_MIN` | `480` / `10080` | How long logins last, in minutes |
+| `SABIL_AUTH_MAX_ATTEMPTS` | `10` | Login/register attempts allowed per IP per minute |
+
+You do not need any of these for normal development.
+
+---
+
+## Tests (optional)
+
+Run against a throw-away database, never your real one. From `backend/` with the venv active:
+```powershell
+docker exec sabil-postgis psql -U sabil -d sabil_db -c "CREATE DATABASE sabil_test;"
 pip install -r requirements-dev.txt
-SABIL_DATABASE_URL="postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_test?ssl=disable" python -m pytest tests -q
+$env:SABIL_DATABASE_URL="postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_test?ssl=disable"
+python -m pytest tests -q
 ```
+(11 tests; the PostGIS extension is enabled by the test setup.)
 
-Note: uploaded photos are no longer open static files. `/uploads/photos/<file>` is served by a route that only shows unapproved photos to admins and to the person who uploaded them.
+## Making a code snapshot for an AI chat
+```powershell
+python tools/pack_code.py
+```
+creates `coolman_dump_<date>_<time>.txt` in the repo root with every source file in one text file.
+
+---
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `docker compose up` fails / "cannot connect to the Docker daemon" | Docker Desktop is not running | Start Docker Desktop, wait until it says running |
+| Server error "connection refused" on port 5433 | Database container is not running | `docker compose up -d`, check with `docker ps` |
+| `ModuleNotFoundError: sabil` | Started from the wrong folder | `cd backend` first, use `sabil.main:app` |
+| `function st_dwithin does not exist` | PostGIS missing (not using the Docker image) | Use `docker compose up -d`, which provides PostGIS |
+| App shows no coolers / network error | Server not running, or wrong address | Check http://localhost:8000/docs opens; emulator uses `10.0.2.2`; real phone needs your LAN IP |
+| Old photos show as missing | `uploads/` folder moved | Copy the old `uploads` folder into `backend/` |
+| Server will not start and mentions JWT secret/admin password | `SABIL_ENV=production` without the required settings | Set them, or unset `SABIL_ENV` for development |
+| Login rejected after changes | Old saved token | Log out in the profile screen, or clear the app data |
+| `flutter doctor` shows red crosses | Missing Android licences/SDK | `flutter doctor --android-licenses`, install missing parts in Android Studio |

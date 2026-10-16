@@ -79,19 +79,19 @@ Last updated after **Phase 4 (admin and profile splits) and the cross-check**. B
 
 ## 4. Repo cleanup: needs your approval before anything is deleted
 
-Nothing below has been removed. Each is still in the repository exactly as it was.
+Approved on 2026-10-16 and removed (RC-01 to RC-06, RC-09; the old README was replaced earlier). `packer.py.txt` was moved, not deleted (RC-07). Still waiting for a decision: RC-08.
 
 | ID | Item | Why it is a candidate | Status |
 |---|---|---|---|
-| RC-01 | `__pycache__/` (5 `.pyc` files) at the repo root, and `routers/__pycache__/`, `services/__pycache__/` | Compiled Python committed by accident; now covered by `.gitignore` but still tracked. | APPROVAL |
-| RC-02 | `routers/auth.py`, `services/dependencies.py` | An abandoned earlier split. Nothing imports them, and the new `backend/sabil/` code replaces them. `routers/__pycache__` also holds compiled `admin`/`coolers` files whose source is gone. | APPROVAL |
-| RC-03 | `db_fix.py` | One-off `ALTER TABLE` patches for two columns; superseded by BE-14 (migrations). | APPROVAL |
-| RC-04 | `package.json`, `tsconfig.json`, `vite.config.ts`, `metadata.json` | Leftovers from the AI Studio web template; the app has no web frontend and they have no dependencies. | APPROVAL |
-| RC-05 | `README.md` (AI Studio text) and `.env.example` (Gemini key placeholders) | Describe the template, not Sabil. Suggest replacing them with a real README rather than just deleting. | APPROVAL |
-| RC-06 | `coolman_dump_20260705_061337.txt` (289 KB) | Stale snapshot of the code from July; the git history already keeps every version. | APPROVAL |
-| RC-07 | `packer.py.txt` | Developer tool for packing the code into one file; suggest moving it to `backend/scripts/` instead of deleting. | APPROVAL |
+| RC-01 | `__pycache__/` (5 `.pyc` files) at the repo root, and `routers/__pycache__/`, `services/__pycache__/` | Compiled Python committed by accident; now covered by `.gitignore` but still tracked. | DELETED |
+| RC-02 | `routers/auth.py`, `services/dependencies.py` | An abandoned earlier split. Nothing imports them, and the new `backend/sabil/` code replaces them. `routers/__pycache__` also holds compiled `admin`/`coolers` files whose source is gone. | DELETED |
+| RC-03 | `db_fix.py` | One-off `ALTER TABLE` patches for two columns; superseded by BE-14 (migrations). | DELETED |
+| RC-04 | `package.json`, `tsconfig.json`, `vite.config.ts`, `metadata.json` | Leftovers from the AI Studio web template; the app has no web frontend and they have no dependencies. | DELETED |
+| RC-05 | `README.md` (AI Studio text) and `.env.example` (Gemini key placeholders) | Describe the template, not Sabil. Suggest replacing them with a real README rather than just deleting. | DELETED |
+| RC-06 | `coolman_dump_20260705_061337.txt` (289 KB) | Stale snapshot of the code from July; the git history already keeps every version. | DELETED |
+| RC-07 | `packer.py.txt` | Developer tool for packing the code into one file; suggest moving it to `backend/scripts/` instead of deleting. | MOVED to `tools/pack_code.py` (now also includes `.yml`/`.txt`, skips `uploads/`) |
 | RC-08 | `.vscode/settings.json` | Hard-codes a Windows venv path (`venv/Scripts/python.exe`); personal editor setting, not project config. | APPROVAL |
-| RC-09 | Node-only lines in `.gitignore` (`node_modules/`, `dist/`, `coverage/`) | Only needed if RC-04 stays. | APPROVAL |
+| RC-09 | Node-only lines in `.gitignore` (`node_modules/`, `dist/`, `coverage/`) | Only needed if RC-04 stays. | DELETED |
 | RC-10 | Docs note `pydantic-settings` as installed but nothing uses it. | Cosmetic; already dropped from `requirements.txt`. | FIXED |
 
 ### What each candidate was for (explained to the owner; still waiting for answers on the ones marked ASK)
@@ -128,7 +128,7 @@ the local remote still points at the old URL (works, but update it when convenie
 | 2 | Mobile foundations: theme, config, shared widgets, split models and API files | Done, but **not compiled** (no Flutter SDK here): run `flutter analyze` |
 | 3 | Mobile: split `map_screen.dart` | Done (1,621 to 484 lines; `flutter analyze` passes on GitHub) |
 | 4 | Mobile: split `admin_screen.dart`, `admin_widgets.dart`, other screens | Done: admin split into `screens/admin/` (8 files), profile into `screens/profile/` (4 files). `my_submissions`, `sponsor` and `onboarding` screens left whole (under 320 lines each) |
-| 5 | Cleanup deletions (section 4, after your approval) and docs refresh | Not started |
+| 5 | Cleanup deletions (section 4) and docs refresh | Done 2026-10-16. A fresh dated dump is in the repo root; `GETTING_STARTED.md` rewritten for a new laptop |
 | After | Work through sections 2 and 3 of this log | Not started |
 
 ### Temporary compatibility shims (remove in Phase 5)
@@ -184,3 +184,18 @@ A script checked that every import, export and `part` resolves, that braces bala
 3. One unused import (`profile_error_card.dart`).
 
 Lesson for later phases: scripted rewrites of Dart need `flutter analyze` right after, which the GitHub check now does on every push.
+
+---
+
+## 8. Planned for later (not started)
+
+### AI photo moderation (Gemini Vision)
+
+Idea: when someone uploads a photo, send it to a Gemini Vision model to check it really shows a water cooler (or cups) and reject spam or unrelated pictures before an admin has to look. It is listed in `BUSINESS_STRATEGY.md` (roadmap, Phase 2 area).
+
+Decision (2026-10-16): build it on a clean slate **after the app is running well**. The leftover Google AI Studio files (`package.json`, `vite.config.ts`, `.env.example` with a Gemini key placeholder, etc.) were deleted because they were an unrelated web template.
+
+Notes for when it is built:
+- Hook point: `backend/sabil/media/storage.py` `save_image` / `coolers/photos.py` upload route, after the magic-byte check.
+- Keep the key in a new `SABIL_GEMINI_API_KEY` setting in `core/config.py`, never in the repo.
+- Treat the AI verdict as advice (auto-flag or auto-hide), keep admin as final say, and fail open (photo goes to the normal queue) if the AI call errors or times out. Add retries/fallback around the call.
