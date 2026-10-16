@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 
-import '../../core/theme.dart';
 
 class ProfileErrorCard extends StatelessWidget {
   final String message;

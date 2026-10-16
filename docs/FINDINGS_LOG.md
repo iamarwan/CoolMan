@@ -11,7 +11,7 @@ been changed yet unless the Status says so.
 **Severity:** High = security or data loss · Medium = wrong behaviour users can hit ·
 Low = clutter or polish
 
-Last updated after **Phase 3 (map screen split)**. Branch: `restructure`.
+Last updated after **Phase 4 (admin and profile splits) and the cross-check**. Branch: `restructure`.
 
 ---
 
@@ -114,7 +114,7 @@ the local remote still points at the old URL (works, but update it when convenie
 | 1 | Backend split, verify, docs | Done (commit `e582504`) |
 | 2 | Mobile foundations: theme, config, shared widgets, split models and API files | Done, but **not compiled** (no Flutter SDK here): run `flutter analyze` |
 | 3 | Mobile: split `map_screen.dart` | Done (1,621 to 484 lines; `flutter analyze` passes on GitHub) |
-| 4 | Mobile: split `admin_screen.dart`, `admin_widgets.dart`, other screens | Not started |
+| 4 | Mobile: split `admin_screen.dart`, `admin_widgets.dart`, other screens | Done: admin split into `screens/admin/` (8 files), profile into `screens/profile/` (4 files). `my_submissions`, `sponsor` and `onboarding` screens left whole (under 320 lines each) |
 | 5 | Cleanup deletions (section 4, after your approval) and docs refresh | Not started |
 | After | Work through sections 2 and 3 of this log | Not started |
 
@@ -137,3 +137,37 @@ A script checked that every import, export and `part` resolves, that braces bala
 ### Behaviour changes from batch 4 (for the app)
 
 - Reporting a status change now requires an approved cooler, and returns an error if the cooler already has that status ("Use Still working") or if you reported it in the last 10 minutes. The app shows these messages as it does any other error.
+
+---
+
+## 7. Cross-check after the splits (app vs server, and duplicated rules)
+
+### What was checked and passed
+
+| Check | Result |
+|---|---|
+| Every server call in the app (31) against the server's route list (method and path) | All match. |
+| Fields the app reads from `WaterCooler`, `CoolerPhoto`, `Sponsor`, `UserProfile` against what the server sends | The app reads nothing the server does not send (`cooler_count` comes from the sponsor list/detail routes, which do send it). |
+| `flutter analyze` on GitHub after every phase | Clean after fixes (see "Caught by the analyzer" below). |
+| Backend tests (11) against a real PostGIS database | All pass. |
+
+### New findings
+
+| ID | Sev | Finding | Status |
+|---|---|---|---|
+| XC-01 | Medium | **The app did not know the new server rule from batch 4**: tapping the status the cooler already has returned an error ("Use Still working"). | FIXED: the highlighted status button now does nothing. The 10-minute report cooldown still shows the server's message as a normal error. |
+| MB-11 | Low | **Nine `catch (_)` blocks hide the reason for a failure.** Expected ones: `session_store.dart`, `api_client.dart` (fall back to default text), `admin_login_dialog.dart` (shows "Invalid credentials"). To review: `admin/photo_gallery_sheet.dart` (x2), `admin/sponsor_assign_sheet.dart`, `map_screen.dart` (two places), `sponsor_screen.dart`. | OPEN: check each shows the person something useful. |
+| MB-12 | Low | `sponsor_screen.dart` says "Maintains N Coolers **in Cairo**" with the city typed in. | OPEN |
+| MB-13 | Low | `admin/admin_login_dialog.dart` and `create_sponsor_dialog.dart` dispose their text controllers right after the dialog closes; Flutter can throw "used after being disposed" while the close animation runs. Also a variable named `pass` holds a controller. | OPEN (VERIFY on a device) |
+| MB-14 | Low | **Reward amounts and rules are typed into the app** (`+50`, `+5`, `-100`, "500 points", "60 minutes") in `map_screen.dart`, `cooler_sheet.dart`, `my_submissions_screen.dart`, `onboarding_screen.dart`, `profile/trust_level.dart`. They duplicate `backend/sabil/users/trust.py` and the confirm cooldown, and will drift if the server numbers change. Extends MB-07, MB-08 and MB-09. | OPEN: one fix (the server sends its rules, or one shared Dart constants file) |
+| MB-15 | Low | The words `Working` / `Empty` / `Broken`, the sponsor types (`Business`, `Mosque`, `Individual`, `NGO`) and the photo categories are plain text repeated in about 8 files. A typo would compile fine. | OPEN: Dart `enum`s |
+| BE-19 | Low | `GET /coolers/{id}` is never called by the app (dead route). | DECIDE: keep for future clients or remove |
+| RC-11 | Low | `my_submissions_screen.dart` has its own colour and icon logic for submission states (Approved / Rejected / Pending). It is a different idea from cooler status, so it was left alone, but it could join `widgets/status_style.dart`. | OPEN |
+
+### Caught by the analyzer while splitting (all fixed, none left)
+
+1. A script that added `super.key` to the new public widgets also rewrote *uses* of those widgets and removed the key from `AdminScreen` (`use_key_in_widget_constructors`).
+2. A constructor ended up with the key declared twice (`duplicate_definition`).
+3. One unused import (`profile_error_card.dart`).
+
+Lesson for later phases: scripted rewrites of Dart need `flutter analyze` right after, which the GitHub check now does on every push.

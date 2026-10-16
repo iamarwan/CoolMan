@@ -26,7 +26,7 @@ jobs:
           flutter analyze --no-pub > analyze.txt 2>&1
           code=$?
           cat analyze.txt
-          awk -F ' • ' '/^ +(error|warning|info) • /{
+          awk -F ' • ' '/^ *(error|warning|info) • /{
             sev=$1; gsub(/ /,"",sev); split($3,loc,":");
             lvl=(sev=="error")?"error":(sev=="warning"?"warning":"notice");
             printf "::%s file=mobile/%s,line=%s,col=%s::%s (%s)\n", lvl, loc[1], loc[2], loc[3], $2, $4 }' analyze.txt

@@ -133,7 +133,8 @@ void showCoolerSheet(
                   color: AppColors.success,
                   icon: Icons.water_drop,
                   isActive: cooler.status == 'Working',
-                  onTap: () => onChangeStatus('Working'),
+                  // The server refuses "report the status it already has", so do nothing here.
+                  onTap: cooler.status == 'Working' ? () {} : () => onChangeStatus('Working'),
                 ),
               ),
               const SizedBox(width: 8),
@@ -143,7 +144,8 @@ void showCoolerSheet(
                   color: AppColors.slate500,
                   icon: Icons.water_drop_outlined,
                   isActive: cooler.status == 'Empty',
-                  onTap: () => onChangeStatus('Empty'),
+                  // The server refuses "report the status it already has", so do nothing here.
+                  onTap: cooler.status == 'Empty' ? () {} : () => onChangeStatus('Empty'),
                 ),
               ),
               const SizedBox(width: 8),
@@ -153,7 +155,8 @@ void showCoolerSheet(
                   color: AppColors.danger,
                   icon: Icons.report,
                   isActive: cooler.status == 'Broken',
-                  onTap: () => onChangeStatus('Broken'),
+                  // The server refuses "report the status it already has", so do nothing here.
+                  onTap: cooler.status == 'Broken' ? () {} : () => onChangeStatus('Broken'),
                 ),
               ),
             ],
