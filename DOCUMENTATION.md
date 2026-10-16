@@ -8,23 +8,24 @@ This document describes the software architecture, data schemas, verification me
 
 ```
  ┌───────────────────────┐
- │   Flutter Client App  │ <── (Mobile, Dart / OSM Map Canvas)
+ │   Flutter Client App  │ <── (Mobile, Dart / OpenStreetMap map)
  └───────────┬───────────┘
-             │ HTTP (JSON / Parts) over Port 8000
+             │ HTTP (JSON and photo uploads) over port 8000
              ▼
  ┌───────────────────────┐
- │   FastAPI Backend API │ <── (Python / Uvicorn Server Engine)
+ │   FastAPI Backend API │ <── (Python / Uvicorn)
  └───────────┬───────────┘
-             │ asyncpg (Async Database Adapter)
+             │ asyncpg
              ▼
  ┌───────────────────────┐
- │ PostgreSQL + PostGIS  │ <── (Relational DB Spatial Spatial Query Engine)
+ │ PostgreSQL + PostGIS  │ <── (stores coolers; answers "what is within 5 km?")
  └───────────────────────┘
 ```
 
-The system relies on a two-tier full-stack architecture:
-1.  **Mobile Client (Flutter/Dart)**: An immersive single-page map controller with visual overlays, legend overlays, bottom detail drawers, and onboarding pages. Recharts OSM map tiles with high-performance marker clustering (`flutter_map_marker_cluster`) to avoid slow layouts.
-2.  **Server Engine (FastAPI/SQLAlchemy)**: A fully asynchronous backend processing REST queries, rate limiter, and authentication. Coordinates GIS spatial filters via PostGIS native SQL directives.
+1.  **Mobile client (Flutter/Dart)**: a single map screen with pop-up sheets, plus profile, submissions, sponsor, onboarding and (hidden) admin screens. Map markers are grouped with `flutter_map_marker_cluster`.
+2.  **Server (FastAPI/SQLAlchemy)**: asynchronous REST API with rate limits and sign-in. Distance searches use PostGIS.
+
+The code is organised by **feature**: each feature folder holds its own `models.py` (database tables), `schemas.py` (what the API accepts and returns) and `router.py` (the routes). See the folder map and the list of reusable pieces in sections 6 and 7 below.
 
 ---
 
@@ -53,6 +54,7 @@ Tracks registered community contributors and administrators.
 *   `username` (String(64)): Unique index.
 *   `hashed_password` (String(256)): Structured password hash.
 *   `trust_score` (Integer): Dynamic score mapping permissions. Default: 0.
+*   `badges`: Reserved for future achievements; nothing uses it yet.
 *   `created_at` (DateTime): Registration date.
 
 #### `sponsors`
@@ -79,6 +81,7 @@ The main spatial entity representing physical drinking water stations.
 *   `user_id` (UUID, Foreign Key): Identifier of the original reporter.
 *   `pending_status_user_id` (UUID, Foreign Key): Submitter of review updates.
 *   `sponsor_id` (UUID, Foreign Key): Linked charity sponsor.
+*   `iot_weight_kg` (Float, optional): Reserved for a future sensor; nothing uses it yet.
 
 #### `cooler_photos`
 Tracks verification photos uploaded for security review.
@@ -88,6 +91,7 @@ Tracks verification photos uploaded for security review.
 *   `uploaded_at` (DateTime): Time of upload.
 *   `is_approved` (Boolean): Admin approved for public view.
 *   `photo_category` (Enum): Cooler, Cups.
+*   `user_id` (UUID, Foreign Key): Who uploaded it.
 
 ---
 
@@ -112,9 +116,84 @@ A central gamified trust loop handles review queues and defends the database aga
 1.  **Submission Verification**:
     *   Proposed coolers get queued as `is_approved = False`.
     *   If the submitter is a **Verified Reporter (Trust Score ≥ 500)**, the cooler is auto-approved and goes live instantly.
-2.  **Trust Flow Calculations**:
+2.  **Trust Flow Calculations** (all numbers live in `backend/sabil/users/trust.py`):
     *   *Add New Cooler*: Approved: **+50 Trust** to the reporter. Rejected: **-100 Trust**.
-    *   *Verify / Confirm*: Tap "Still Working" (restricted by 1-hour cooldown per cooler): **+5 Trust**.
-    *   *Propose Status Update*: Suggested status change: **+10 Trust** upon submission. If trust ≥ 500, the status updates instantly. Otherwise, it is staged as `pending_status` for admin approval.
+    *   *Verify / Confirm*: Tap "Still Working" (restricted by a 1-hour cooldown per user and cooler): **+5 Trust**.
+    *   *Propose Status Update*: **+10 Trust**, paid only when the change takes effect: at once for trusted users (score >= 500), otherwise when an admin approves it. One report per cooler every 10 minutes, and reporting the status a cooler already has is refused.
 3.  **GPS Duplication Guard**:
     *   The database rejects adding a cooler if another cooler exists within a **15-meter radius** (determined via PostGIS `ST_DWithin` on the coordinates index). This blocks multiple reports for the same cooler.
+4.  **Privacy of unapproved items**:
+    *   An unapproved cooler (`GET /coolers/{id}`) and an unapproved photo (`/uploads/photos/<file>`) are visible only to admins and to the person who submitted them. Everyone else gets 404.
+5.  **Abuse limits** (all in `backend/sabil/core/config.py`):
+    *   3 new coolers per minute per IP; 20 photo uploads per minute per IP; 10 login/register attempts per minute per IP.
+    *   Uploads: JPEG, PNG or WebP only (checked by the file's real contents), at most 8 MB.
+    *   `SABIL_ENV=production` makes the server refuse to start with the default admin password or token secret.
+
+---
+
+## 🌐 5. API Overview
+
+Interactive docs are served at `/docs` when the server runs. Routes by feature:
+
+| Feature | Routes |
+|---|---|
+| Accounts | `POST /auth/register`, `POST /auth/login`, `GET /auth/me`, `GET /users/leaderboard` |
+| Finding coolers | `GET /coolers/nearby`, `GET /coolers/search`, `GET /coolers/my`, `GET /coolers/{id}`, `GET /coolers/{id}/photos` |
+| Reporting | `POST /coolers`, `PATCH /coolers/{id}/status`, `POST /coolers/{id}/confirm`, `POST /coolers/{id}/photos` |
+| Sponsors (public) | `GET /sponsors`, `GET /sponsors/{id}` |
+| Photos | `GET /uploads/photos/{file}` (approval-checked) |
+| Admin (needs admin token) | `POST /auth/admin/login`, then everything under `/admin/...`: review queue, approve / reject, force status, delete, photo moderation, sponsor management |
+
+---
+
+## 6. Reusable pieces
+
+Each of these has no knowledge of coolers, so you can copy it into another project.
+
+**Backend (`backend/sabil/`)**
+
+| File | What it gives you | Copy it with |
+|---|---|---|
+| `core/security.py` | Password hashing and signed login tokens (JWT) with no extra libraries | `core/config.py` (the settings it reads) |
+| `core/rate_limit.py` | Per-IP request limits and per-user cooldowns | `core/config.py` |
+| `core/validation.py` | Text sanitising for user input | nothing |
+| `core/lookup.py` | `get_or_404` helper | nothing |
+| `core/dependencies.py` | "Who is asking?" (user / admin / anonymous) for FastAPI routes | `core/security.py` |
+| `media/storage.py` | Safe image saving: type check by content, size cap, random file names | `core/config.py` |
+
+**Mobile (`mobile/lib/`)**
+
+| File | What it gives you |
+|---|---|
+| `core/theme.dart` | All colours (`AppColors`) and the app theme in one place |
+| `core/config.dart` | The one server address |
+| `services/session_store.dart` | Saved login (token kept in secure storage) |
+| `services/api_client.dart` | Building URLs and reading error messages |
+| `widgets/app_snackbar.dart`, `photo_pickers.dart`, `auth_dialog.dart` | Message bar, camera/gallery pop-ups, login pop-up |
+| `screens/admin/...`, `screens/map/...`, `screens/profile/...` | One folder per screen: the screen file holds the state, the folder holds its pieces |
+
+---
+
+## 7. Folder map
+
+```
+backend/
+  sabil/
+    main.py            starts the app and plugs in the feature folders
+    core/              settings, database, security, limits, shared helpers
+    users/             accounts, leaderboard, trust rules
+    coolers/           the main feature: find, add, report, photos, who-can-see-what
+    sponsors/          public sponsor pages
+    admin/             admin login, review queue, moderation, sponsor management
+    media/             saving image files and serving them safely
+  scripts/seed.py      puts sample coolers in an empty database
+  tests/               automated tests (need a PostGIS database)
+mobile/lib/
+  main.dart            app start
+  core/                colours and server address
+  models/              plain data classes (one per file)
+  services/            talking to the server (one file per area) + saved login
+  widgets/             small pieces used on several screens
+  screens/             the screens, with a sub-folder of pieces for the big ones
+docs/FINDINGS_LOG.md   problems found, what was fixed, what is left
+```

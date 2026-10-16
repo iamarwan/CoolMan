@@ -1,20 +1,40 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Sabil (CoolMan)
 
-# Run and deploy your AI Studio app
+A crowd-sourced map of public water coolers (*sabil*) in Egypt. People add coolers, report whether they work or are empty, and attach photos. An admin reviews new submissions. Users earn **trust points** for good reports; trusted users skip the review queue.
 
-This contains everything you need to run your app locally.
+| Part | Tech | Folder |
+|---|---|---|
+| Phone app | Flutter (Dart), OpenStreetMap tiles | `mobile/` |
+| Server | FastAPI + async SQLAlchemy | `backend/` |
+| Database | PostgreSQL with PostGIS (distance queries) | `docker-compose.yml` |
 
-View your app in AI Studio: https://ai.studio/apps/6c668ed1-4c2e-49cf-953e-968840990fd6
+## Run it
 
-## Run Locally
+Step-by-step instructions (database, server, app, settings) are in **[GETTING_STARTED.md](GETTING_STARTED.md)**. The short version:
 
-**Prerequisites:**  Node.js
+```bash
+docker compose up -d                      # database
+cd backend
+pip install -r requirements.txt
+uvicorn sabil.main:app --reload           # server on http://localhost:8000  (docs at /docs)
+cd ../mobile && flutter run               # the app
+```
 
+## Where to look
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+| I want to... | Read |
+|---|---|
+| Understand how the code is organised, file by file | [DOCUMENTATION.md](DOCUMENTATION.md) |
+| Reuse a piece in another project | "Reusable pieces" in [DOCUMENTATION.md](DOCUMENTATION.md) |
+| See known problems and what has been fixed | [docs/FINDINGS_LOG.md](docs/FINDINGS_LOG.md) |
+| Read the product plan | [BUSINESS_STRATEGY.md](BUSINESS_STRATEGY.md) |
+
+## Tests
+
+```bash
+cd backend
+pip install -r requirements-dev.txt
+SABIL_DATABASE_URL="postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_test?ssl=disable" python -m pytest tests -q
+```
+
+GitHub also runs `flutter analyze` on every push (`.github/workflows/flutter-analyze.yml`).
