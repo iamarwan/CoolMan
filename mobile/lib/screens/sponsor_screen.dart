@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/water_cooler.dart';
 import '../models/sponsor.dart';
 import '../core/theme.dart';
 

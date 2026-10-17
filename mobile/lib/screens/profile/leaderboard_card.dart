@@ -5,7 +5,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme.dart';
-import '../../services/api_service.dart';
 import '../../models/leaderboard_entry.dart';
 import 'profile_error_card.dart';
 
