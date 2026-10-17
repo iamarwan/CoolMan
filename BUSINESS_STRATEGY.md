@@ -36,7 +36,7 @@ Many individuals across the globe want to contribute to charity but lack direct 
 
 ### C. Large-Scale Enterprise Sadaka Dashboards
 Corporate CSR programs (PepsiCo, Nestlé, real estate developers) fund massive networks of hundreds of street water coolers.
-*   **What they get**: We sell them access to an unified Web Dashboard that displays spatial tracking, water consumption metrics, filter lifespan projections, and user feedback ratings.
+*   **What they get**: We sell them access to an unified Web Dashboard that displays spatial tracking, status history, how fresh each cooler's verification is, and user feedback ratings.
 *   **The Model**: Annual corporate subscriptions (e.g., $240/year per cooler monitored).
 
 ---
@@ -63,14 +63,13 @@ To maintain user retention and avoid overloading the application, we deploy feat
                            │
                            ▼
 ┌────────────────────────────────────────────────────────┐
-│ Phase 3: Hardware Expansion & API (Months 7–12)        │
+│ Phase 3: Insights & API (Months 7–12)                │
 ├────────────────────────────────────────────────────────┤
-│ • Integrate IoT smart weight / flow-rate sensors.      │
+│ • Cooler health history & community ratings.           │
 │ • Establish REST API data channels for municipalities. │
 └────────────────────────────────────────────────────────┘
 ```
 
 ### Future Growth Vectors:
 1.  **AI Image Moderation**: Automatically pass photo uploads through Gemini Vision model checks to reject non-cooler photos immediately, alleviating the admin's queue review fatigue. *(Status: planned; to be built from scratch once the app is up and running. See `docs/FINDINGS_LOG.md` section 8.)*
-2.  **IoT Weight Monitors**: Sell low-power battery-operated IoT weights to sponsors that slip under the bottle, auto-reporting status updates when weight drops below 5kg.
-3.  **Beverage Brand Alliances**: Large mineral water bottling entities can distribute bio-degradable paper cups bearing their brand directly to our highly-ranked sponsor locations.
+2.  **Beverage Brand Alliances**: Large mineral water bottling entities can distribute bio-degradable paper cups bearing their brand directly to our highly-ranked sponsor locations.
