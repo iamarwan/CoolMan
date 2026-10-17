@@ -19,11 +19,6 @@ import 'coolers_api.dart';
 import 'session_store.dart';
 import 'sponsors_api.dart';
 
-// UserProfile and LeaderboardEntry used to be defined in this file; they are
-// re-exported so screens that import api_service.dart still see them.
-export '../models/leaderboard_entry.dart';
-export '../models/user_profile.dart';
-
 class ApiService with AuthApi, CoolersApi, SponsorsApi, AdminApi {
   // ─── Session (static, shared by the whole app) ───
 

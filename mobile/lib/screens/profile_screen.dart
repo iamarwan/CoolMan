@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
+import '../models/user_profile.dart';
+import '../models/leaderboard_entry.dart';
 import 'profile/leaderboard_card.dart';
 import 'profile/profile_card.dart';
 import '../core/theme.dart';

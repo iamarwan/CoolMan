@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../core/config.dart';
 import '../../core/theme.dart';
 import '../../models/water_cooler.dart';
+import '../../models/cooler_photo.dart';
 import '../../services/api_service.dart';
 
 class AdminPhotoGallerySheet extends StatefulWidget {

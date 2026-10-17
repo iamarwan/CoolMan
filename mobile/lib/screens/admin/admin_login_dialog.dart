@@ -8,84 +8,104 @@ import '../../core/theme.dart';
 import '../../services/api_service.dart';
 
 Future<bool> showAdminLoginDialog(BuildContext context, ApiService api) async {
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-  bool loading = false;
-  String? error;
-
   final success = await showDialog<bool>(
     context: context,
     barrierDismissible: false,
-    builder: (ctx) => StatefulBuilder(
-      builder: (ctx, setDialog) => AlertDialog(
-        title: const Text('Verify Administrative Account'),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: usernameController,
-              decoration: const InputDecoration(labelText: 'Admin Username', border: OutlineInputBorder()),
-              enabled: !loading,
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
-              obscureText: true,
-              enabled: !loading,
-            ),
-            if (error != null) ...[
-              const SizedBox(height: 10),
-              Text(error!,
-                  style: TextStyle(color: Colors.red.shade700, fontSize: 12, fontWeight: FontWeight.bold)),
-            ],
+    builder: (_) => _AdminLoginDialog(api: api),
+  );
+  return success == true;
+}
+
+// A StatefulWidget so the text controllers are disposed together with the
+// dialog (after its close animation), not while it is still on screen.
+class _AdminLoginDialog extends StatefulWidget {
+  final ApiService api;
+  const _AdminLoginDialog({required this.api});
+
+  @override
+  State<_AdminLoginDialog> createState() => _AdminLoginDialogState();
+}
+
+class _AdminLoginDialogState extends State<_AdminLoginDialog> {
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _loading = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text;
+    if (username.isEmpty || password.isEmpty) {
+      setState(() => _error = 'Credentials required.');
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      await widget.api.adminLogin(username: username, password: password);
+      if (mounted) Navigator.of(context).pop(true);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = 'Invalid administrative credentials.';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Verify Administrative Account'),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _usernameController,
+            decoration: const InputDecoration(labelText: 'Admin Username', border: OutlineInputBorder()),
+            enabled: !_loading,
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _passwordController,
+            decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
+            obscureText: true,
+            enabled: !_loading,
+          ),
+          if (_error != null) ...[
+            const SizedBox(height: 10),
+            Text(_error!,
+                style: TextStyle(color: Colors.red.shade700, fontSize: 12, fontWeight: FontWeight.bold)),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: loading ? null : () => Navigator.of(ctx).pop(false),
-            child: const Text('Back'),
-          ),
-          FilledButton(
-            onPressed: loading
-                ? null
-                : () async {
-                    final user = usernameController.text.trim();
-                    final pass = passwordController;
-                    if (user.isEmpty || pass.text.isEmpty) {
-                      setDialog(() => error = 'Credentials required.');
-                      return;
-                    }
-                    setDialog(() {
-                      loading = true;
-                      error = null;
-                    });
-                    try {
-                      await api.adminLogin(username: user, password: pass.text);
-                      if (ctx.mounted) Navigator.of(ctx).pop(true);
-                    } catch (_) {
-                      setDialog(() {
-                        loading = false;
-                        error = 'Invalid administrative credentials.';
-                      });
-                    }
-                  },
-            style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-            child: loading
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : const Text('Authenticate'),
-          ),
         ],
       ),
-    ),
-  );
-
-  usernameController.dispose();
-  passwordController.dispose();
-  return success == true;
+      actions: [
+        TextButton(
+          onPressed: _loading ? null : () => Navigator.of(context).pop(false),
+          child: const Text('Back'),
+        ),
+        FilledButton(
+          onPressed: _loading ? null : _submit,
+          style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+          child: _loading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                )
+              : const Text('Authenticate'),
+        ),
+      ],
+    );
+  }
 }

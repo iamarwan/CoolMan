@@ -52,11 +52,11 @@ Last updated after **Phase 4 (admin and profile splits) and the cross-check**. B
 | BE-11 | Low | **Sponsor `views_count` / `clicks_count` are never incremented**, so the API always returns 0. | No code touches them | DECIDE | Build the counting, or remove the columns. |
 | BE-12 | Low | **`WaterCoolerUpdate` is unused.** No route edits a cooler's name, cups info or location, so a typo can only be fixed by delete and re-add. | `coolers/schemas.py` (marked unused) | DECIDE | Build one admin edit route (name, cups; location needs `geom` + duplicate check) or delete the class. |
 | BE-13 | Low | **`iot_weight_kg` is unused** (IoT roadmap only). `badges` is unused too, but you chose to keep it. | grep | DECIDE | Keep as roadmap, or remove. |
-| BE-14 | Low | **No real migrations.** `create_all` never alters existing tables, so changes need hand-written SQL (`db_fix.py` is exactly that). Your existing database still has the 3 removed columns. | `db_fix.py`, `core/database.py` `init_db` | OPEN | Adopt Alembic; until then run the `ALTER TABLE ... DROP COLUMN` from `GETTING_STARTED`/the Phase 1 notes. |
+| BE-14 | Low | **No real migrations.** `create_all` never alters existing tables, so changes need hand-written SQL (`db_fix.py` is exactly that). Your existing database still has the 3 removed columns. | `db_fix.py`, `core/database.py` `init_db` | PARTLY DONE: `python -m scripts.sync_schema` reports and fixes column differences (dry run by default; `--apply` adds missing columns, `--drop-extra` removes unused ones). Tested on a copy of the old database. Alembic still not adopted | Adopt Alembic; until then run the `ALTER TABLE ... DROP COLUMN` from `GETTING_STARTED`/the Phase 1 notes. |
 | BE-15 | Low | **There are no tests in the repo.** The 100-step comparison I used lives only in my scratch workspace. | no `tests/` folder | PARTLY DONE: `backend/tests/` has 11 tests (run with pytest). The old 100-step scenario is not saved | Save the scenario as `backend/tests/` so every later phase has a safety net. |
 | BE-16 | Low | **Blocking file write inside an async route** (`shutil.copyfileobj`). Fine at low traffic. | `media/storage.py` | OPEN | Use a thread or `aiofiles` later. |
 | BE-17 | Low | **Three overlapping ways to update a cooler's status** (Confirm, Change status, Add photo), plus the pending/approve flow. Hard to reason about and to explain to users. | Code + UI | DECIDE | Decide what each flow is for during the "behaviour clutter" phase. |
-| BE-18 | Low | **`cups_type` is never set by the app** (so it is always null); only `has_cups` is used. | Earlier analysis | VERIFY | Check in the Flutter add-cooler dialog (Phase 3); keep or remove. |
+| BE-18 | Low | **`cups_type` is never set by the app** (so it is always null); only `has_cups` is used. | Earlier analysis | CONFIRMED: the app only ever sends null (the add dialog never picks a cups type) | DECIDE: add a picker in the app or remove the field. |
 
 ---
 
@@ -131,12 +131,12 @@ the local remote still points at the old URL (works, but update it when convenie
 | 5 | Cleanup deletions (section 4) and docs refresh | Done 2026-10-16. A fresh dated dump is in the repo root; `GETTING_STARTED.md` rewritten for a new laptop |
 | After | Work through sections 2 and 3 of this log | Not started |
 
-### Temporary compatibility shims (remove in Phase 5)
+### Temporary compatibility shims (REMOVED 2026-10-17)
 
 - `mobile/lib/models/water_cooler.dart` re-exports `cooler_photo.dart` and `sponsor.dart`.
 - `mobile/lib/services/api_service.dart` re-exports `user_profile.dart` and `leaderboard_entry.dart`.
 
-They keep the old imports in the screens working. Once the screens import the specific files, the re-exports can go.
+Done: every file now imports `cooler_photo.dart`, `sponsor.dart`, `user_profile.dart` and `leaderboard_entry.dart` directly and the re-exports are gone.
 
 ### Static check limits (Phase 2)
 
@@ -170,8 +170,8 @@ A script checked that every import, export and `part` resolves, that braces bala
 |---|---|---|---|
 | XC-01 | Medium | **The app did not know the new server rule from batch 4**: tapping the status the cooler already has returned an error ("Use Still working"). | FIXED: the highlighted status button now does nothing. The 10-minute report cooldown still shows the server's message as a normal error. |
 | MB-11 | Low | **Nine `catch (_)` blocks hide the reason for a failure.** Expected ones: `session_store.dart`, `api_client.dart` (fall back to default text), `admin_login_dialog.dart` (shows "Invalid credentials"). To review: `admin/photo_gallery_sheet.dart` (x2), `admin/sponsor_assign_sheet.dart`, `map_screen.dart` (two places), `sponsor_screen.dart`. | OPEN: check each shows the person something useful. |
-| MB-12 | Low | `sponsor_screen.dart` says "Maintains N Coolers **in Cairo**" with the city typed in. | OPEN |
-| MB-13 | Low | `admin/admin_login_dialog.dart` and `create_sponsor_dialog.dart` dispose their text controllers right after the dialog closes; Flutter can throw "used after being disposed" while the close animation runs. Also a variable named `pass` holds a controller. | OPEN (VERIFY on a device) |
+| MB-12 | Low | `sponsor_screen.dart` says "Maintains N Coolers **in Cairo**" with the city typed in. | FIXED: text now says "Maintains N Coolers" |
+| MB-13 | Low | `admin/admin_login_dialog.dart` and `create_sponsor_dialog.dart` dispose their text controllers right after the dialog closes; Flutter can throw "used after being disposed" while the close animation runs. Also a variable named `pass` holds a controller. | FIXED in code: both dialogs are now small widgets that own and dispose their controllers; confirm on a device |
 | MB-14 | Low | **Reward amounts and rules are typed into the app** (`+50`, `+5`, `-100`, "500 points", "60 minutes") in `map_screen.dart`, `cooler_sheet.dart`, `my_submissions_screen.dart`, `onboarding_screen.dart`, `profile/trust_level.dart`. They duplicate `backend/sabil/users/trust.py` and the confirm cooldown, and will drift if the server numbers change. Extends MB-07, MB-08 and MB-09. | OPEN: one fix (the server sends its rules, or one shared Dart constants file) |
 | MB-15 | Low | The words `Working` / `Empty` / `Broken`, the sponsor types (`Business`, `Mosque`, `Individual`, `NGO`) and the photo categories are plain text repeated in about 8 files. A typo would compile fine. | OPEN: Dart `enum`s |
 | BE-19 | Low | `GET /coolers/{id}` is never called by the app (dead route). | DECIDE: keep for future clients or remove |

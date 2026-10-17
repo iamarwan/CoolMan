@@ -133,7 +133,9 @@ The tables are created if missing, but **existing tables are never altered**. Yo
 docker compose down -v
 docker compose up -d
 ```
-then restart the server and run `python -m scripts.seed`. (If you used a natively installed PostgreSQL before, you can stop using it: Docker replaces it.)
+then restart the server and run `python -m scripts.seed`.
+
+Or keep your data and only compare/fix the columns: from `backend/` run `python -m scripts.sync_schema` (just reports), then `python -m scripts.sync_schema --apply` (adds missing columns) and, if you want the three unused ones gone, `--apply --drop-extra` (back up first). (If you used a natively installed PostgreSQL before, you can stop using it: Docker replaces it.)
 
 ---
 

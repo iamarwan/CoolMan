@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 import '../core/config.dart';
 import '../models/water_cooler.dart';
+import '../models/cooler_photo.dart';
 import 'api_client.dart';
 import 'session_store.dart';
 

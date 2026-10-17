@@ -3,12 +3,6 @@
 import 'cooler_photo.dart';
 import 'sponsor.dart';
 
-// CoolerPhoto and Sponsor used to live in this file. They are re-exported so
-// screens that only import water_cooler.dart keep working; new code can import
-// cooler_photo.dart / sponsor.dart directly.
-export 'cooler_photo.dart';
-export 'sponsor.dart';
-
 class WaterCooler {
   final String id;
   final String name;

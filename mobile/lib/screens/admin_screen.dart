@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/water_cooler.dart';
+import '../models/sponsor.dart';
 import '../services/api_service.dart';
 import '../widgets/app_snackbar.dart';
 import '../widgets/photo_pickers.dart';

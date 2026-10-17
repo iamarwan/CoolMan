@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/water_cooler.dart';
+import '../models/sponsor.dart';
 import '../core/theme.dart';
 
 class SponsorScreen extends StatelessWidget {
@@ -180,7 +181,7 @@ class SponsorScreen extends StatelessWidget {
                           color: Colors.white, size: 18),
                       const SizedBox(width: 8),
                       Text(
-                        'Maintains ${sponsor.coolerCount} Coolers in Cairo',
+                        'Maintains ${sponsor.coolerCount} Coolers',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,

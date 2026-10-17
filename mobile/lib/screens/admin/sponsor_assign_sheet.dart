@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme.dart';
 import '../../models/water_cooler.dart';
+import '../../models/sponsor.dart';
 import '../../services/api_service.dart';
 
 class AdminSponsorAssignSheet extends StatefulWidget {

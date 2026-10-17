@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme.dart';
 import '../../models/water_cooler.dart';
+import '../../models/sponsor.dart';
 import '../sponsor_screen.dart';
 
 class HintBanner extends StatelessWidget {
