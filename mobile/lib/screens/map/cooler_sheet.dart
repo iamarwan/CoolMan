@@ -177,6 +177,11 @@ void showCoolerSheet(
               ),
             ),
           ),
+          if (cooler.dedicatedTo != null) ...[
+            const SizedBox(height: 14),
+            DedicationCard(
+                name: cooler.dedicatedTo!, message: cooler.dedicationMessage),
+          ],
           if (cooler.sponsor != null) ...[
             const SizedBox(height: 18),
             SponsorBadge(sponsor: cooler.sponsor!),

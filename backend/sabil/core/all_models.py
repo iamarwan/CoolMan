@@ -5,7 +5,7 @@
 # of them must be imported before the first query. Importing this one file does
 # exactly that. If you add a new model file, add it here.
 
-from sabil.users.models import User  # noqa: F401
+from sabil.users.models import PhoneCode, User  # noqa: F401
 from sabil.sponsors.models import Sponsor, SponsorType  # noqa: F401
 from sabil.coolers.models import (  # noqa: F401
     WaterCooler,

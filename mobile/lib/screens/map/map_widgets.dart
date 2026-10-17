@@ -309,3 +309,53 @@ class SponsorBadge extends StatelessWidget {
     );
   }
 }
+
+
+/// "Sadaka Jariya in memory of ..." shown on a cooler's card when an admin
+/// has dedicated it to someone.
+class DedicationCard extends StatelessWidget {
+  final String name;
+  final String? message;
+  const DedicationCard({super.key, required this.name, this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.primaryTint,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.favorite_rounded, color: AppColors.primary, size: 16),
+              SizedBox(width: 8),
+              Text('Sadaka Jariya',
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primary)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text('In memory of $name',
+              style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.slate800)),
+          if (message != null && message!.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(message!,
+                style: const TextStyle(
+                    fontSize: 13, color: AppColors.slate600, height: 1.4)),
+          ],
+        ],
+      ),
+    );
+  }
+}

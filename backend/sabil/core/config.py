@@ -84,6 +84,22 @@ PHOTO_RATE_LIMIT_WINDOW_SECONDS = 60.0
 AUTH_RATE_LIMIT_MAX_ATTEMPTS = int(os.getenv("SABIL_AUTH_MAX_ATTEMPTS", "10"))
 AUTH_RATE_LIMIT_WINDOW_SECONDS = 60.0
 
+# ─────────────────────────────────────────────
+# PHONE SIGN-IN (SMS one-time codes)
+# ─────────────────────────────────────────────
+
+# Which SMS service sends the codes (see core/sms.py):
+#   console  development only: the code is printed in the server log, nothing is sent
+#   none     phone sign-in is switched off (the default in production until a real
+#            provider is added to core/sms.py and named here)
+SMS_PROVIDER = os.getenv("SABIL_SMS_PROVIDER", "none" if IS_PRODUCTION else "console").strip().lower()
+
+PHONE_CODE_LENGTH = 6
+PHONE_CODE_TTL_SECONDS = 300          # a code works for 5 minutes
+PHONE_CODE_MAX_WRONG_TRIES = 5        # then the code is burned and a new one is needed
+PHONE_CODE_RESEND_SECONDS = 60        # minimum gap between two codes for one number
+PHONE_CODES_PER_HOUR = 5              # most codes one number can request per hour (SMS costs money)
+
 # A user may report a status change on the same cooler once per this many
 # seconds (stops point-farming by repeating the same report).
 STATUS_REPORT_COOLDOWN_SECONDS = 600.0        # 10 minutes
@@ -109,6 +125,10 @@ def settings_problems() -> list[str]:
         )
     if ADMIN_PASSWORD == DEFAULT_ADMIN_PASSWORD:
         problems.append("SABIL_ADMIN_PASSWORD must be set (the default is public).")
+    if IS_PRODUCTION and SMS_PROVIDER == "console":
+        problems.append(
+            "SABIL_SMS_PROVIDER=console only prints codes in the log; use a real provider or none."
+        )
     return problems
 
 

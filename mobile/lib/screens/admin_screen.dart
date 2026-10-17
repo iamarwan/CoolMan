@@ -12,6 +12,7 @@ import 'admin/admin_common.dart';
 import 'admin/admin_login_dialog.dart';
 import 'admin/create_sponsor_dialog.dart';
 import 'admin/current_tab.dart';
+import 'admin/dedication_dialog.dart';
 import 'admin/pending_tab.dart';
 import 'admin/photo_gallery_sheet.dart';
 import 'admin/sponsor_assign_sheet.dart';
@@ -429,6 +430,13 @@ class _AdminScreenState extends State<AdminScreen>
             onAddPhoto: _uploadPhotoAdmin,
             onViewPhotos: (c) => _showPhotoGallery(context, c),
             onManageSponsor: (c) => _showSponsorSheet(context, c),
+            onDedicate: (c) => showDedicationDialog(
+              context,
+              cooler: c,
+              api: _api,
+              notify: _snack,
+              onChanged: _fetchCurrent,
+            ),
           ),
           AdminSponsorsTab(
             loading: _loadingSponsors,

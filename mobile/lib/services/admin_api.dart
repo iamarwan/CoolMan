@@ -147,4 +147,34 @@ mixin class AdminApi {
     if (response.statusCode == 200 || response.statusCode == 204) return true;
     throw Exception('Failed to delete cooler (${response.statusCode}).');
   }
+
+  // ─── "In memory of" dedications ───
+
+  Future<void> setDedication({
+    required String coolerId,
+    required String dedicatedTo,
+    String? message,
+  }) async {
+    final response = await http
+        .put(
+          apiUri('/admin/coolers/$coolerId/dedication'),
+          headers: SessionStore.adminHeaders({'Content-Type': 'application/json'}),
+          body: jsonEncode({
+            'dedicated_to': dedicatedTo,
+            'message': (message == null || message.isEmpty) ? null : message,
+          }),
+        )
+        .timeout(ApiConfig.timeout);
+    if (response.statusCode == 200) return;
+    throw Exception(extractError(response, 'Failed to save the dedication (${response.statusCode}).'));
+  }
+
+  Future<void> clearDedication(String coolerId) async {
+    final response = await http
+        .delete(apiUri('/admin/coolers/$coolerId/dedication'),
+            headers: SessionStore.adminHeaders())
+        .timeout(ApiConfig.timeout);
+    if (response.statusCode == 200) return;
+    throw Exception(extractError(response, 'Failed to remove the dedication (${response.statusCode}).'));
+  }
 }

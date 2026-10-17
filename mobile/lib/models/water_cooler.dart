@@ -19,6 +19,8 @@ class WaterCooler {
   final bool? hasCups;
   final String? cupsType;
   final Sponsor? sponsor;
+  final String? dedicatedTo;          // "in memory of ..." (set by an admin)
+  final String? dedicationMessage;
 
   const WaterCooler({
     required this.id,
@@ -36,6 +38,8 @@ class WaterCooler {
     this.hasCups,
     this.cupsType,
     this.sponsor,
+    this.dedicatedTo,
+    this.dedicationMessage,
   });
 
   factory WaterCooler.fromJson(Map<String, dynamic> json) => WaterCooler(
@@ -58,6 +62,8 @@ class WaterCooler {
         sponsor: json['sponsor'] != null
             ? Sponsor.fromJson(json['sponsor'] as Map<String, dynamic>)
             : null,
+        dedicatedTo: json['dedicated_to'] as String?,
+        dedicationMessage: json['dedication_message'] as String?,
       );
 
   static String statusLabel(String status) => switch (status) {

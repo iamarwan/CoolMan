@@ -60,6 +60,24 @@ def verify_password(password: str, hashed: str) -> bool:
 
 
 # ─────────────────────────────────────────────
+# ONE-TIME CODES (SMS sign-in)
+# ─────────────────────────────────────────────
+
+def generate_one_time_code(length: int) -> str:
+    """A random numeric code such as '048213' (leading zeros kept)."""
+    return "".join(secrets.choice("0123456789") for _ in range(length))
+
+
+def hash_one_time_code(phone: str, code: str) -> str:
+    """Keyed hash of a code, so the database never holds a usable code.
+
+    The server secret is the key: someone who copies the table cannot try all
+    1,000,000 codes offline without it.
+    """
+    return hmac.new(JWT_SECRET.encode("utf-8"), f"{phone}:{code}".encode("utf-8"), hashlib.sha256).hexdigest()
+
+
+# ─────────────────────────────────────────────
 # JWT PRIMITIVES
 # A JWT is three base64 pieces joined by dots: header.payload.signature
 # ─────────────────────────────────────────────

@@ -75,6 +75,10 @@ class WaterCooler(Base):
     # Reserved for the IoT roadmap (see BUSINESS_STRATEGY.md); nothing writes it yet.
     iot_weight_kg: Mapped[Optional[float]] = mapped_column(Numeric(5, 2), nullable=True)
 
+    # "Sadaka Jariya in memory of ..." (set by an admin only, see admin/dedications.py).
+    dedicated_to: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
+    dedication_message: Mapped[Optional[str]] = mapped_column(String(280), nullable=True)
+
     user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )

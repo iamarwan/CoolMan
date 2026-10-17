@@ -74,6 +74,11 @@ async def main(apply: bool, drop_extra: bool) -> None:
             ddl = _column_ddl(table.name, col, dialect)
             print("run:", ddl)
             await conn.execute(text(ddl))
+            if col.unique or col.index:  # keep uniqueness / speed of the new column
+                kind = "UNIQUE INDEX" if col.unique else "INDEX"
+                idx = f'CREATE {kind} IF NOT EXISTS "ix_{table.name}_{col.name}" ON "{table.name}" ("{col.name}")'
+                print("run:", idx)
+                await conn.execute(text(idx))
         if drop_extra:
             for t, c in extra:
                 ddl = f'ALTER TABLE "{t}" DROP COLUMN IF EXISTS "{c}"'

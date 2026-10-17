@@ -73,6 +73,9 @@ class WaterCoolerRead(BaseModel):
 
     iot_weight_kg: float | None = None
 
+    dedicated_to: str | None = None           # "in memory of ..." (public)
+    dedication_message: str | None = None
+
     user_id: uuid.UUID | None = None          # who submitted it
     pending_status_user_id: uuid.UUID | None = None
     sponsor: SponsorRead | None = None

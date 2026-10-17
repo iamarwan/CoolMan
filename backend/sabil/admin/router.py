@@ -6,11 +6,12 @@
 #   router        everything under /admin  (the dependency below makes EVERY route in it
 #                                           require a valid admin token)
 #
-# The actual routes are in admin/coolers.py, admin/photos.py and admin/sponsors.py.
+# The actual routes are in admin/coolers.py, admin/photos.py, admin/sponsors.py and
+# admin/dedications.py.
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from sabil.admin import coolers, photos, sponsors
+from sabil.admin import coolers, dedications, photos, sponsors
 from sabil.admin.schemas import AdminLoginRequest
 from sabil.core.dependencies import require_admin
 from sabil.core.rate_limit import auth_rate_limiter
@@ -30,3 +31,4 @@ router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(requir
 router.include_router(coolers.router)
 router.include_router(photos.router)
 router.include_router(sponsors.router)
+router.include_router(dedications.router)

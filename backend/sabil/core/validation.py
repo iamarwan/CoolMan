@@ -5,8 +5,9 @@
 import re
 
 # Basic text sanitization regex to prevent basic XSS or script injections.
-# Only allows letters, numbers, spaces, and basic punctuation.
-STRICT_TEXT_PATTERN = re.compile(r"^[\w\s.,!?'\"()-]*$")
+# Only allows letters (any language, so Arabic works), numbers, spaces, and basic
+# punctuation, including the Arabic comma, semicolon, question mark and quotes.
+STRICT_TEXT_PATTERN = re.compile(r"^[\w\s.,!?'\"()\-\u060C\u061B\u061F\u00AB\u00BB]*$")
 
 
 # A contact is an email, phone number, handle or link, so it also needs @ + : /

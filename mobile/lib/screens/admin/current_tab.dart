@@ -17,6 +17,7 @@ class AdminCurrentTab extends StatelessWidget {
   final void Function(WaterCooler) onAddPhoto;
   final void Function(WaterCooler) onViewPhotos;
   final void Function(WaterCooler) onManageSponsor;
+  final void Function(WaterCooler) onDedicate;
 
   const AdminCurrentTab({super.key, 
     required this.loading,
@@ -26,6 +27,7 @@ class AdminCurrentTab extends StatelessWidget {
     required this.onAddPhoto,
     required this.onViewPhotos,
     required this.onManageSponsor,
+    required this.onDedicate,
   });
 
   @override
@@ -49,6 +51,7 @@ class AdminCurrentTab extends StatelessWidget {
         onAddPhoto: () => onAddPhoto(coolers[i]),
         onViewPhotos: () => onViewPhotos(coolers[i]),
         onManageSponsor: () => onManageSponsor(coolers[i]),
+        onDedicate: () => onDedicate(coolers[i]),
       ),
     );
   }
@@ -61,6 +64,7 @@ class AdminLiveCard extends StatelessWidget {
   final VoidCallback onAddPhoto;
   final VoidCallback onViewPhotos;
   final VoidCallback onManageSponsor;
+  final VoidCallback onDedicate;
 
   const AdminLiveCard({super.key, 
     required this.cooler,
@@ -69,6 +73,7 @@ class AdminLiveCard extends StatelessWidget {
     required this.onAddPhoto,
     required this.onViewPhotos,
     required this.onManageSponsor,
+    required this.onDedicate,
   });
 
   @override
@@ -211,6 +216,8 @@ class AdminLiveCard extends StatelessWidget {
                   onSelected: (value) {
                     if (value == '__sponsor__') {
                       onManageSponsor();
+                    } else if (value == '__dedicate__') {
+                      onDedicate();
                     } else {
                       onForceStatus(value);
                     }
@@ -250,10 +257,65 @@ class AdminLiveCard extends StatelessWidget {
                         ],
                       ),
                     ),
+                    PopupMenuItem<String>(
+                      value: '__dedicate__',
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primaryTint,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.favorite_border_rounded,
+                                color: AppColors.primary, size: 16),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            cooler.dedicatedTo != null
+                                ? 'Edit dedication'
+                                : 'In memory of…',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
+            if (cooler.dedicatedTo != null) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryTint,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.favorite_rounded,
+                        color: AppColors.primary, size: 14),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        'In memory of ${cooler.dedicatedTo}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             if (cooler.sponsor != null) ...[
               const SizedBox(height: 10),
               Container(

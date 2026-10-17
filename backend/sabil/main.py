@@ -3,7 +3,7 @@
 # The entry point. It builds the FastAPI app and plugs in the feature routers.
 # All real logic lives in the feature folders:
 #
-#   users/     register, login, leaderboard, trust rules
+#   users/     register, login, phone sign-in, leaderboard, trust rules
 #   coolers/   find coolers, add one, report status, photos
 #   sponsors/  public sponsor pages
 #   admin/     admin login, review queue, moderation, sponsor management
@@ -25,6 +25,7 @@ from sabil.core.database import init_db
 from sabil.media.router import router as media_router
 from sabil.media.storage import ensure_upload_dirs
 from sabil.sponsors.router import router as sponsors_router
+from sabil.users.phone import router as phone_router
 from sabil.users.router import router as users_router
 
 
@@ -51,6 +52,7 @@ app.add_middleware(
 ensure_upload_dirs()
 
 app.include_router(users_router)
+app.include_router(phone_router)
 app.include_router(coolers_router)
 app.include_router(sponsors_router)
 app.include_router(admin_login_router)
