@@ -177,6 +177,17 @@ A script checked that every import, export and `part` resolves, that braces bala
 | BE-19 | Low | `GET /coolers/{id}` is never called by the app (dead route). | DECIDE: keep for future clients or remove |
 | RC-11 | Low | `my_submissions_screen.dart` has its own colour and icon logic for submission states (Approved / Rejected / Pending). It is a different idea from cooler status, so it was left alone, but it could join `widgets/status_style.dart`. | OPEN |
 
+### Found while building the translation sheet and new features (2026-10-17)
+
+| ID | Sev | Finding | Status |
+|---|---|---|---|
+| BE-20 | Medium | The text check on cooler names rejected Arabic punctuation (`،` `؟` `؛` `«»`), so an Arabic cooler name or dedication with a comma or question mark would be refused. | FIXED in `core/validation.py` (Arabic letters were already allowed) |
+| MB-16 | Medium | **Server error sentences are shown to the user as they arrive, in English.** Arabic needs the server to send error codes the app can translate (22 messages, listed in the translation sheet). | OPEN: part of the Arabic work |
+| MB-17 | Low | Several words are assembled from pieces, which does not work in Arabic: plurals (`day` + `s`), `Verified $days days ago`, `$n item(s)`. Arabic has different forms for 1, 2, 3-10 and 11+. | OPEN: part of the Arabic work (marked in the sheet) |
+| MB-18 | Low | Odd English in the app: "Sponsored Sadie", "Map Index empty", "Sabil s.a." as the app-bar title, "Administration Controller". Probably typing mistakes and machine wording. | OPEN: fix with the Arabic wording pass |
+| BE-21 | Low | A phone number can be linked to an account on the server (`/auth/phone/attach`) but the app has no button for it yet, so password users cannot add a number. | OPEN |
+| BE-22 | Low | `scripts/sync_schema.py` adds missing columns and their index, but does not create foreign keys (not needed for the columns added so far). | NOTED |
+
 ### Caught by the analyzer while splitting (all fixed, none left)
 
 1. A script that added `super.key` to the new public widgets also rewrote *uses* of those widgets and removed the key from `AdminScreen` (`use_key_in_widget_constructors`).

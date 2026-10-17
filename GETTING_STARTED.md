@@ -94,6 +94,8 @@ uvicorn sabil.main:app --reload --host 0.0.0.0 --port 8000 --reload-exclude "upl
 - Open http://localhost:8000/docs to see and try every endpoint.
 - **First time only:** to put sample coolers in the (empty) database, run in another terminal in `backend` with the venv active: `python -m scripts.seed`
 
+> **After pulling new code, if your database already existed:** run `python -m scripts.sync_schema --apply` once in `backend/` (venv active). Recent changes added columns (`users.phone`, `water_coolers.dedicated_to`, `water_coolers.dedication_message`); without them the server fails with `column users.phone does not exist`. It only adds missing columns; it never drops anything unless you add `--drop-extra`.
+
 ### Step 3: Start the app
 1. In Android Studio open **Device Manager** and start an emulator (or run `flutter emulators --launch <id>`).
 2. In the emulator's **... > Location** panel set a point in Cairo, for example latitude `29.9596`, longitude `31.2575` (Maadi), so the seeded coolers appear.
@@ -110,6 +112,9 @@ The emulator reaches your laptop's server at `10.0.2.2:8000`; that is already se
 3. Edit `mobile/lib/core/config.dart` and change `baseUrl` to `http://192.168.1.20:8000`.
 4. Keep the server started with `--host 0.0.0.0` (as in Step 2) and allow Python through the Windows firewall if asked.
 5. `flutter run` with the phone plugged in (USB debugging on).
+
+### Trying phone sign-in on your laptop
+In the app's login pop-up choose the **Phone** tab, type a number such as `01012345678` and tap **Send code**. No text is sent in development: look in the **server terminal** for a line like `SMS to +201012345678: Sabil code: 123456 ...` and type that code in the app. A number with no account yet is then asked for a username.
 
 ### Admin screen
 In the app, tap the app title 5 times to open the admin login. In development the login is `admin` / `admin123`.
@@ -151,6 +156,7 @@ Set them in the terminal **before** starting the server, e.g. `$env:SABIL_ENV="p
 | `SABIL_ADMIN_USERNAME` / `SABIL_ADMIN_PASSWORD` | `admin` / `admin123` | In-app admin login. Change the password on any real server |
 | `SABIL_ADMIN_TOKEN_MIN` / `SABIL_USER_TOKEN_MIN` | `480` / `10080` | How long logins last, in minutes |
 | `SABIL_AUTH_MAX_ATTEMPTS` | `10` | Login/register attempts allowed per IP per minute |
+| `SABIL_SMS_PROVIDER` | `console` in development, `none` in production | How phone sign-in codes are sent. `console` prints the code in the server terminal (development only). `none` switches phone sign-in off. A real SMS company still has to be added in `backend/sabil/core/sms.py` |
 
 You do not need any of these for normal development.
 
@@ -165,7 +171,7 @@ pip install -r requirements-dev.txt
 $env:SABIL_DATABASE_URL="postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_test?ssl=disable"
 python -m pytest tests -q
 ```
-(11 tests; the PostGIS extension is enabled by the test setup.)
+(39 tests; the PostGIS extension is enabled by the test setup. If the test database already existed before the latest update, run `python -m scripts.sync_schema --apply` against it first, or drop and recreate it.)
 
 ## Making a code snapshot for an AI chat
 ```powershell
@@ -186,5 +192,7 @@ creates `coolman_dump_<date>_<time>.txt` in the repo root with every source file
 | App shows no coolers / network error | Server not running, or wrong address | Check http://localhost:8000/docs opens; emulator uses `10.0.2.2`; real phone needs your LAN IP |
 | Old photos show as missing | `uploads/` folder moved | Copy the old `uploads` folder into `backend/` |
 | Server will not start and mentions JWT secret/admin password | `SABIL_ENV=production` without the required settings | Set them, or unset `SABIL_ENV` for development |
+| Server error `column users.phone does not exist` | Database made before phone sign-in / dedications | `python -m scripts.sync_schema --apply` in `backend/` |
+| Phone tab says "Phone sign-in is not available" | `SABIL_SMS_PROVIDER` is `none` (or the server runs in production mode) | Unset it in development (default is `console`) |
 | Login rejected after changes | Old saved token | Log out in the profile screen, or clear the app data |
 | `flutter doctor` shows red crosses | Missing Android licences/SDK | `flutter doctor --android-licenses`, install missing parts in Android Studio |

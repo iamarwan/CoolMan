@@ -39,6 +39,14 @@ Corporate CSR programs (PepsiCo, Nestlé, real estate developers) fund massive n
 *   **What they get**: We sell them access to an unified Web Dashboard that displays spatial tracking, status history, how fresh each cooler's verification is, and user feedback ratings.
 *   **The Model**: Annual corporate subscriptions (e.g., $240/year per cooler monitored).
 
+### D. Commissioned Coolers: "In Memory Of" (Sadaka Jariya on demand)
+Many people want to give a lasting charity in the name of a parent, relative or friend, but do not know how to set up a water cooler, or have no place for one.
+*   **What they get**: they ask in the app for a cooler to be installed in a place they choose (or one we suggest), in the name of someone they love. Sabil **builds and installs the cooler itself**, adds it to the map with the dedication ("Sadaka Jariya in memory of ..." plus a short message and a photo of the finished cooler), and keeps it running.
+*   **The Model**: a one-time fee that covers hardware and installation, plus a yearly maintenance fee (refills, cups, repairs). The margin on hardware and the maintenance contract are the profit. A cooler that is dedicated and funded is also a permanent, visible advert for Sabil in a neighbourhood.
+*   **Why it fits**: it reuses what the app already does (map, status, trust, photo proof) and the Sadaka Jariya culture, and it sells to individuals as well as shops.
+*   **Things to settle before selling**: price list, permission from the owner of the place (mosque, shop, building, municipality), who maintains each cooler and how fast, what happens if one is damaged or removed, refunds, and how the dedicated person's name may be shown (the family must agree).
+*   **How the app supports it** (see `docs/LAUNCH_PLAN.md`, "Commissioned coolers"): a request form in the app, an admin inbox for requests, then the admin sets the dedication on the finished cooler (the dedication part is already built).
+
 ---
 
 ## 🗺️ 3. 12-Month Product & Feature Roadmap
@@ -59,6 +67,7 @@ To maintain user retention and avoid overloading the application, we deploy feat
 ├────────────────────────────────────────────────────────┤
 │ • Launch "Sponsor Assign" control panel on Flutter map. │
 │ • Push "Sadaka Cup Refill" Stripe/Checkout modules.    │
+│ • Commissioned "In Memory Of" coolers (build + install).│
 └────────────────────────────────────────────────────────┘
                            │
                            ▼

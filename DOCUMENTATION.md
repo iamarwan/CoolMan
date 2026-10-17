@@ -54,8 +54,12 @@ Tracks registered community contributors and administrators.
 *   `username` (String(64)): Unique index.
 *   `hashed_password` (String(256)): Structured password hash.
 *   `trust_score` (Integer): Dynamic score mapping permissions. Default: 0.
+*   `phone` (String(16), optional, unique): Egyptian mobile in the form `+201012345678`, used for phone sign-in.
 *   `badges`: Reserved for future achievements; nothing uses it yet.
 *   `created_at` (DateTime): Registration date.
+
+#### `phone_codes`
+One-time SMS codes waiting to be entered (`phone`, keyed hash of the code, `expires_at`, `wrong_tries`, `used`). The code itself is never stored.
 
 #### `sponsors`
 Tracks commercial or religious organizations sponsoring charity coolers.
@@ -81,7 +85,8 @@ The main spatial entity representing physical drinking water stations.
 *   `user_id` (UUID, Foreign Key): Identifier of the original reporter.
 *   `pending_status_user_id` (UUID, Foreign Key): Submitter of review updates.
 *   `sponsor_id` (UUID, Foreign Key): Linked charity sponsor.
-*   `iot_weight_kg` (Float, optional): Reserved for a future sensor; nothing uses it yet.
+*   `iot_weight_kg` (Float, optional): Reserved for a future sensor; nothing uses it yet (IoT was dropped from the plan, so this column can be removed).
+*   `dedicated_to` (String(120), optional), `dedication_message` (String(280), optional): "Sadaka Jariya in memory of ...", set by an admin only and shown to everyone on the cooler's card.
 
 #### `cooler_photos`
 Tracks verification photos uploaded for security review.
@@ -138,11 +143,12 @@ Interactive docs are served at `/docs` when the server runs. Routes by feature:
 | Feature | Routes |
 |---|---|
 | Accounts | `POST /auth/register`, `POST /auth/login`, `GET /auth/me`, `GET /users/leaderboard` |
+| Phone sign-in | `POST /auth/phone/request` (text a code), `POST /auth/phone/verify` (log in, or create the account with a username), `POST /auth/phone/attach` (logged-in user links a number) |
 | Finding coolers | `GET /coolers/nearby`, `GET /coolers/search`, `GET /coolers/my`, `GET /coolers/{id}`, `GET /coolers/{id}/photos` |
 | Reporting | `POST /coolers`, `PATCH /coolers/{id}/status`, `POST /coolers/{id}/confirm`, `POST /coolers/{id}/photos` |
 | Sponsors (public) | `GET /sponsors`, `GET /sponsors/{id}` |
 | Photos | `GET /uploads/photos/{file}` (approval-checked) |
-| Admin (needs admin token) | `POST /auth/admin/login`, then everything under `/admin/...`: review queue, approve / reject, force status, delete, photo moderation, sponsor management |
+| Admin (needs admin token) | `POST /auth/admin/login`, then everything under `/admin/...`: review queue, approve / reject, force status, delete, photo moderation, sponsor management, "in memory of" dedications (`PUT/DELETE /admin/coolers/{id}/dedication`, `GET /admin/dedications`) |
 
 ---
 
@@ -156,7 +162,9 @@ Each of these has no knowledge of coolers, so you can copy it into another proje
 |---|---|---|
 | `core/security.py` | Password hashing and signed login tokens (JWT) with no extra libraries | `core/config.py` (the settings it reads) |
 | `core/rate_limit.py` | Per-IP request limits and per-user cooldowns | `core/config.py` |
-| `core/validation.py` | Text sanitising for user input | nothing |
+| `core/validation.py` | Text sanitising for user input (Arabic letters and punctuation allowed) | nothing |
+| `core/phone.py` | Cleans Egyptian mobile numbers into `+20...` (accepts 010..., +20..., Arabic digits) | nothing |
+| `core/sms.py` | "Send a text" with swappable providers (console for development) | `core/config.py` |
 | `core/lookup.py` | `get_or_404` helper | nothing |
 | `core/dependencies.py` | "Who is asking?" (user / admin / anonymous) for FastAPI routes | `core/security.py` |
 | `media/storage.py` | Safe image saving: type check by content, size cap, random file names | `core/config.py` |
@@ -181,12 +189,13 @@ backend/
   sabil/
     main.py            starts the app and plugs in the feature folders
     core/              settings, database, security, limits, shared helpers
-    users/             accounts, leaderboard, trust rules
+    users/             accounts, phone sign-in, leaderboard, trust rules
     coolers/           the main feature: find, add, report, photos, who-can-see-what
     sponsors/          public sponsor pages
-    admin/             admin login, review queue, moderation, sponsor management
+    admin/             admin login, review queue, moderation, sponsor management, dedications
     media/             saving image files and serving them safely
   scripts/seed.py      puts sample coolers in an empty database
+  scripts/sync_schema.py  compares an existing database with the models and fixes the columns
   tests/               automated tests (need a PostGIS database)
 mobile/lib/
   main.dart            app start
@@ -196,4 +205,7 @@ mobile/lib/
   widgets/             small pieces used on several screens
   screens/             the screens, with a sub-folder of pieces for the big ones
 docs/FINDINGS_LOG.md   problems found, what was fixed, what is left
+docs/LAUNCH_PLAN.md    what the app still needs before launch in Egypt
+docs/translations/     Arabic translation spreadsheet (every text in the app)
+tools/pack_code.py     writes the whole code into one dated text file
 ```
