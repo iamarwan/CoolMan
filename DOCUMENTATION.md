@@ -55,7 +55,7 @@ Tracks registered community contributors and administrators.
 *   `hashed_password` (String(256)): Structured password hash.
 *   `trust_score` (Integer): Dynamic score mapping permissions. Default: 0.
 *   `phone` (String(16), optional, unique): Egyptian mobile in the form `+201012345678`, used for phone sign-in.
-*   `badges`: Reserved for future achievements; nothing uses it yet.
+*   `badges`: Kept on purpose for trust-level badges (nothing writes it yet; see `docs/LAUNCH_PLAN.md` section 8a).
 *   `created_at` (DateTime): Registration date.
 
 #### `phone_codes`
@@ -85,7 +85,6 @@ The main spatial entity representing physical drinking water stations.
 *   `user_id` (UUID, Foreign Key): Identifier of the original reporter.
 *   `pending_status_user_id` (UUID, Foreign Key): Submitter of review updates.
 *   `sponsor_id` (UUID, Foreign Key): Linked charity sponsor.
-*   `iot_weight_kg` (Float, optional): Reserved for a future sensor; nothing uses it yet (IoT was dropped from the plan, so this column can be removed).
 *   `dedicated_to` (String(120), optional), `dedication_message` (String(280), optional): "Sadaka Jariya in memory of ...", set by an admin only and shown to everyone on the cooler's card.
 
 #### `cooler_photos`

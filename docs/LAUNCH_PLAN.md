@@ -145,3 +145,19 @@ Funeral and mosque partnerships (offer the option to families); Ramadan and corp
 ## 8. Ideas list status
 
 Chosen by the owner on 2026-10-17: idea 2 ("In memory of" dedications, built) and idea 9 (phone sign-in, built). The commissioned-coolers service (section 7) grows out of idea 2. The other ideas (cooler types incl. Zeer, WhatsApp sharing, request a cooler here, guardians, heat/Ramadan mode, metro layer, quality tags, offline map) are not decided yet.
+
+### 8a. Trust-level badges (owner decision 2026-10-18: keep and build)
+
+People get a badge when their trust score reaches a level. The `users.badges` column (a JSON list of badge ids) is kept for this; the score rules already exist in `backend/sabil/users/trust.py` (+50 approved cooler, +10 approved report, +5 "Still working"; 500 = trusted, instant approval).
+
+Proposed levels (numbers are a starting point, change freely):
+
+| Score | Badge (English / Arabic idea) | Meaning |
+|---|---|---|
+| 50 | Newcomer / مبتدئ | First approved cooler |
+| 200 | Helper / مساعد | Regular contributor |
+| 500 | Trusted / موثوق | Reached auto-approval, so this badge doubles as the "your coolers go live at once" moment |
+| 1000 | Water Guardian / حارس السبيل | Top contributor |
+
+What to build (not started): (1) a `BADGE_LEVELS` table in `users/trust.py`; (2) award in `reward()` when a threshold is crossed (write the id into `badges`, never remove); (3) return `badges` in `/auth/me` and `/users/leaderboard`; (4) show them on the profile screen and next to leaderboard names; (5) a short pop-up "You earned a badge" the first time; (6) Arabic strings added to the translation sheet; (7) tests. Do it after the Arabic work so badge names are translated from the start.
+

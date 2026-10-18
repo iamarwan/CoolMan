@@ -54,8 +54,6 @@ class WaterCoolerRead(BaseModel):
     has_cups: bool | None = None
     cups_type: CupsType | None = None
 
-    iot_weight_kg: float | None = None
-
     dedicated_to: str | None = None           # "in memory of ..." (public)
     dedication_message: str | None = None
 

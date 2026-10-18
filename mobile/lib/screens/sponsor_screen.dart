@@ -30,25 +30,27 @@ class SponsorScreen extends StatelessWidget {
     final phoneUri = Uri.parse('tel:$contact');
     final webUri = Uri.parse(
         contact.startsWith('http') ? contact : 'https://$contact');
+    var opened = false;
     try {
       if (await canLaunchUrl(phoneUri)) {
-        await launchUrl(phoneUri);
+        opened = await launchUrl(phoneUri);
       } else if (await canLaunchUrl(webUri)) {
-        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+        opened = await launchUrl(webUri, mode: LaunchMode.externalApplication);
       }
-    } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Could not open contact.'),
-            backgroundColor: Colors.red.shade700,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
-            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          ),
-        );
-      }
+    } catch (e) {
+      debugPrint('Opening contact failed: $e');
+    }
+    // Tell the person whenever nothing opened, not only when an error was thrown.
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Could not open contact.'),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        ),
+      );
     }
   }
 

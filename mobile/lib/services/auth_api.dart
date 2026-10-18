@@ -139,6 +139,7 @@ mixin class AuthApi {
       SessionStore.cachedProfile = profile;
       return profile;
     }
+    if (response.statusCode == 401) throw const AuthRejectedException();
     throw Exception('Failed to fetch profile (${response.statusCode}).');
   }
 
@@ -173,6 +174,7 @@ mixin class AuthApi {
       SessionStore.setAdminToken(token);
       return token;
     }
-    throw Exception('Admin login failed (${response.statusCode}).');
+    throw Exception(extractError(
+        response, 'Invalid administrative credentials (${response.statusCode}).'));
   }
 }

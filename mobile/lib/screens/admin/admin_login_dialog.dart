@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme.dart';
+import '../../services/api_client.dart';
 import '../../services/api_service.dart';
 
 Future<bool> showAdminLoginDialog(BuildContext context, ApiService api) async {
@@ -53,11 +54,11 @@ class _AdminLoginDialogState extends State<_AdminLoginDialog> {
     try {
       await widget.api.adminLogin(username: username, password: password);
       if (mounted) Navigator.of(context).pop(true);
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = 'Invalid administrative credentials.';
+        _error = friendlyError(e, 'Invalid administrative credentials.');
       });
     }
   }

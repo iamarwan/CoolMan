@@ -8,6 +8,7 @@ import '../../core/config.dart';
 import '../../core/theme.dart';
 import '../../models/water_cooler.dart';
 import '../../models/cooler_photo.dart';
+import '../../services/api_client.dart';
 import '../../services/api_service.dart';
 
 class AdminPhotoGallerySheet extends StatefulWidget {
@@ -61,11 +62,11 @@ class _AdminPhotoGallerySheetState extends State<AdminPhotoGallerySheet> {
           );
         }
       });
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: const Text('Approval failed.'),
+              content: Text(friendlyError(e, 'Approval failed.')),
               backgroundColor: Colors.red.shade700),
         );
       }
@@ -76,11 +77,11 @@ class _AdminPhotoGallerySheetState extends State<AdminPhotoGallerySheet> {
     try {
       await widget.api.deletePhoto(photo.id);
       setState(() => _photos.removeWhere((p) => p.id == photo.id));
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: const Text('Delete failed.'),
+              content: Text(friendlyError(e, 'Delete failed.')),
               backgroundColor: Colors.red.shade700),
         );
       }

@@ -7,6 +7,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../models/user_profile.dart';
+import 'api_client.dart';
 
 class SessionStore {
   SessionStore._();
@@ -50,9 +51,13 @@ class SessionStore {
     _userToken = stored;
     try {
       cachedProfile = await fetchProfile();
-    } catch (_) {
+    } on AuthRejectedException {
+      // The server says this login is no longer valid: forget it.
       _userToken = null;
       await _storage.delete(key: 'user_token');
+    } catch (_) {
+      // No network, server down, timeout: keep the login so the person is not
+      // signed out just because they opened the app offline. The profile loads later.
     }
   }
 

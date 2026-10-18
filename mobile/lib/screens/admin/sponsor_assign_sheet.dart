@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme.dart';
 import '../../models/water_cooler.dart';
 import '../../models/sponsor.dart';
+import '../../services/api_client.dart';
 import '../../services/api_service.dart';
 
 class AdminSponsorAssignSheet extends StatefulWidget {
@@ -59,10 +60,11 @@ class _AdminSponsorAssignSheetState extends State<AdminSponsorAssignSheet> {
       await widget.api.assignSponsor(coolerId: widget.cooler.id, sponsorId: id);
       widget.onAssigned();
       if (mounted) Navigator.of(context).pop();
-    } catch (_) {
+    } catch (e) {
+      if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = 'Failed to assign sponsor.';
+        _error = friendlyError(e, 'Failed to assign sponsor.');
       });
     }
   }

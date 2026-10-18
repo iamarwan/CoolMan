@@ -198,7 +198,8 @@ class _MapScreenState extends State<MapScreen> {
             imageFile: File(p.file.path),
             photoCategory: p.category,
           );
-        } catch (_) {
+        } catch (e) {
+          debugPrint('Photo upload failed: $e');
           failedPhotos++;
         }
       }
@@ -296,7 +297,8 @@ class _MapScreenState extends State<MapScreen> {
       } else {
         await launchUrl(fallback, mode: LaunchMode.externalApplication);
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Map navigation failed: $e');
       _showSnackbar('Could not open map navigation.', isError: true);
     }
   }

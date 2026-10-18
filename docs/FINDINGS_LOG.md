@@ -51,7 +51,7 @@ Last updated after **Phase 4 (admin and profile splits) and the cross-check**. B
 | BE-10 | Low | **CORS allows every origin with credentials** (`allow_origins=["*"]`). | `main.py` | OPEN | List the real origins before deploying. |
 | BE-11 | Low | **Sponsor `views_count` / `clicks_count` are never incremented**, so the API always returns 0. | No code touches them | DECIDE | Build the counting, or remove the columns. |
 | BE-12 | Low | **`WaterCoolerUpdate` is unused.** No route edits a cooler's name, cups info or location, so a typo can only be fixed by delete and re-add. | `coolers/schemas.py` (marked unused) | DECIDE | Build one admin edit route (name, cups; location needs `geom` + duplicate check) or delete the class. |
-| BE-13 | Low | **`iot_weight_kg` is unused** (IoT roadmap only). `badges` is unused too, but you chose to keep it. | grep | DECIDE | Keep as roadmap, or remove. |
+| BE-13 | Low | **`iot_weight_kg` was unused** (IoT roadmap only). `badges` is unused too, but kept on purpose. | grep | DONE (2026-10-18) | `iot_weight_kg` removed from model and API. `badges` stays: it will hold trust-level badges (LAUNCH_PLAN 8a). An existing database keeps the old empty column until `python -m scripts.sync_schema --apply --drop-extra` is run (back up first); it is harmless meanwhile. |
 | BE-14 | Low | **No real migrations.** `create_all` never alters existing tables, so changes need hand-written SQL (`db_fix.py` is exactly that). Your existing database still has the 3 removed columns. | `db_fix.py`, `core/database.py` `init_db` | PARTLY DONE: `python -m scripts.sync_schema` reports and fixes column differences (dry run by default; `--apply` adds missing columns, `--drop-extra` removes unused ones). Tested on a copy of the old database. Alembic still not adopted | Adopt Alembic; until then run the `ALTER TABLE ... DROP COLUMN` from `GETTING_STARTED`/the Phase 1 notes. |
 | BE-15 | Low | **There are no tests in the repo.** The 100-step comparison I used lives only in my scratch workspace. | no `tests/` folder | PARTLY DONE: `backend/tests/` has 11 tests (run with pytest). The old 100-step scenario is not saved | Save the scenario as `backend/tests/` so every later phase has a safety net. |
 | BE-16 | Low | **Blocking file write inside an async route** (`shutil.copyfileobj`). Fine at low traffic. | `media/storage.py` | OPEN | Use a thread or `aiofiles` later. |
@@ -222,8 +222,8 @@ Method: ruff + vulture on the backend; every config constant, schema and model f
 **Server routes the app does not call (kept, intentional):** `GET /coolers/{id}` (public cooler page, useful for share links), `GET /sponsors/{id}`, `GET /admin/dedications` (admin list for a future screen), `POST /auth/phone/attach` (button not built yet).
 
 **Needs owner decision (not touched):**
-- `users.badges` column: never read or written. Remove, or keep for a future badges feature?
-- `water_coolers.iot_weight_kg` column: IoT removed from the plan; remove the column?
+- `users.badges`: KEPT by owner decision (trust-level badges, LAUNCH_PLAN 8a).
+- `water_coolers.iot_weight_kg`: REMOVED from code (owner approved 2026-10-18).
 - `.vscode/settings.json` (RC-08): stale Windows path; delete?
-- Nine `catch (_)` blocks in the app swallow errors silently (MB-11); worth a pass before launch.
+- MB-11 (nine `catch (_)`): FIXED 2026-10-18. Screens now show the real reason (server message, or "could not reach the server"). Found and fixed a real bug on the way: opening the app with no internet signed the person out (any profile-fetch failure deleted the saved login); now only a 401 from the server does. The contact button on a sponsor page also did nothing silently when no app could open it; it now says so.
 - Still open from before: BE-09 (rate limits in memory, one server only), BE-10 (CORS `*`), BE-11/12/13/17/19/21.

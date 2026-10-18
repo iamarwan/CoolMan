@@ -72,9 +72,6 @@ class WaterCooler(Base):
     has_cups: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     cups_type: Mapped[Optional[CupsType]] = mapped_column(SAEnum(CupsType), nullable=True)
 
-    # Reserved for the IoT roadmap (see BUSINESS_STRATEGY.md); nothing writes it yet.
-    iot_weight_kg: Mapped[Optional[float]] = mapped_column(Numeric(5, 2), nullable=True)
-
     # "Sadaka Jariya in memory of ..." (set by an admin only, see admin/dedications.py).
     dedicated_to: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
     dedication_message: Mapped[Optional[str]] = mapped_column(String(280), nullable=True)
