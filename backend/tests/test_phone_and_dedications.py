@@ -152,9 +152,9 @@ def test_not_an_egyptian_mobile(client, fake_sms):
     assert fake_sms.sent == []
 
 
-def test_sms_failure_is_reported_and_code_unusable(client, monkeypatch):
+def test_sms_failure_is_reported_and_code_unusable(client):
     class Broken:
-        async def send(self, phone, text):
+        async def send(self, _phone, _text):
             raise RuntimeError("provider down")
 
     sms.set_sms_sender(Broken())
@@ -241,7 +241,7 @@ def _approved_cooler(client, admin, name="Dedicated cooler"):
     return cid
 
 
-def test_admin_sets_shows_and_clears_a_dedication(client, admin, make_user):
+def test_admin_sets_shows_and_clears_a_dedication(client, admin):
     cid = _approved_cooler(client, admin)
     assert client.get(f"/coolers/{cid}").json()["dedicated_to"] is None
 

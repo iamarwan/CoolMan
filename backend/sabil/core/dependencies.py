@@ -60,7 +60,7 @@ async def get_current_user(
     try:
         user_id = uuid.UUID(payload.get("sub"))
     except (ValueError, TypeError, AttributeError):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token subject.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token subject.") from None
 
     user = await db.get(User, user_id)
     if not user:

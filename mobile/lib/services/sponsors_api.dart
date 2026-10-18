@@ -26,16 +26,6 @@ mixin class SponsorsApi {
     throw Exception('Failed to fetch sponsors (${response.statusCode}).');
   }
 
-  Future<Sponsor> fetchSponsor(String sponsorId) async {
-    final response = await http
-        .get(apiUri('/sponsors/$sponsorId'))
-        .timeout(ApiConfig.timeout);
-    if (response.statusCode == 200) {
-      return Sponsor.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-    }
-    throw Exception('Failed to fetch sponsor (${response.statusCode}).');
-  }
-
   // ─── Admin ───
 
   Future<Sponsor> createSponsor({

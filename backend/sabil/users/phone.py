@@ -137,7 +137,7 @@ async def request_code(payload: PhoneRequest, db: AsyncSession = Depends(get_db)
         log.exception("Could not send the SMS code")
         row.used = True
         await db.commit()
-        raise HTTPException(status_code=502, detail="Could not send the code. Try again later.")
+        raise HTTPException(status_code=502, detail="Could not send the code. Try again later.") from None
     return {"expires_in": PHONE_CODE_TTL_SECONDS, "resend_in": PHONE_CODE_RESEND_SECONDS}
 
 

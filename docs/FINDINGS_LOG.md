@@ -210,3 +210,20 @@ Notes for when it is built:
 - Hook point: `backend/sabil/media/storage.py` `save_image` / `coolers/photos.py` upload route, after the magic-byte check.
 - Keep the key in a new `SABIL_GEMINI_API_KEY` setting in `core/config.py`, never in the repo.
 - Treat the AI verdict as advice (auto-flag or auto-hide), keep admin as final say, and fail open (photo goes to the normal queue) if the AI call errors or times out. Add retries/fallback around the call.
+
+## 9. Integration and dead-code audit (2026-10-18)
+
+Method: ruff + vulture on the backend; every config constant, schema and model field grep-checked; a script scanning every Dart declaration/file for zero references; every app HTTP call compared with the server's route list (from `app.openapi()`).
+
+**Result: app and server agree.** All 33 app calls hit an existing route with the right verb (including phone sign-in and dedications). 39 backend tests pass.
+
+**Removed (provably unused):** `WaterCoolerUpdate` schema (no edit route exists); `fetchSponsor` in the app (never called); lint fixes (`raise ... from None`, unused test arguments).
+
+**Server routes the app does not call (kept, intentional):** `GET /coolers/{id}` (public cooler page, useful for share links), `GET /sponsors/{id}`, `GET /admin/dedications` (admin list for a future screen), `POST /auth/phone/attach` (button not built yet).
+
+**Needs owner decision (not touched):**
+- `users.badges` column: never read or written. Remove, or keep for a future badges feature?
+- `water_coolers.iot_weight_kg` column: IoT removed from the plan; remove the column?
+- `.vscode/settings.json` (RC-08): stale Windows path; delete?
+- Nine `catch (_)` blocks in the app swallow errors silently (MB-11); worth a pass before launch.
+- Still open from before: BE-09 (rate limits in memory, one server only), BE-10 (CORS `*`), BE-11/12/13/17/19/21.

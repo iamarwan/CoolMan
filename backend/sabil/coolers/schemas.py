@@ -24,23 +24,6 @@ class WaterCoolerCreate(BaseModel):
         return sanitize_text(v)
 
 
-class WaterCoolerUpdate(BaseModel):
-    # NOT USED YET: no route edits a cooler's details. Kept until it is decided
-    # whether to build that edit endpoint or delete this class.
-    name: Optional[str] = Field(None, min_length=1, max_length=255)
-    status: Optional[CoolerStatus] = None
-    latitude: Optional[float] = Field(None, ge=-90, le=90)
-    longitude: Optional[float] = Field(None, ge=-180, le=180)
-    has_cups: Optional[bool] = None
-    cups_type: Optional[CupsType] = None
-
-    @field_validator("name")
-    def validate_name(cls, v):
-        if v is not None:
-            return sanitize_text(v)
-        return v
-
-
 class StatusUpdate(BaseModel):
     """Body of PATCH /coolers/{id}/status and PATCH /admin/coolers/{id}/force-status."""
     status: CoolerStatus

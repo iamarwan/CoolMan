@@ -63,20 +63,84 @@ Map with clustering and nearby search; add a cooler with photos and a 15 m dupli
 
 ## 7. Commissioned coolers ("In memory of", built by you)
 
-Business idea in `BUSINESS_STRATEGY.md`, section 2D: people order a cooler built and installed in the name of someone they love, and you build it and keep it running.
+Business idea in `BUSINESS_STRATEGY.md`, section 2D: people order a cooler built and installed in the name of someone they love, and you build it and keep it running. Not started; waiting for the owner to decide where it sits in the app (see 7.4).
 
-**What the app needs (not started):**
+### 7.1 Decision (2026-10-18): how people ask
+
+| Option | Verdict |
+|---|---|
+| **A button inside the app, feeding an admin inbox** | **Chosen.** The person drops a pin exactly where the cooler should go; their phone number is already verified (phone sign-in); the request lands in the admin panel and connects to the dedication feature already built. |
+| A separate app | Rejected. Two apps to build, publish and maintain for the same audience, no benefit. Only worth reconsidering for a corporate (B2B) product much later. |
+| Email only | Rejected as the process: no map pin, no verified person, a lot of back and forth. Use email only as a notification to the owner. |
+| WhatsApp | Add as the conversation channel: a "Talk to us on WhatsApp" button that opens a chat with the request pre-filled. This is where sales will actually be closed in Egypt. |
+| A simple web order page with the same form | Later, for people who have not installed the app and arrive from a WhatsApp or Facebook link. Uses the same server. |
+
+### 7.2 The flow
+
+1. The user taps "Give a Sabil in someone's name" (wording to be decided; avoid "donate" and "buy", see 7.5).
+2. They choose a tier, drop a pin (or describe the place), enter the name to dedicate and a short message, any notes (mosque, shop, building), and how they want to be contacted. Their account and verified phone number are attached automatically.
+3. The request appears in the admin panel. The owner replies on WhatsApp with a quote. Payment starts offline (InstaPay, bank transfer, cash) and is recorded by the admin.
+4. The user can follow the request in the app ("My requests"): New, Contacted, Quoted, Paid, Building, Installed, Declined.
+5. The owner builds and installs it, adds a photo, creates the cooler and sets the dedication (already built). The person gets a shareable "in memory of" card.
+
+### 7.3 Tiers (owner to confirm which at launch)
+
+| Tier | What it is | Why |
+|---|---|---|
+| Dedicate an existing cooler | A year of refills and cups on an existing cooler, with the name on its card | Cheapest way in, no building |
+| Zeer (clay pot) cooler | Traditional, cheap, no electricity | Low cost, culturally familiar |
+| New cooler, built and installed | The full service | Highest margin |
+
+All tiers can include a yearly renewal (maintenance fee).
+
+### 7.4 Where to put the entry point in the app (owner to decide)
+
+| Place | For | Against |
+|---|---|---|
+| **On each cooler's card:** "Dedicate this cooler / fund its refills in someone's name" | Right moment (the person is looking at a cooler); fits the cheapest tier | Only reaches people who open a cooler |
+| **A card on the profile screen:** "Give a Sabil in someone's name" | Always findable, does not clutter the map | Few people open the profile |
+| A floating button on the map | Most visible | Clutters the map, which is the product |
+| A fourth welcome screen | Everyone sees it once | Too early, before they trust the app |
+| The sponsor page ("Become a sponsor") | Right for shops and businesses | Not for individuals |
+| A seasonal banner (Ramadan, heat waves) | Good timing, easy to switch off | Needs a banner mechanism |
+
+**Suggestion:** cooler card + profile card, keep the map clean, and add the web order page for people who have not installed the app. Revisit once there is data on what people tap.
+
+### 7.5 What the app and server need (all not started)
 
 | Step | What it is | Effort |
 |---|---|---|
-| 1 | **"Commission a cooler" form in the app.** The person marks a place on the map (or describes it), enters the name to dedicate and a short message, their contact (the signed-in account and phone number are attached automatically), and any notes (mosque, shop, building). | M |
-| 2 | **Admin inbox for requests** with a status for each: New, Contacted, Quoted, Paid, Building, Installed, Declined. Notes and contact visible only to the admin. | M |
-| 3 | **Turning a request into a cooler.** When installed, the admin creates the cooler, attaches the photo, and sets the dedication (already built). The person is told it is live (by SMS once an SMS company is chosen). | S |
-| 4 | **Public "Dedicated coolers" list** (optional): a screen of all in-memory-of coolers, as a showcase and sales tool. | S |
-| 5 | **Payments:** start offline (bank transfer, InstaPay, Fawry, cash) recorded by the admin. Online payment can come later. | S now, M later |
-| 6 | **Maintenance reminders:** the yearly maintenance fee needs a renewal date per cooler and a list of those due. | M |
+| 1 | Request form in the app (pin, tier, name, message, notes, contact). | M |
+| 2 | Admin inbox for requests with status, notes and contact visible only to the admin. | M |
+| 3 | "My requests" screen so the person can follow progress. | S |
+| 4 | Turning a request into a cooler: create the cooler, attach the photo, set the dedication (the dedication part exists). | S |
+| 5 | WhatsApp button with the request pre-filled (a `wa.me` link, no server needed). | S |
+| 6 | Price list stored on the server so prices change without a new app release. | S |
+| 7 | Shareable gift card (image or PDF: name, message, cooler photo, location). | M |
+| 8 | QR plaque for each cooler: scanning opens that cooler's page, shows the dedication and lets passers-by confirm "Still working". Also keeps the data fresh. | M |
+| 9 | Payments: offline first, recorded by the admin. Online later. | S now, M later |
+| 10 | Maintenance renewals: renewal date per cooler, list of renewals due, reminder at 40 days and one year. | M |
+| 11 | Internal tracker: supplier costs, installed coolers, maintenance schedule. | M |
 
-**Things only you can decide:** prices (hardware, install, yearly maintenance), which areas you serve at first, who has permission to place coolers where, who does the physical maintenance, the rule for a family that does not want the name shown, and what happens if a cooler is removed. Getting the legal and permission side right matters more than the code.
+### 7.6 Checks before selling (owner, with a lawyer and accountant)
+
+- **Selling a service is not collecting donations.** Collecting donations is regulated in Egypt. Word the offer as commissioning or sponsoring a cooler, and confirm with a lawyer which rules apply to you.
+- **Permission for each place:** who can approve a cooler in a mosque, shop, building or on a street.
+- **Practicalities:** water supply, electricity, theft and vandalism, hygiene and cups, who does the monthly refill and how fast.
+- **Business paperwork:** registration to take payment and issue receipts.
+- **Consent for the name:** the family agrees to the name being shown, and there is a way to remove it.
+- **Pricing:** hardware + installation + first-year maintenance + margin; renewal price.
+
+### 7.7 More ideas for this business
+
+Funeral and mosque partnerships (offer the option to families); Ramadan and corporate batches (one company funds many coolers, with its name on the plaques); anniversary messages with a fresh photo at 40 days and one year; a "before and after" photo for every installation; local technician partners per area; group funding of one cooler by a family (check the donation rules first).
+
+### 7.7a Questions waiting for the owner
+
+1. Which tiers at launch?
+2. The WhatsApp business number to use.
+3. Web order page now or after the app?
+4. Where the entry point goes (7.4).
 
 ## 8. Ideas list status
 
