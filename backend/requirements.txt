@@ -2,7 +2,7 @@
 # (minimum versions only; the code needs SQLAlchemy 2.x and Pydantic 2.x)
 fastapi>=0.110
 uvicorn[standard]>=0.29
-sqlalchemy>=2.0
+sqlalchemy[asyncio]>=2.0
 asyncpg>=0.29
 geoalchemy2>=0.14
 pydantic>=2.6
