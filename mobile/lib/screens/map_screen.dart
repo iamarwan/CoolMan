@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/water_cooler.dart';
+import '../services/api_client.dart';
 import '../services/api_service.dart';
 import '../services/location_service.dart';
 import '../widgets/app_snackbar.dart';
@@ -218,48 +219,52 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  Future<void> _updateCoolerStatus(
-      WaterCooler cooler, String newStatus) async {
+  // The three cooler-sheet actions return a SheetNotice (shown inside the sheet)
+  // when the sheet stays open, or null when they closed it and showed a snackbar.
+
+  Future<SheetNotice?> _updateCoolerStatus(WaterCooler cooler, String newStatus) async {
     final ok = await _ensureLoggedIn();
-    if (!ok || !mounted) return;
+    if (!ok || !mounted) return null;
     try {
-      await _api.updateCoolerStatus(
-          coolerId: cooler.id, newStatus: newStatus);
-      if (mounted) Navigator.of(context).pop();
-      _showSnackbar('Status updated! Confirmed report earns points.');
-      await _fetchCoolers();
+      await _api.updateCoolerStatus(coolerId: cooler.id, newStatus: newStatus);
     } catch (e) {
-      _showSnackbar('Failed to update status: $e', isError: true);
+      return SheetNotice(friendlyError(e, 'Failed to update the status.'), isError: true);
     }
+    if (!mounted) return null;
+    Navigator.of(context).pop();
+    _showSnackbar('Status updated! Confirmed report earns points.');
+    await _fetchCoolers();
+    return null;
   }
 
-  Future<void> _confirmWorking(WaterCooler cooler) async {
+  Future<SheetNotice?> _confirmWorking(WaterCooler cooler) async {
+    final Map<String, dynamic> result;
     try {
-      final result = await _api.confirmCoolerWorking(cooler.id);
-      final newScore = result['trust_score'] as int?;
-      if (mounted) Navigator.of(context).pop();
-      _showSnackbar(
-        newScore != null
-            ? '✓ Verified! +5 Points (Balance: $newScore pts)'
-            : '✓ Verified working!',
-      );
-      await _fetchCoolers();
+      result = await _api.confirmCoolerWorking(cooler.id);
     } catch (e) {
-      final msg = e.toString().replaceFirst('Exception: ', '');
-      _showSnackbar(msg, isError: true);
+      return SheetNotice(friendlyError(e, 'Could not confirm the cooler.'), isError: true);
     }
+    if (!mounted) return null;
+    final newScore = result['trust_score'] as int?;
+    Navigator.of(context).pop();
+    _showSnackbar(
+      newScore != null
+          ? '✓ Verified! +5 Points (Balance: $newScore pts)'
+          : '✓ Verified working!',
+    );
+    await _fetchCoolers();
+    return null;
   }
 
-  Future<void> _uploadPhoto(WaterCooler cooler) async {
+  Future<SheetNotice?> _uploadPhoto(WaterCooler cooler) async {
     final ok = await _ensureLoggedIn();
-    if (!ok || !mounted) return;
+    if (!ok || !mounted) return null;
 
     final category = await pickPhotoCategory(context);
+    if (category == null || !mounted) return null;
 
-    if (category == null || !mounted) return;
-    
     final source = await pickImageSource(context);
-    if (source == null) return;
+    if (source == null) return null;
 
     final picked = await _imagePicker.pickImage(
       source: source,
@@ -267,7 +272,7 @@ class _MapScreenState extends State<MapScreen> {
       maxWidth: 1280,
       requestFullMetadata: false,
     );
-    if (picked == null) return;
+    if (picked == null) return null;
 
     try {
       await _api.uploadPhoto(
@@ -275,9 +280,9 @@ class _MapScreenState extends State<MapScreen> {
         imageFile: File(picked.path),
         photoCategory: category,
       );
-      _showSnackbar('Verification photo attached successfully!');
+      return const SheetNotice('Photo attached. It will appear once it is approved.');
     } catch (e) {
-      _showSnackbar('Failed to upload photo: $e', isError: true);
+      return SheetNotice(friendlyError(e, 'Failed to upload the photo.'), isError: true);
     }
   }
 

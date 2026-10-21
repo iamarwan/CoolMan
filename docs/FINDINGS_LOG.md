@@ -231,7 +231,7 @@ Method: ruff + vulture on the backend; every config constant, schema and model f
 
 ## 10. Owner feedback after first emulator run (2026-10-22) — work plan
 
-Phases: (1) permissions + Google Maps directions [done]; (2) photo-first draggable cooler sheet with an "Update condition" menu (current condition highlighted, not tappable) [done]; (3) messages shown inside the sheet, not behind it; (4) cups: **off by default**, switched on when a sponsor backs the cooler, and the sponsor name is shown with it (new column `cups_enabled`, admin switch, rules tied to sponsor assignment); (5) docs + test checklist.
+Phases: (1) permissions + Google Maps directions [done]; (2) photo-first draggable cooler sheet with an "Update condition" menu (current condition highlighted, not tappable) [done]; (3) messages shown inside the sheet, not behind it [done]; (4) cups: **off by default**, switched on when a sponsor backs the cooler, and the sponsor name is shown with it (new column `cups_enabled`, admin switch, rules tied to sponsor assignment); (5) docs + test checklist.
 
 - **MB-19 (fixed, phase 1):** Android manifest had no location, internet or maps-query entries and iOS had no permission texts: "No location permissions are defined in the manifest". Debug builds now also allow plain http to the dev server.
 - **MB-20 (fixed, phase 1):** directions fell back to the browser because `canLaunchUrl` returns false on Android 11+ without `<queries>`. Now tries the Google Maps app, then Google Maps web, then OpenStreetMap.
