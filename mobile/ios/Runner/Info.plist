@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Sabil uses your location to show water coolers near you and to place a new cooler on the map.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Sabil uses the camera to take a photo of a water cooler.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Sabil lets you choose a photo of a water cooler from your library.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

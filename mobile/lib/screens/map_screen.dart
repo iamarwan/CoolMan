@@ -281,26 +281,29 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  /// Opens walking directions to the cooler in the person's maps app.
+  /// Order: Google Maps app, then Google Maps in the browser, then OpenStreetMap.
   Future<void> _launchDirections(WaterCooler cooler) async {
     final lat = cooler.latitude;
     final lng = cooler.longitude;
-    final androidUrl =
-        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=walking';
-    final iosUrl = 'maps://?daddr=$lat,$lng&dirflg=w';
-    final fallbackUrl =
-        'https://www.openstreetmap.org/directions?from=&to=$lat,$lng';
-    final uri = Uri.parse(Platform.isIOS ? iosUrl : androidUrl);
-    final fallback = Uri.parse(fallbackUrl);
-    try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        await launchUrl(fallback, mode: LaunchMode.externalApplication);
+    final candidates = <Uri>[
+      if (Platform.isIOS)
+        Uri.parse('maps://?daddr=$lat,$lng&dirflg=w')
+      else
+        Uri.parse('google.navigation:q=$lat,$lng&mode=w'),
+      Uri.parse(
+          'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=walking'),
+      Uri.parse('https://www.openstreetmap.org/directions?from=&to=$lat,$lng'),
+    ];
+    for (final uri in candidates) {
+      try {
+        // Try to open it directly; a false result or an error means "try the next one".
+        if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+      } catch (e) {
+        debugPrint('Directions via $uri failed: $e');
       }
-    } catch (e) {
-      debugPrint('Map navigation failed: $e');
-      _showSnackbar('Could not open map navigation.', isError: true);
     }
+    _showSnackbar('Could not open map navigation.', isError: true);
   }
 
   void _showSnackbar(String message, {bool isError = false}) {

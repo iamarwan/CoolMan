@@ -228,3 +228,10 @@ Method: ruff + vulture on the backend; every config constant, schema and model f
 - MB-11 (nine `catch (_)`): FIXED 2026-10-18. Screens now show the real reason (server message, or "could not reach the server"). Found and fixed a real bug on the way: opening the app with no internet signed the person out (any profile-fetch failure deleted the saved login); now only a 401 from the server does. The contact button on a sponsor page also did nothing silently when no app could open it; it now says so.
 - Still open from before: BE-09 (rate limits in memory, one server only), BE-10 (CORS `*`), BE-11/12/13/17/19/21.
 - **RC-12 (found on the owner's first Windows run, 2026-10-21):** `requirements.txt` had `sqlalchemy` without `[asyncio]`, so `greenlet` was not installed and the server crashed at start with "requires that the Python 'greenlet' library is installed". FIXED: now `sqlalchemy[asyncio]>=2.0`. Lesson: always test a fresh install on a clean venv.
+
+## 10. Owner feedback after first emulator run (2026-10-22) — work plan
+
+Phases: (1) permissions + Google Maps directions [done]; (2) photo-first draggable cooler sheet with an "Update condition" menu (current condition highlighted, not tappable); (3) messages shown inside the sheet, not behind it; (4) cups: **off by default**, switched on when a sponsor backs the cooler, and the sponsor name is shown with it (new column `cups_enabled`, admin switch, rules tied to sponsor assignment); (5) docs + test checklist.
+
+- **MB-19 (fixed, phase 1):** Android manifest had no location, internet or maps-query entries and iOS had no permission texts: "No location permissions are defined in the manifest". Debug builds now also allow plain http to the dev server.
+- **MB-20 (fixed, phase 1):** directions fell back to the browser because `canLaunchUrl` returns false on Android 11+ without `<queries>`. Now tries the Google Maps app, then Google Maps web, then OpenStreetMap.
