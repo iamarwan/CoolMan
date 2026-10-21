@@ -12,6 +12,11 @@ class AdminLoginRequest(BaseModel):
     password: str
 
 
+class CupsEnabledSet(BaseModel):
+    """Body of PUT /admin/coolers/{id}/cups."""
+    enabled: bool
+
+
 class DedicationSet(BaseModel):
     """Body of PUT /admin/coolers/{id}/dedication."""
     dedicated_to: str = Field(..., min_length=1, max_length=120)

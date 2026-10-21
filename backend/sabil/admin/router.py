@@ -11,7 +11,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from sabil.admin import coolers, dedications, photos, sponsors
+from sabil.admin import coolers, cups, dedications, photos, sponsors
 from sabil.admin.schemas import AdminLoginRequest
 from sabil.core.dependencies import require_admin
 from sabil.core.rate_limit import auth_rate_limiter
@@ -31,4 +31,5 @@ router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(requir
 router.include_router(coolers.router)
 router.include_router(photos.router)
 router.include_router(sponsors.router)
+router.include_router(cups.router)
 router.include_router(dedications.router)

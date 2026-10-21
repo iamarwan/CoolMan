@@ -72,6 +72,10 @@ class WaterCooler(Base):
     has_cups: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     cups_type: Mapped[Optional[CupsType]] = mapped_column(SAEnum(CupsType), nullable=True)
 
+    # Cups are NOT shown by default. An admin switches this on for a cooler that
+    # really supplies cups (sponsoring a cooler does not switch it on by itself).
+    cups_enabled: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
+
     # "Sadaka Jariya in memory of ..." (set by an admin only, see admin/dedications.py).
     dedicated_to: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
     dedication_message: Mapped[Optional[str]] = mapped_column(String(280), nullable=True)

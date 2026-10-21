@@ -53,6 +53,7 @@ class WaterCoolerRead(BaseModel):
     pending_status: str | None = None
     has_cups: bool | None = None
     cups_type: CupsType | None = None
+    cups_enabled: bool = False                # the app hides cup info unless this is true
 
     dedicated_to: str | None = None           # "in memory of ..." (public)
     dedication_message: str | None = None
