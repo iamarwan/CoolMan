@@ -209,49 +209,6 @@ class PhotoCategoryChip extends StatelessWidget {
   }
 }
 
-class StatusButton extends StatelessWidget {
-  final String label;
-  final Color color;
-  final IconData icon;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const StatusButton({super.key, required this.label,
-      required this.color,
-      required this.icon,
-      required this.isActive,
-      required this.onTap});
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: isActive ? color : color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-              color: isActive ? color : color.withValues(alpha: 0.4),
-              width: 1.5),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: isActive ? Colors.white : color, size: 20),
-            const SizedBox(height: 4),
-            Text(label,
-                style: TextStyle(
-                    color: isActive ? Colors.white : color,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class SponsorBadge extends StatelessWidget {
   final Sponsor sponsor;
 

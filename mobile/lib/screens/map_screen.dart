@@ -315,6 +315,7 @@ class _MapScreenState extends State<MapScreen> {
     showCoolerSheet(
       context,
       cooler,
+      loadPhotos: () => _api.fetchCoolerPhotos(cooler.id),
       onNavigate: () => _launchDirections(cooler),
       onConfirmWorking: () => _confirmWorking(cooler),
       onChangeStatus: (status) => _updateCoolerStatus(cooler, status),
