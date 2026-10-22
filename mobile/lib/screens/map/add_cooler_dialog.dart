@@ -23,13 +23,9 @@ class PhotoDraft {
 class NewCoolerRequest {
   final String name;
   final List<PhotoDraft> photos;
-  final bool? hasCups;
-  final String? cupsType;
   NewCoolerRequest({
     required this.name,
     required this.photos,
-    this.hasCups,
-    this.cupsType,
   });
 }
 
@@ -39,9 +35,6 @@ Future<NewCoolerRequest?> showAddCoolerDialog(BuildContext context) async {
   final formKey = GlobalKey<FormState>();
   List<PhotoDraft> pickedPhotos = [];
   String pickedCategory = 'Cooler';
-  bool? hasCups;
-  String? cupsType;
-  
   return showDialog<NewCoolerRequest>(
     context: context,
     builder: (ctx) => StatefulBuilder(
@@ -74,48 +67,6 @@ Future<NewCoolerRequest?> showAddCoolerDialog(BuildContext context) async {
                     },
                     textInputAction: TextInputAction.done,
                   ),
-                  const SizedBox(height: 18),
-                  const Text(
-                    'Does it have clean cups?',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.slate800),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      CupsToggleChip(
-                        label: 'Yes',
-                        icon: Icons.coffee_rounded,
-                        color: AppColors.success,
-                        selected: hasCups == true,
-                        onTap: () => setDialog(() {
-                          hasCups = true;
-                        }),
-                      ),
-                      const SizedBox(width: 8),
-                      CupsToggleChip(
-                        label: 'No',
-                        icon: Icons.coffee_outlined,
-                        color: AppColors.danger,
-                        selected: hasCups == false,
-                        onTap: () => setDialog(() {
-                          hasCups = false;
-                          cupsType = null;
-                        }),
-                      ),
-                      const SizedBox(width: 8),
-                      CupsToggleChip(
-                        label: 'Unsure',
-                        icon: Icons.help_outline_rounded,
-                        color: AppColors.slate500,
-                        selected: hasCups == null,
-                        onTap: () => setDialog(() {
-                          hasCups = null;
-                          cupsType = null;
-                        }),
-                      ),
-                    ],
-                  ),
-
                   const SizedBox(height: 18),
                   const Text(
                     'Attach verification photos (Recommended)',
@@ -252,8 +203,6 @@ Future<NewCoolerRequest?> showAddCoolerDialog(BuildContext context) async {
                 Navigator.of(ctx).pop(NewCoolerRequest(
                   name: controller.text.trim(),
                   photos: List<PhotoDraft>.from(pickedPhotos),
-                  hasCups: hasCups,
-                  cupsType: cupsType,
                 ));
               }
             },

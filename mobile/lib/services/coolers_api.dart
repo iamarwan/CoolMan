@@ -70,8 +70,6 @@ mixin class CoolersApi {
     required double latitude,
     required double longitude,
     String status = 'Working',
-    bool? hasCups,
-    String? cupsType,
   }) async {
     final body = <String, dynamic>{
       'name': name,
@@ -79,8 +77,6 @@ mixin class CoolersApi {
       'longitude': longitude,
       'status': status,
     };
-    if (hasCups != null) body['has_cups'] = hasCups;
-    if (cupsType != null) body['cups_type'] = cupsType;
 
     final response = await http
         .post(

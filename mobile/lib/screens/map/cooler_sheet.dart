@@ -195,13 +195,18 @@ class _CoolerSheetBodyState extends State<_CoolerSheetBody> {
             label: 'Verified Freshness',
             value: staleness.text,
           ),
-          const SizedBox(height: 10),
-          InfoRow(
-            icon: cupsIcon(cooler.hasCups),
-            iconColor: cupsColor(cooler.hasCups),
-            label: 'Cup Supplies',
-            value: cupsLabel(cooler.hasCups, cooler.cupsType),
-          ),
+          // Cup information is hidden unless an admin switched it on for this cooler.
+          if (cooler.cupsEnabled) ...[
+            const SizedBox(height: 10),
+            InfoRow(
+              icon: cupsIcon(cooler.hasCups),
+              iconColor: cupsColor(cooler.hasCups),
+              label: 'Cup Supplies',
+              value: cooler.sponsor != null
+                  ? '${cupsLabel(cooler.hasCups, cooler.cupsType)} · by ${cooler.sponsor!.name}'
+                  : cupsLabel(cooler.hasCups, cooler.cupsType),
+            ),
+          ],
           const SizedBox(height: 22),
           if (cooler.status == 'Working') ...[
             SizedBox(

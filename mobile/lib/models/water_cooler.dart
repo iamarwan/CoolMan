@@ -18,6 +18,7 @@ class WaterCooler {
   final List<CoolerPhoto> photos;
   final bool? hasCups;
   final String? cupsType;
+  final bool cupsEnabled;             // cup info is hidden unless an admin switched it on
   final Sponsor? sponsor;
   final String? dedicatedTo;          // "in memory of ..." (set by an admin)
   final String? dedicationMessage;
@@ -37,6 +38,7 @@ class WaterCooler {
     this.photos = const [],
     this.hasCups,
     this.cupsType,
+    this.cupsEnabled = false,
     this.sponsor,
     this.dedicatedTo,
     this.dedicationMessage,
@@ -59,6 +61,7 @@ class WaterCooler {
             .toList(),
         hasCups: json['has_cups'] as bool?,
         cupsType: json['cups_type'] as String?,
+        cupsEnabled: json['cups_enabled'] as bool? ?? false,
         sponsor: json['sponsor'] != null
             ? Sponsor.fromJson(json['sponsor'] as Map<String, dynamic>)
             : null,

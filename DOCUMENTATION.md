@@ -85,6 +85,7 @@ The main spatial entity representing physical drinking water stations.
 *   `user_id` (UUID, Foreign Key): Identifier of the original reporter.
 *   `pending_status_user_id` (UUID, Foreign Key): Submitter of review updates.
 *   `sponsor_id` (UUID, Foreign Key): Linked charity sponsor.
+*   `cups_enabled` (Boolean, default false): cup information is hidden in the app unless an admin switches it on for that cooler (`PUT /admin/coolers/{id}/cups`). Sponsoring a cooler does not switch it on.
 *   `dedicated_to` (String(120), optional), `dedication_message` (String(280), optional): "Sadaka Jariya in memory of ...", set by an admin only and shown to everyone on the cooler's card.
 
 #### `cooler_photos`

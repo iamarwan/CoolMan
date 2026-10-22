@@ -177,4 +177,18 @@ mixin class AdminApi {
     if (response.statusCode == 200) return;
     throw Exception(extractError(response, 'Failed to remove the dedication (${response.statusCode}).'));
   }
+
+  // ─── Cup information (hidden in the app unless switched on per cooler) ───
+
+  Future<void> setCupsEnabled(String coolerId, bool enabled) async {
+    final response = await http
+        .put(
+          apiUri('/admin/coolers/$coolerId/cups'),
+          headers: SessionStore.adminHeaders({'Content-Type': 'application/json'}),
+          body: jsonEncode({'enabled': enabled}),
+        )
+        .timeout(ApiConfig.timeout);
+    if (response.statusCode == 200) return;
+    throw Exception(extractError(response, 'Failed to change cups (${response.statusCode}).'));
+  }
 }

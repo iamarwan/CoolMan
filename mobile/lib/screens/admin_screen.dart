@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../models/water_cooler.dart';
 import '../models/sponsor.dart';
 import '../services/api_service.dart';
+import '../services/api_client.dart';
 import '../widgets/app_snackbar.dart';
 import '../widgets/photo_pickers.dart';
 import '../core/theme.dart';
@@ -84,6 +85,19 @@ class _AdminScreenState extends State<AdminScreen>
       setState(() => _loadingPending = false);
       if (_handleAdminAuthError(e)) return;
       _snack('Failed to load pending coolers.', isError: true);
+    }
+  }
+
+  Future<void> _toggleCups(WaterCooler cooler) async {
+    final turnOn = !cooler.cupsEnabled;
+    try {
+      await _api.setCupsEnabled(cooler.id, turnOn);
+      _snack(turnOn
+          ? 'Cups are now shown on "${cooler.name}".'
+          : 'Cups are now hidden on "${cooler.name}".');
+      await _fetchCurrent();
+    } catch (e) {
+      _snack(friendlyError(e, 'Could not change cups.'), isError: true);
     }
   }
 
@@ -430,6 +444,7 @@ class _AdminScreenState extends State<AdminScreen>
             onAddPhoto: _uploadPhotoAdmin,
             onViewPhotos: (c) => _showPhotoGallery(context, c),
             onManageSponsor: (c) => _showSponsorSheet(context, c),
+            onToggleCups: _toggleCups,
             onDedicate: (c) => showDedicationDialog(
               context,
               cooler: c,

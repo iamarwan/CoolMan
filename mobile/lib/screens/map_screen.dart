@@ -187,8 +187,6 @@ class _MapScreenState extends State<MapScreen> {
         name: request.name,
         latitude: point.latitude,
         longitude: point.longitude,
-        hasCups: request.hasCups,
-        cupsType: request.cupsType,
       );
 
       var failedPhotos = 0;

@@ -18,6 +18,7 @@ class AdminCurrentTab extends StatelessWidget {
   final void Function(WaterCooler) onViewPhotos;
   final void Function(WaterCooler) onManageSponsor;
   final void Function(WaterCooler) onDedicate;
+  final void Function(WaterCooler) onToggleCups;
 
   const AdminCurrentTab({super.key, 
     required this.loading,
@@ -28,6 +29,7 @@ class AdminCurrentTab extends StatelessWidget {
     required this.onViewPhotos,
     required this.onManageSponsor,
     required this.onDedicate,
+    required this.onToggleCups,
   });
 
   @override
@@ -52,6 +54,7 @@ class AdminCurrentTab extends StatelessWidget {
         onViewPhotos: () => onViewPhotos(coolers[i]),
         onManageSponsor: () => onManageSponsor(coolers[i]),
         onDedicate: () => onDedicate(coolers[i]),
+        onToggleCups: () => onToggleCups(coolers[i]),
       ),
     );
   }
@@ -65,6 +68,7 @@ class AdminLiveCard extends StatelessWidget {
   final VoidCallback onViewPhotos;
   final VoidCallback onManageSponsor;
   final VoidCallback onDedicate;
+  final VoidCallback onToggleCups;
 
   const AdminLiveCard({super.key, 
     required this.cooler,
@@ -74,6 +78,7 @@ class AdminLiveCard extends StatelessWidget {
     required this.onViewPhotos,
     required this.onManageSponsor,
     required this.onDedicate,
+    required this.onToggleCups,
   });
 
   @override
@@ -218,6 +223,8 @@ class AdminLiveCard extends StatelessWidget {
                       onManageSponsor();
                     } else if (value == '__dedicate__') {
                       onDedicate();
+                    } else if (value == '__cups__') {
+                      onToggleCups();
                     } else {
                       onForceStatus(value);
                     }
@@ -248,6 +255,33 @@ class AdminLiveCard extends StatelessWidget {
                             cooler.sponsor != null
                                 ? 'Edit sponsor mapping'
                                 : 'Map Sponsor',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: '__cups__',
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primaryTint,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.coffee_outlined,
+                                color: AppColors.primary, size: 16),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            cooler.cupsEnabled
+                                ? 'Cups: ON (tap to hide)'
+                                : 'Cups: OFF (tap to show)',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: AppColors.primary,

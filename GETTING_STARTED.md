@@ -94,7 +94,7 @@ uvicorn sabil.main:app --reload --host 0.0.0.0 --port 8000 --reload-exclude "upl
 - Open http://localhost:8000/docs to see and try every endpoint.
 - **First time only:** to put sample coolers in the (empty) database, run in another terminal in `backend` with the venv active: `python -m scripts.seed`
 
-> **After pulling new code, if your database already existed:** run `python -m scripts.sync_schema --apply` once in `backend/` (venv active). Recent changes added columns (`users.phone`, `water_coolers.dedicated_to`, `water_coolers.dedication_message`); without them the server fails with `column users.phone does not exist`. It only adds missing columns; it never drops anything unless you add `--drop-extra`.
+> **After pulling new code, if your database already existed:** run `python -m scripts.sync_schema --apply` once in `backend/` (venv active). Recent changes added columns (`users.phone`, `water_coolers.dedicated_to`, `water_coolers.dedication_message`, `water_coolers.cups_enabled`); without them the server fails with `column users.phone does not exist`. It only adds missing columns; it never drops anything unless you add `--drop-extra`.
 
 ### Step 3: Start the app
 1. In Android Studio open **Device Manager** and start an emulator (or run `flutter emulators --launch <id>`).
@@ -171,7 +171,7 @@ pip install -r requirements-dev.txt
 $env:SABIL_DATABASE_URL="postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_test?ssl=disable"
 python -m pytest tests -q
 ```
-(39 tests; the PostGIS extension is enabled by the test setup. If the test database already existed before the latest update, run `python -m scripts.sync_schema --apply` against it first, or drop and recreate it.)
+(44 tests; the PostGIS extension is enabled by the test setup. If the test database already existed before the latest update, run `python -m scripts.sync_schema --apply` against it first, or drop and recreate it.)
 
 ## Making a code snapshot for an AI chat
 ```powershell
