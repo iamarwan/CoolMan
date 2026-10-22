@@ -77,11 +77,13 @@ class _AdminScreenState extends State<AdminScreen>
     setState(() => _loadingPending = true);
     try {
       final result = await _api.fetchPendingCoolers();
+      if (!mounted) return; // the admin screen was closed while loading
       setState(() {
         _pending = result;
         _loadingPending = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _loadingPending = false);
       if (_handleAdminAuthError(e)) return;
       _snack('Failed to load pending coolers.', isError: true);
@@ -106,11 +108,13 @@ class _AdminScreenState extends State<AdminScreen>
     setState(() => _loadingCurrent = true);
     try {
       final result = await _api.fetchCurrentCoolers();
+      if (!mounted) return; // the admin screen was closed while loading
       setState(() {
         _current = result;
         _loadingCurrent = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _loadingCurrent = false);
       if (_handleAdminAuthError(e)) return;
       _snack('Failed to load live coolers.', isError: true);
@@ -122,11 +126,13 @@ class _AdminScreenState extends State<AdminScreen>
     setState(() => _loadingSponsors = true);
     try {
       final result = await _api.fetchAllSponsors();
+      if (!mounted) return; // the admin screen was closed while loading
       setState(() {
         _sponsors = result;
         _loadingSponsors = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _loadingSponsors = false);
       if (_handleAdminAuthError(e)) return;
       _snack('Failed to load sponsors.', isError: true);
