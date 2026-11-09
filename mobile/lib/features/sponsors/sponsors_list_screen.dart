@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/error_text.dart';
+import '../../core/locale.dart';
 import '../../shared/ui.dart';
 import '../profile/profile_repository.dart';
 import 'sponsor_screen.dart';
@@ -11,13 +12,14 @@ class SponsorsListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
     final sponsors = ref.watch(sponsorsProvider);
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(title: const Text('Sponsors')),
+      appBar: AppBar(title: Text(l.sponsors)),
       body: sponsors.when(
         data: (list) => list.isEmpty
-            ? const Center(child: Text('No sponsors yet.'))
+            ? Center(child: Text(l.sponsorsEmpty))
             : ListView.builder(
                 padding: const EdgeInsets.all(12),
                 itemCount: list.length,
@@ -33,7 +35,7 @@ class SponsorsListScreen extends ConsumerWidget {
                           const Icon(Icons.verified, size: 16, color: AppColors.working),
                         ],
                       ]),
-                      subtitle: Text('${sponsorTypeLabel(s.type)} · ${s.coolerCount} coolers'),
+                      subtitle: Text('${sponsorTypeLabel(l, s.type)} · ${l.sponsorCoolerCount(s.coolerCount)}'),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => SponsorScreen(sponsor: s)),
@@ -43,7 +45,7 @@ class SponsorsListScreen extends ConsumerWidget {
                 },
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(errorText(e))),
+        error: (e, _) => Center(child: Text(errorText(l, e))),
       ),
     );
   }

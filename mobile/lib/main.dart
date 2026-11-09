@@ -24,7 +24,7 @@ Future<void> main() async {
             child: Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
-                child: Text('Something went wrong on this screen.', textAlign: TextAlign.center),
+                child: Text('Something went wrong.\nحدث خطأ ما.', textAlign: TextAlign.center),
               ),
             ),
           );

@@ -10,6 +10,7 @@ import '../../core/api_client.dart';
 import '../../core/config.dart';
 import '../../core/error_text.dart';
 import '../../core/format.dart';
+import '../../core/locale.dart';
 import '../../core/session.dart';
 import '../../models/cooler.dart';
 import '../../shared/ui.dart';
@@ -94,11 +95,11 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
     try {
       final r = await _repo.confirm(before.id);
       ref.read(sessionProvider.notifier).updateScore(r.trustScore);
-      if (mounted) showSnack(context, 'Thanks for confirming! +5 points');
+      if (mounted) showSnack(context, context.l10n.thanksConfirm);
     } catch (e) {
       if (!mounted) return;
       setState(() => _cooler = before);
-      showSnack(context, errorText(e), error: true);
+      showSnack(context, errorText(context.l10n, e), error: true);
     } finally {
       if (mounted) setState(() => _confirming = false);
     }
@@ -126,13 +127,13 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
       ref.read(sessionProvider.notifier).refreshProfile();
       showSnack(
         context,
-        trusted ? 'Status updated. +10 points' : 'Thanks! Your report will be reviewed. +10 points',
+        trusted ? context.l10n.statusUpdatedPoints : context.l10n.reportReviewedPoints,
       );
     } catch (e) {
       if (!mounted) return;
       setState(() => _cooler = before);
       pins.setStatus(before.id, before.status);
-      showSnack(context, errorText(e), error: true);
+      showSnack(context, errorText(context.l10n, e), error: true);
     } finally {
       if (mounted) setState(() => _reporting = false);
     }
@@ -148,12 +149,12 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
       if (!mounted) return;
       if (photo.isApproved) {
         setState(() => _cooler = _cooler!.copyWith(photos: [photo, ..._cooler!.photos]));
-        showSnack(context, 'Photo added. Thank you!');
+        showSnack(context, context.l10n.photoAdded);
       } else {
-        showSnack(context, 'Photo sent for review. Thank you!');
+        showSnack(context, context.l10n.photoSentForReview);
       }
     } catch (e) {
-      if (mounted) showSnack(context, errorText(e), error: true);
+      if (mounted) showSnack(context, errorText(context.l10n, e), error: true);
     } finally {
       if (mounted) setState(() => _uploading = false);
     }
@@ -169,21 +170,22 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
         await launchUrl(geo, mode: LaunchMode.externalApplication);
       }
     } catch (_) {
-      if (mounted) showSnack(context, 'Could not open directions.', error: true);
+      if (mounted) showSnack(context, context.l10n.errDirections, error: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final c = _cooler;
     if (c == null) {
       return _loadError != null
           ? _Message(
               icon: Icons.cloud_off_outlined,
-              text: errorText(_loadError!),
-              action: TextButton(onPressed: _load, child: const Text('Try again')),
+              text: errorText(l, _loadError!),
+              action: TextButton(onPressed: _load, child: Text(l.tryAgain)),
             )
-          : const _Message(icon: null, text: 'Loading…');
+          : _Message(icon: null, text: l.loading);
     }
 
     final userPos = ref.watch(userLocationProvider.select((s) => s.position));
@@ -205,7 +207,7 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
           ),
           IconButton.filled(
             onPressed: _directions,
-            tooltip: 'Directions',
+            tooltip: l.directions,
             icon: const Icon(Icons.directions_walk),
           ),
         ]),
@@ -215,19 +217,19 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
           if (c.pendingStatus != null && c.pendingStatus != c.status)
             StatusChip(status: c.pendingStatus!, pending: true),
           if (meters != null)
-            Text('${formatDistance(meters)} · ${walkingTime(meters)}',
+            Text('${formatDistance(l, meters)} · ${walkingTime(l, meters)}',
                 style: const TextStyle(color: AppColors.muted)),
         ]),
         const SizedBox(height: 16),
         _InfoRow(
           icon: Icons.verified_outlined,
           color: freshness.color,
-          text: 'Last confirmed ${timeAgo(c.lastVerifiedAt)}',
+          text: l.lastConfirmed(timeAgo(l, c.lastVerifiedAt)),
         ),
         _InfoRow(
           icon: c.hasCups == true ? Icons.coffee : Icons.coffee_outlined,
           color: c.hasCups == true ? AppColors.working : AppColors.muted,
-          text: cupsLabel(c.hasCups, c.cupsType),
+          text: cupsLabel(l, c.hasCups, c.cupsType),
         ),
         if (c.photos.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -242,14 +244,14 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
           FilledButton.icon(
             onPressed: _confirming ? null : _confirm,
             icon: const Icon(Icons.check_circle_outline),
-            label: const Text('Still working'),
+            label: Text(l.stillWorking),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.working,
               minimumSize: const Size.fromHeight(52),
             ),
           ),
         const SizedBox(height: 12),
-        const Text('Something changed?',
+        Text(l.somethingChanged,
             style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.muted)),
         const SizedBox(height: 8),
         Row(children: [
@@ -261,7 +263,7 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
                   child: OutlinedButton.icon(
                     onPressed: _reporting ? null : () => _report(s),
                     icon: Icon(s.icon, color: s.color, size: 18),
-                    label: Text('Report ${s.label.toLowerCase()}'),
+                    label: Text(s.reportLabel(l)),
                     style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
                   ),
                 ),
@@ -273,7 +275,7 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
           icon: _uploading
               ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
               : const Icon(Icons.add_a_photo_outlined),
-          label: Text(_uploading ? 'Uploading…' : 'Add photo'),
+          label: Text(_uploading ? l.uploading : l.addPhoto),
           style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
         ),
       ],
@@ -372,8 +374,8 @@ class _SponsorCard extends StatelessWidget {
         elevation: 0,
         child: ListTile(
           leading: Icon(sponsorTypeIcon(sponsor.type), color: AppColors.sponsor),
-          title: Text('Maintained by ${sponsor.name}'),
-          subtitle: sponsor.verified ? const Text('Verified sponsor') : null,
+          title: Text(context.l10n.maintainedBy(sponsor.name)),
+          subtitle: sponsor.verified ? Text(context.l10n.verifiedSponsor) : null,
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => SponsorScreen(sponsor: sponsor)),

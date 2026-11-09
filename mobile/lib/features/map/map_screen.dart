@@ -8,9 +8,12 @@ import 'package:latlong2/latlong.dart';
 import '../../core/config.dart';
 import '../../core/error_text.dart';
 import '../../core/location_service.dart';
+import '../../core/locale.dart';
 import '../../core/providers.dart';
+import '../../core/session.dart';
 import '../../models/cooler.dart';
 import '../../shared/ui.dart';
+import '../../shared/language_picker.dart';
 import '../auth/auth_sheet.dart';
 import '../cooler/add_cooler_sheet.dart';
 import '../cooler/cooler_sheet.dart';
@@ -73,18 +76,19 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       _moveTo(pos, 16);
       return;
     }
+    final l = context.l10n;
     final problem = ref.read(userLocationProvider).problem;
     final service = ref.read(locationServiceProvider);
     final (message, action) = switch (problem) {
-      LocationProblem.serviceDisabled => ('Location is turned off.', service.openSettings),
-      LocationProblem.deniedForever => ('Location permission is blocked.', service.openAppSettings),
-      LocationProblem.denied => ('Location permission was denied.', null),
-      null => ('Could not find your location. Try again outside.', null),
+      LocationProblem.serviceDisabled => (l.locationOff, service.openSettings),
+      LocationProblem.deniedForever => (l.locationBlocked, service.openAppSettings),
+      LocationProblem.denied => (l.locationDenied, null),
+      null => (l.locationUnavailable, null),
     };
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
       behavior: SnackBarBehavior.floating,
-      action: action == null ? null : SnackBarAction(label: 'Settings', onPressed: action),
+      action: action == null ? null : SnackBarAction(label: l.settings, onPressed: action),
     ));
   }
 
@@ -119,8 +123,39 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Future<void> _openProfile() async {
-    if (!await ensureLoggedIn(context, ref) || !mounted) return;
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+    if (ref.read(sessionProvider).isLoggedIn) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+      return;
+    }
+    // Guests: log in, or change language without an account.
+    final l = context.l10n;
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const SheetHandle(),
+            ListTile(
+              leading: const Icon(Icons.login),
+              title: Text(l.guestLogin),
+              onTap: () => Navigator.pop(ctx, 'login'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.translate),
+              title: Text(l.language),
+              onTap: () => Navigator.pop(ctx, 'language'),
+            ),
+          ]),
+        ),
+      ),
+    );
+    if (!mounted) return;
+    if (choice == 'language') {
+      await showLanguagePicker(context, ref);
+    } else if (choice == 'login' && await ensureLoggedIn(context, ref) && mounted) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+    }
   }
 
   // ── Adding a cooler ──────────────────────────────────────────────────────
@@ -137,9 +172,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     if (cooler == null || !mounted) return;
     showSnack(
       context,
-      cooler.isApproved
-          ? 'Cooler added and live on the map. +50 points'
-          : 'Submitted! It will appear after review (+50 points when approved).',
+      cooler.isApproved ? context.l10n.coolerAddedLive : context.l10n.coolerSubmitted,
     );
   }
 
@@ -147,6 +180,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final userPos = ref.watch(userLocationProvider.select((s) => s.position));
     final locating = ref.watch(userLocationProvider.select((s) => s.locating));
 
@@ -220,7 +254,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                           onPressed: locating ? null : _goToMyLocation,
                           backgroundColor: Colors.white,
                           foregroundColor: AppColors.primary,
-                          tooltip: 'My location',
+                          tooltip: l.myLocation,
                           child: locating
                               ? const SizedBox(
                                   width: 18,
@@ -237,7 +271,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                           heroTag: 'add',
                           onPressed: _startPlacing,
                           icon: const Icon(Icons.add_location_alt_outlined),
-                          label: const Text('Add cooler'),
+                          label: Text(l.addCooler),
                         ),
                       ),
                     ]),
@@ -276,13 +310,14 @@ class _MapStatusBanner extends ConsumerWidget {
     final hasPins = ref.watch(mapPinsProvider.select((s) => s.pins.isNotEmpty));
     final loadedOnce = ref.watch(mapPinsProvider.select((s) => s.loadedOnce));
 
+    final l = context.l10n;
     final String? text;
     var showRetry = false;
     if (error != null) {
-      text = hasPins ? 'Offline: showing saved coolers.' : errorText(error);
+      text = hasPins ? l.mapOffline : errorText(l, error);
       showRetry = true;
     } else if (loadedOnce && !hasPins) {
-      text = 'No coolers here yet. Be the first to add one!';
+      text = l.mapEmpty;
     } else {
       text = null;
     }
@@ -300,7 +335,7 @@ class _MapStatusBanner extends ConsumerWidget {
             if (showRetry)
               TextButton(
                 onPressed: () => ref.read(mapPinsProvider.notifier).refresh(),
-                child: const Text('Retry', style: TextStyle(color: Colors.white)),
+                child: Text(l.retry, style: const TextStyle(color: Colors.white)),
               ),
           ]),
         ),
@@ -320,14 +355,14 @@ class _PlacementCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Text('Move the map to put the pin on the cooler',
-                style: TextStyle(fontWeight: FontWeight.w700), textAlign: TextAlign.center),
+            Text(context.l10n.placePinHint,
+                style: const TextStyle(fontWeight: FontWeight.w700), textAlign: TextAlign.center),
             const SizedBox(height: 12),
             Row(children: [
-              Expanded(child: OutlinedButton(onPressed: onCancel, child: const Text('Cancel'))),
+              Expanded(child: OutlinedButton(onPressed: onCancel, child: Text(context.l10n.cancel))),
               const SizedBox(width: 12),
               Expanded(
-                child: FilledButton(onPressed: onConfirm, child: const Text('Confirm location')),
+                child: FilledButton(onPressed: onConfirm, child: Text(context.l10n.confirmLocation)),
               ),
             ]),
           ]),

@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 
 import '../core/format.dart';
+import '../core/locale.dart';
+import '../l10n/app_localizations.dart';
 import '../models/cooler.dart';
 
 class AppColors {
@@ -32,10 +34,16 @@ extension CoolerStatusStyle on CoolerStatus {
         CoolerStatus.broken => Icons.build_circle,
       };
 
-  String get label => switch (this) {
-        CoolerStatus.working => 'Working',
-        CoolerStatus.empty => 'Empty',
-        CoolerStatus.broken => 'Broken',
+  String label(AppLocalizations l) => switch (this) {
+        CoolerStatus.working => l.statusWorking,
+        CoolerStatus.empty => l.statusEmpty,
+        CoolerStatus.broken => l.statusBroken,
+      };
+
+  String reportLabel(AppLocalizations l) => switch (this) {
+        CoolerStatus.working => l.reportWorking,
+        CoolerStatus.empty => l.reportEmpty,
+        CoolerStatus.broken => l.reportBroken,
       };
 }
 
@@ -47,13 +55,13 @@ extension FreshnessStyle on Freshness {
       };
 }
 
-String cupsLabel(bool? hasCups, CupsType? type) {
-  if (hasCups == null) return 'Cups: unknown';
-  if (!hasCups) return 'No cups';
+String cupsLabel(AppLocalizations l, bool? hasCups, CupsType? type) {
+  if (hasCups == null) return l.cupsUnknown;
+  if (!hasCups) return l.cupsNone;
   return switch (type) {
-    CupsType.communal => 'Shared cup',
-    CupsType.disposable => 'Disposable cups',
-    null => 'Cups available',
+    CupsType.communal => l.cupsShared,
+    CupsType.disposable => l.cupsDisposable,
+    null => l.cupsAvailable,
   };
 }
 
@@ -89,7 +97,9 @@ class StatusChip extends StatelessWidget {
         Icon(pending ? Icons.hourglass_top : status.icon, size: 14, color: color),
         const SizedBox(width: 4),
         Text(
-          pending ? '${status.label} (pending review)' : status.label,
+          pending
+              ? context.l10n.statusPendingReview(status.label(context.l10n))
+              : status.label(context.l10n),
           style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 12),
         ),
       ]),

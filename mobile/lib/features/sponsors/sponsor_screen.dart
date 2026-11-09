@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/cooler.dart';
+import '../../core/locale.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/ui.dart';
 
 IconData sponsorTypeIcon(String type) => switch (type) {
@@ -11,11 +13,11 @@ IconData sponsorTypeIcon(String type) => switch (type) {
       _ => Icons.storefront_outlined,
     };
 
-String sponsorTypeLabel(String type) => switch (type) {
-      'Mosque' => 'Mosque',
-      'Individual' => 'Individual donor',
-      'NGO' => 'NGO',
-      _ => 'Local business',
+String sponsorTypeLabel(AppLocalizations l, String type) => switch (type) {
+      'Mosque' => l.sponsorTypeMosque,
+      'Individual' => l.sponsorTypeIndividual,
+      'NGO' => l.sponsorTypeNgo,
+      _ => l.sponsorTypeBusiness,
     };
 
 Future<void> openSponsorContact(BuildContext context, String contact) async {
@@ -26,10 +28,10 @@ Future<void> openSponsorContact(BuildContext context, String contact) async {
       : Uri.parse(c.startsWith('http') ? c : 'https://$c');
   try {
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication) && context.mounted) {
-      showSnack(context, 'Could not open contact.', error: true);
+      showSnack(context, context.l10n.errContact, error: true);
     }
   } catch (_) {
-    if (context.mounted) showSnack(context, 'Could not open contact.', error: true);
+    if (context.mounted) showSnack(context, context.l10n.errContact, error: true);
   }
 }
 
@@ -40,9 +42,10 @@ class SponsorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(title: const Text('Sponsor')),
+      appBar: AppBar(title: Text(l.sponsorTitle)),
       body: ListView(padding: const EdgeInsets.all(20), children: [
         Center(
           child: CircleAvatar(
@@ -56,27 +59,24 @@ class SponsorScreen extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 4),
-        Text(sponsorTypeLabel(sponsor.type),
+        Text(sponsorTypeLabel(l, sponsor.type),
             textAlign: TextAlign.center, style: const TextStyle(color: AppColors.muted)),
         if (sponsor.verified) ...[
           const SizedBox(height: 8),
-          const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(Icons.verified, color: AppColors.working, size: 18),
-            SizedBox(width: 4),
-            Text('Verified sponsor', style: TextStyle(color: AppColors.working)),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const Icon(Icons.verified, color: AppColors.working, size: 18),
+            const SizedBox(width: 4),
+            Text(l.verifiedSponsor, style: const TextStyle(color: AppColors.working)),
           ]),
         ],
         const SizedBox(height: 24),
-        const Text(
-          'This sponsor helps keep public water coolers working. Thank you!',
-          textAlign: TextAlign.center,
-        ),
+        Text(l.sponsorThanks, textAlign: TextAlign.center),
         if (sponsor.contact != null && sponsor.contact!.isNotEmpty) ...[
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: () => openSponsorContact(context, sponsor.contact!),
             icon: const Icon(Icons.call_outlined),
-            label: Text(sponsor.contact!),
+            label: Text(sponsor.contact!, textDirection: TextDirection.ltr),
             style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
           ),
         ],

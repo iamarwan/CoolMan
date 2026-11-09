@@ -1,6 +1,6 @@
 # Sabil / CoolMan — Full Rework Design
 
-Status: **Phases 1–3 and 5 implemented** (4 in progress, 6 pending)
+Status: **Phases 1–5 implemented** (6 waits for brand + Stitch designs)
 Date: 2026-11-09
 Stack (kept): Flutter (Android first) · FastAPI · PostgreSQL + PostGIS
 
@@ -238,7 +238,7 @@ with hundreds of pins, and no file is over ~400 lines.
 - `flutter_localizations` + `.arb` files for English and Arabic; every visible string moved.
 - Direction-aware layouts (`EdgeInsetsDirectional`, `AlignmentDirectional`), mirrored icons where appropriate.
 - Language switcher in profile/settings, saved on device; defaults to the phone's language.
-- One bundled font family that covers Arabic and Latin (subset to keep size down).
+- One bundled font family that covers Arabic and Latin (subset to keep size down). *Done differently: the phone's built-in Arabic font is used for now; the brand font is bundled in Phase 6 so it is only added once.*
 - Backend error messages return codes the app translates.
 
 **Done when:** switching to Arabic flips the whole app to RTL with no English left.

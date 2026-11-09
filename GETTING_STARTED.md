@@ -70,6 +70,10 @@ It also works from any device on your Wi-Fi at `http://<your-pc-ip>:8000/admin`.
 The admin screens are no longer inside the phone app.
 
 Run backend tests: `.\run_backend.ps1 -Test`
+Run app tests: `cd mobile; flutter test`
+
+**Language:** the app follows the phone's language (English or Arabic). To switch
+manually: account icon on the map → Language (or Profile → Language).
 
 ---
 

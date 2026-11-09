@@ -1,16 +1,17 @@
 import 'package:latlong2/latlong.dart';
 
+import '../l10n/app_localizations.dart';
+
 const _distance = Distance();
 
-String timeAgo(DateTime t, {DateTime? now}) {
+String timeAgo(AppLocalizations l, DateTime t, {DateTime? now}) {
   final d = (now ?? DateTime.now()).difference(t);
-  if (d.inMinutes < 1) return 'just now';
-  if (d.inMinutes < 60) return '${d.inMinutes} min ago';
-  if (d.inHours < 24) return '${d.inHours} h ago';
-  if (d.inDays < 7) return '${d.inDays} ${d.inDays == 1 ? 'day' : 'days'} ago';
-  final weeks = d.inDays ~/ 7;
-  if (weeks < 5) return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
-  return '${d.inDays ~/ 30} mo ago';
+  if (d.inMinutes < 1) return l.timeJustNow;
+  if (d.inMinutes < 60) return l.timeMinutesAgo(d.inMinutes);
+  if (d.inHours < 24) return l.timeHoursAgo(d.inHours);
+  if (d.inDays < 7) return l.timeDaysAgo(d.inDays);
+  if (d.inDays < 35) return l.timeWeeksAgo(d.inDays ~/ 7);
+  return l.timeMonthsAgo(d.inDays ~/ 30);
 }
 
 /// How much to trust a status, based on when it was last confirmed.
@@ -25,11 +26,12 @@ Freshness freshnessOf(DateTime lastVerified, {DateTime? now}) {
 
 double metersBetween(LatLng a, LatLng b) => _distance.as(LengthUnit.Meter, a, b);
 
-String formatDistance(double meters) =>
-    meters < 1000 ? '${(meters / 10).round() * 10} m' : '${(meters / 1000).toStringAsFixed(1)} km';
+String formatDistance(AppLocalizations l, double meters) => meters < 1000
+    ? l.distanceMeters((meters / 10).round() * 10)
+    : l.distanceKm((meters / 1000).toStringAsFixed(1));
 
 /// Walking at ~80 m per minute.
-String walkingTime(double meters) {
+String walkingTime(AppLocalizations l, double meters) {
   final min = (meters / 80).ceil();
-  return min < 60 ? '$min min walk' : '${(min / 60).toStringAsFixed(1)} h walk';
+  return min < 60 ? l.walkMinutes(min) : l.walkHours((min / 60).toStringAsFixed(1));
 }

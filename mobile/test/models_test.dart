@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sabil/core/format.dart';
+import 'package:sabil/l10n/app_localizations.dart';
 import 'package:sabil/models/cooler.dart';
 
 void main() {
@@ -30,14 +32,28 @@ void main() {
         ['a', 1.0, 2.0, CoolerStatus.broken, true, true]);
   });
 
-  test('time and distance formatting', () {
+  test('time and distance formatting in English', () {
+    final l = lookupAppLocalizations(const Locale('en'));
     final now = DateTime(2026, 11, 9, 12);
-    expect(timeAgo(now.subtract(const Duration(seconds: 20)), now: now), 'just now');
-    expect(timeAgo(now.subtract(const Duration(minutes: 25)), now: now), '25 min ago');
-    expect(timeAgo(now.subtract(const Duration(days: 2)), now: now), '2 days ago');
+    expect(timeAgo(l, now.subtract(const Duration(seconds: 20)), now: now), 'just now');
+    expect(timeAgo(l, now.subtract(const Duration(minutes: 25)), now: now), '25 min ago');
+    expect(timeAgo(l, now.subtract(const Duration(days: 2)), now: now), '2 days ago');
     expect(freshnessOf(now.subtract(const Duration(days: 20)), now: now), Freshness.stale);
-    expect(formatDistance(123), '120 m');
-    expect(formatDistance(2500), '2.5 km');
-    expect(walkingTime(160), '2 min walk');
+    expect(formatDistance(l, 123), '120 m');
+    expect(formatDistance(l, 2500), '2.5 km');
+    expect(walkingTime(l, 160), '2 min walk');
+  });
+
+  test('Arabic uses correct plural forms', () {
+    final l = lookupAppLocalizations(const Locale('ar'));
+    final now = DateTime(2026, 11, 9, 12);
+    String ago(Duration d) => timeAgo(l, now.subtract(d), now: now);
+    expect(ago(const Duration(minutes: 1)), 'منذ دقيقة');
+    expect(ago(const Duration(minutes: 2)), 'منذ دقيقتين');
+    expect(ago(const Duration(minutes: 5)), 'منذ 5 دقائق');
+    expect(ago(const Duration(minutes: 25)), 'منذ 25 دقيقة');
+    expect(ago(const Duration(days: 3)), 'منذ 3 أيام');
+    expect(formatDistance(l, 2500), '2.5 كم');
+    expect(l.sponsorCoolerCount(2), 'مبردان');
   });
 }

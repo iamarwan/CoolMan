@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/locale.dart';
 import '../core/providers.dart';
 import '../core/session.dart';
 import '../features/map/map_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
+import '../l10n/app_localizations.dart';
 import '../shared/ui.dart';
 
-class SabilApp extends StatelessWidget {
+class SabilApp extends ConsumerWidget {
   const SabilApp({super.key, this.home});
 
   /// Optional override, used by tests.
   final Widget? home;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'Sabil',
+      onGenerateTitle: (context) => context.l10n.appTitle,
       debugShowCheckedModeBanner: false,
+      // English + Arabic. Arabic switches the whole app to right-to-left.
+      locale: ref.watch(localeProvider),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: ThemeData(
         colorSchemeSeed: AppColors.primary,
         useMaterial3: true,

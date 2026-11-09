@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/error_text.dart';
+import '../../core/locale.dart';
 import '../../core/session.dart';
 import '../../models/cooler.dart';
 import '../../shared/ui.dart';
@@ -67,7 +68,7 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
       setState(() => _results = results);
     } catch (e) {
       if (!mounted || seq != _seq) return;
-      setState(() => _error = errorText(e));
+      setState(() => _error = errorText(context.l10n, e));
     } finally {
       if (mounted && seq == _seq) setState(() => _searching = false);
     }
@@ -81,6 +82,7 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final loggedIn = ref.watch(sessionProvider.select((s) => s.isLoggedIn));
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Material(
@@ -99,8 +101,8 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
               onChanged: _onChanged,
               textInputAction: TextInputAction.search,
               onSubmitted: (t) => t.trim().isEmpty ? null : _search(t.trim()),
-              decoration: const InputDecoration(
-                hintText: 'Search coolers',
+              decoration: InputDecoration(
+                hintText: l.searchHint,
                 border: InputBorder.none,
               ),
             ),
@@ -111,10 +113,10 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
               child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
             )
           else if (_controller.text.isNotEmpty)
-            IconButton(onPressed: _clear, icon: const Icon(Icons.close), tooltip: 'Clear'),
+            IconButton(onPressed: _clear, icon: const Icon(Icons.close), tooltip: l.searchClear),
           IconButton(
             onPressed: widget.onProfile,
-            tooltip: loggedIn ? 'Profile' : 'Log in',
+            tooltip: loggedIn ? l.profile : l.authLogin,
             icon: Icon(
               loggedIn ? Icons.account_circle : Icons.account_circle_outlined,
               color: loggedIn ? AppColors.primary : AppColors.muted,
@@ -135,7 +137,7 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
               child: _error != null
                   ? ListTile(leading: const Icon(Icons.cloud_off), title: Text(_error!))
                   : _results!.isEmpty
-                      ? const ListTile(title: Text('No coolers found'))
+                      ? ListTile(title: Text(l.searchNoResults))
                       : ListView.builder(
                           shrinkWrap: true,
                           padding: EdgeInsets.zero,
@@ -145,7 +147,7 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
                             return ListTile(
                               leading: Icon(c.status.icon, color: c.status.color),
                               title: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                              subtitle: Text(c.status.label),
+                              subtitle: Text(c.status.label(l)),
                               onTap: () {
                                 _clear();
                                 widget.onSelected(c);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../models/cooler.dart';
+import '../../core/locale.dart';
 import '../../shared/ui.dart';
 
 typedef PickedPhoto = ({String path, PhotoCategory category});
@@ -11,6 +12,7 @@ final _picker = ImagePicker();
 /// One sheet: choose what the photo shows, then camera or gallery.
 /// Images are downscaled on the phone before upload (faster, less data).
 Future<PickedPhoto?> pickPhoto(BuildContext context) async {
+  final l = context.l10n;
   var category = PhotoCategory.cooler;
   final source = await showModalBottomSheet<ImageSource>(
     context: context,
@@ -23,19 +25,19 @@ Future<PickedPhoto?> pickPhoto(BuildContext context) async {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SheetHandle(),
-              const Text('What does the photo show?',
+              Text(l.photoWhat,
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
               const SizedBox(height: 12),
               SegmentedButton<PhotoCategory>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                       value: PhotoCategory.cooler,
-                      icon: Icon(Icons.water_drop_outlined),
-                      label: Text('The cooler')),
+                      icon: const Icon(Icons.water_drop_outlined),
+                      label: Text(l.photoCooler)),
                   ButtonSegment(
                       value: PhotoCategory.cups,
-                      icon: Icon(Icons.coffee_outlined),
-                      label: Text('The cups')),
+                      icon: const Icon(Icons.coffee_outlined),
+                      label: Text(l.photoCups)),
                 ],
                 selected: {category},
                 onSelectionChanged: (s) => setSheet(() => category = s.first),
@@ -46,7 +48,7 @@ Future<PickedPhoto?> pickPhoto(BuildContext context) async {
                   child: FilledButton.icon(
                     onPressed: () => Navigator.pop(ctx, ImageSource.camera),
                     icon: const Icon(Icons.photo_camera_outlined),
-                    label: const Text('Camera'),
+                    label: Text(l.camera),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -54,7 +56,7 @@ Future<PickedPhoto?> pickPhoto(BuildContext context) async {
                   child: OutlinedButton.icon(
                     onPressed: () => Navigator.pop(ctx, ImageSource.gallery),
                     icon: const Icon(Icons.photo_library_outlined),
-                    label: const Text('Gallery'),
+                    label: Text(l.gallery),
                   ),
                 ),
               ]),
@@ -75,7 +77,7 @@ Future<PickedPhoto?> pickPhoto(BuildContext context) async {
     );
     return file == null ? null : (path: file.path, category: category);
   } catch (_) {
-    if (context.mounted) showSnack(context, 'Could not open the camera or gallery.', error: true);
+    if (context.mounted) showSnack(context, l.errCameraGallery, error: true);
     return null;
   }
 }

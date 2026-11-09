@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/error_text.dart';
+import '../../core/locale.dart';
 import '../../core/session.dart';
 import '../../shared/ui.dart';
 
@@ -58,7 +59,7 @@ class _AuthSheetState extends ConsumerState<_AuthSheet> {
       }
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
-      if (mounted) setState(() => _error = errorText(e));
+      if (mounted) setState(() => _error = errorText(context.l10n, e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -66,6 +67,7 @@ class _AuthSheetState extends ConsumerState<_AuthSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return Padding(
       padding: EdgeInsets.fromLTRB(24, 12, 24, 24 + MediaQuery.viewInsetsOf(context).bottom),
       child: Form(
@@ -76,19 +78,19 @@ class _AuthSheetState extends ConsumerState<_AuthSheet> {
           children: [
             const SheetHandle(),
             Text(
-              'Log in to contribute',
+              l.authTitle,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Browsing is free. An account lets you add coolers, report status and earn trust points.',
+            Text(
+              l.authSubtitle,
               style: TextStyle(color: AppColors.muted),
             ),
             const SizedBox(height: 16),
             SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: false, label: Text('Log in')),
-                ButtonSegment(value: true, label: Text('Create account')),
+              segments: [
+                ButtonSegment(value: false, label: Text(l.authLogin)),
+                ButtonSegment(value: true, label: Text(l.authRegister)),
               ],
               selected: {_register},
               onSelectionChanged: (s) => setState(() {
@@ -101,16 +103,16 @@ class _AuthSheetState extends ConsumerState<_AuthSheet> {
               controller: _username,
               autofillHints: const [AutofillHints.username],
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                prefixIcon: Icon(Icons.person_outline),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l.authUsername,
+                prefixIcon: const Icon(Icons.person_outline),
+                border: const OutlineInputBorder(),
               ),
               validator: (v) {
                 final t = v?.trim() ?? '';
-                if (t.length < 3) return 'At least 3 characters';
+                if (t.length < 3) return l.authUsernameTooShort;
                 if (!RegExp(r'^[A-Za-z0-9_]+$').hasMatch(t)) {
-                  return 'Letters, numbers and _ only';
+                  return l.authUsernameChars;
                 }
                 return null;
               },
@@ -123,7 +125,7 @@ class _AuthSheetState extends ConsumerState<_AuthSheet> {
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _submit(),
               decoration: InputDecoration(
-                labelText: 'Password',
+                labelText: l.authPassword,
                 prefixIcon: const Icon(Icons.lock_outline),
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
@@ -131,7 +133,7 @@ class _AuthSheetState extends ConsumerState<_AuthSheet> {
                   onPressed: () => setState(() => _obscure = !_obscure),
                 ),
               ),
-              validator: (v) => (v ?? '').length < 8 ? 'At least 8 characters' : null,
+              validator: (v) => (v ?? '').length < 8 ? l.authPasswordTooShort : null,
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
@@ -144,7 +146,7 @@ class _AuthSheetState extends ConsumerState<_AuthSheet> {
               child: _busy
                   ? const SizedBox(
                       width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
-                  : Text(_register ? 'Create account' : 'Log in'),
+                  : Text(_register ? l.authRegister : l.authLogin),
             ),
           ],
         ),

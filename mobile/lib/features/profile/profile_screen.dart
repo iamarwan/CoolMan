@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/error_text.dart';
+import '../../core/locale.dart';
 import '../../core/session.dart';
 import '../../models/user.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/ui.dart';
+import '../../shared/language_picker.dart';
 import '../sponsors/sponsors_list_screen.dart';
 import 'my_submissions_screen.dart';
 import 'profile_repository.dart';
 
-({String label, IconData icon, Color color}) trustLevel(int score) {
-  if (score >= 1000) return (label: 'Community champion', icon: Icons.diamond_outlined, color: const Color(0xFF0891B2));
-  if (score >= trustedThreshold) return (label: 'Verified contributor', icon: Icons.verified, color: AppColors.working);
-  if (score >= 250) return (label: 'Trusted', icon: Icons.star_outline, color: AppColors.pending);
-  if (score >= 100) return (label: 'Contributor', icon: Icons.handshake_outlined, color: AppColors.sponsor);
-  return (label: 'Newcomer', icon: Icons.eco_outlined, color: AppColors.muted);
+({String label, IconData icon, Color color}) trustLevel(AppLocalizations l, int score) {
+  if (score >= 1000) return (label: l.levelChampion, icon: Icons.diamond_outlined, color: const Color(0xFF0891B2));
+  if (score >= trustedThreshold) return (label: l.levelVerified, icon: Icons.verified, color: AppColors.working);
+  if (score >= 250) return (label: l.levelTrusted, icon: Icons.star_outline, color: AppColors.pending);
+  if (score >= 100) return (label: l.levelContributor, icon: Icons.handshake_outlined, color: AppColors.sponsor);
+  return (label: l.levelNewcomer, icon: Icons.eco_outlined, color: AppColors.muted);
 }
 
 class ProfileScreen extends ConsumerWidget {
@@ -22,6 +25,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
     final session = ref.watch(sessionProvider);
     final profile = session.profile;
     final stats = ref.watch(myStatsProvider);
@@ -34,11 +38,11 @@ class ProfileScreen extends ConsumerWidget {
     }
 
     final score = stats.value?.trustScore ?? profile?.trustScore ?? 0;
-    final level = trustLevel(score);
+    final level = trustLevel(l, score);
 
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(l.profile)),
       body: RefreshIndicator(
         onRefresh: refresh,
         child: ListView(padding: const EdgeInsets.all(16), children: [
@@ -65,7 +69,7 @@ class ProfileScreen extends ConsumerWidget {
                           .textTheme
                           .headlineSmall
                           ?.copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)),
-                  const Text(' pts', style: TextStyle(color: AppColors.muted)),
+                  Text(' ${l.pointsShort}', style: const TextStyle(color: AppColors.muted)),
                 ]),
                 const SizedBox(height: 16),
                 if (score < trustedThreshold) ...[
@@ -76,31 +80,31 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '${trustedThreshold - score} points until your additions go live instantly',
+                    l.pointsUntilTrusted(trustedThreshold - score),
                     style: const TextStyle(color: AppColors.muted, fontSize: 13),
                   ),
                 ] else
-                  const Text('Your additions and reports go live instantly.',
-                      style: TextStyle(color: AppColors.working, fontWeight: FontWeight.w600)),
+                  Text(l.trustedNote,
+                      style: const TextStyle(color: AppColors.working, fontWeight: FontWeight.w600)),
               ]),
             ),
           ),
           const SizedBox(height: 12),
           stats.when(
             data: (s) => Row(children: [
-              _Stat(value: s.coolersApproved, label: 'Coolers added'),
-              _Stat(value: s.confirmations, label: 'Confirmations'),
-              _Stat(value: s.photos, label: 'Photos'),
+              _Stat(value: s.coolersApproved, label: l.statCoolers),
+              _Stat(value: s.confirmations, label: l.statConfirmations),
+              _Stat(value: s.photos, label: l.statPhotos),
             ]),
             loading: () => const SizedBox(height: 72),
-            error: (e, _) => Text(errorText(e), style: const TextStyle(color: AppColors.muted)),
+            error: (e, _) => Text(errorText(l, e), style: const TextStyle(color: AppColors.muted)),
           ),
           const SizedBox(height: 12),
           Card(
             child: Column(children: [
               ListTile(
                 leading: const Icon(Icons.inventory_2_outlined),
-                title: const Text('My submissions'),
+                title: Text(l.mySubmissions),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.of(context)
                     .push(MaterialPageRoute(builder: (_) => const MySubmissionsScreen())),
@@ -108,15 +112,27 @@ class ProfileScreen extends ConsumerWidget {
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.volunteer_activism_outlined),
-                title: const Text('Sponsors'),
+                title: Text(l.sponsors),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.of(context)
                     .push(MaterialPageRoute(builder: (_) => const SponsorsListScreen())),
               ),
               const Divider(height: 1),
               ListTile(
+                leading: const Icon(Icons.translate),
+                title: Text(l.language),
+                subtitle: Text(switch (ref.watch(localeProvider)?.languageCode) {
+                  'ar' => l.languageArabic,
+                  'en' => l.languageEnglish,
+                  _ => l.languageSystem,
+                }),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => showLanguagePicker(context, ref),
+              ),
+              const Divider(height: 1),
+              ListTile(
                 leading: const Icon(Icons.logout, color: AppColors.broken),
-                title: const Text('Log out', style: TextStyle(color: AppColors.broken)),
+                title: Text(l.logout, style: const TextStyle(color: AppColors.broken)),
                 onTap: () async {
                   await ref.read(sessionProvider.notifier).logout();
                   if (context.mounted) Navigator.of(context).pop();
@@ -125,7 +141,7 @@ class ProfileScreen extends ConsumerWidget {
             ]),
           ),
           const SizedBox(height: 20),
-          Text('Top contributors',
+          Text(l.topContributors,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
           board.when(
@@ -138,7 +154,7 @@ class ProfileScreen extends ConsumerWidget {
               padding: EdgeInsets.all(24),
               child: CircularProgressIndicator(),
             )),
-            error: (e, _) => Text(errorText(e), style: const TextStyle(color: AppColors.muted)),
+            error: (e, _) => Text(errorText(l, e), style: const TextStyle(color: AppColors.muted)),
           ),
         ]),
       ),
@@ -187,8 +203,9 @@ class _LeaderRow extends StatelessWidget {
               color: medals.containsKey(entry.rank) ? Colors.white : AppColors.ink,
             )),
       ),
-      title: Text(isMe ? '${entry.username} (you)' : entry.username),
-      trailing: Text('${entry.trustScore} pts', style: const TextStyle(fontWeight: FontWeight.w700)),
+      title: Text(isMe ? context.l10n.you(entry.username) : entry.username),
+      trailing: Text(context.l10n.pointsValue(entry.trustScore),
+          style: const TextStyle(fontWeight: FontWeight.w700)),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../core/error_text.dart';
+import '../../core/locale.dart';
 import '../../core/session.dart';
 import '../../models/cooler.dart';
 import '../../shared/ui.dart';
@@ -62,7 +63,7 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
     setState(() {
       _busy = true;
       _error = null;
-      _progress = 'Saving…';
+      _progress = context.l10n.saving;
     });
     final repo = ref.read(coolerRepositoryProvider);
     try {
@@ -76,7 +77,7 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
 
       var failed = 0;
       for (var i = 0; i < _photos.length; i++) {
-        if (mounted) setState(() => _progress = 'Uploading photo ${i + 1} of ${_photos.length}…');
+        if (mounted) setState(() => _progress = context.l10n.uploadingPhoto(i + 1, _photos.length));
         try {
           await repo.uploadPhoto(cooler.id, _photos[i].path, _photos[i].category);
         } catch (_) {
@@ -88,14 +89,13 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
       ref.read(sessionProvider.notifier).refreshProfile();
       if (!mounted) return;
       if (failed > 0) {
-        showSnack(context, '$failed photo(s) could not be uploaded. You can add them later.',
-            error: true);
+        showSnack(context, context.l10n.photosFailed(failed), error: true);
       }
       Navigator.of(context).pop(cooler);
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = errorText(e);
+          _error = errorText(context.l10n, e);
           _busy = false;
           _progress = null;
         });
@@ -105,6 +105,7 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Form(
@@ -114,7 +115,7 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
           children: [
             const SheetHandle(),
-            Text('Add a water cooler',
+            Text(l.addTitle,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
             const SizedBox(height: 16),
             TextFormField(
@@ -122,39 +123,39 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
               autofocus: true,
               maxLength: 255,
               textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(
-                labelText: 'Name or landmark',
-                hintText: 'e.g. Next to El-Tawheed Mosque',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l.addNameLabel,
+                hintText: l.addNameHint,
+                border: const OutlineInputBorder(),
                 counterText: '',
               ),
               validator: (v) {
                 final t = v?.trim() ?? '';
-                if (t.isEmpty) return 'Please describe where it is';
-                if (RegExp(r'[<>]').hasMatch(t)) return 'Please remove < and >';
+                if (t.isEmpty) return l.addNameRequired;
+                if (RegExp(r'[<>]').hasMatch(t)) return l.addNameInvalid;
                 return null;
               },
             ),
             const SizedBox(height: 16),
-            const _Label('Is it working right now?'),
+            _Label(l.addWorkingNow),
             SegmentedButton<CoolerStatus>(
               segments: [
                 for (final s in CoolerStatus.values)
-                  ButtonSegment(value: s, icon: Icon(s.icon, color: s.color), label: Text(s.label)),
+                  ButtonSegment(value: s, icon: Icon(s.icon, color: s.color), label: Text(s.label(l))),
               ],
               selected: {_status},
               onSelectionChanged: (v) => setState(() => _status = v.first),
             ),
             const SizedBox(height: 16),
-            const _Label('Are there cups?'),
+            _Label(l.addCupsQuestion),
             Wrap(spacing: 8, children: [
               ChoiceChip(
-                label: const Text('Yes'),
+                label: Text(l.yes),
                 selected: _hasCups == true,
                 onSelected: (_) => setState(() => _hasCups = true),
               ),
               ChoiceChip(
-                label: const Text('No'),
+                label: Text(l.no),
                 selected: _hasCups == false,
                 onSelected: (_) => setState(() {
                   _hasCups = false;
@@ -162,7 +163,7 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
                 }),
               ),
               ChoiceChip(
-                label: const Text('Not sure'),
+                label: Text(l.notSure),
                 selected: _hasCups == null,
                 onSelected: (_) => setState(() {
                   _hasCups = null;
@@ -174,19 +175,19 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
               const SizedBox(height: 8),
               Wrap(spacing: 8, children: [
                 ChoiceChip(
-                  label: const Text('Shared cup'),
+                  label: Text(l.cupsShared),
                   selected: _cupsType == CupsType.communal,
                   onSelected: (_) => setState(() => _cupsType = CupsType.communal),
                 ),
                 ChoiceChip(
-                  label: const Text('Disposable cups'),
+                  label: Text(l.cupsDisposable),
                   selected: _cupsType == CupsType.disposable,
                   onSelected: (_) => setState(() => _cupsType = CupsType.disposable),
                 ),
               ]),
             ],
             const SizedBox(height: 16),
-            const _Label('Photos (recommended, up to 3)'),
+            _Label(l.addPhotos),
             SizedBox(
               height: 84,
               child: ListView(scrollDirection: Axis.horizontal, children: [
@@ -236,7 +237,7 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
             FilledButton(
               onPressed: _busy ? null : _submit,
               style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-              child: Text(_busy ? (_progress ?? 'Saving…') : 'Submit'),
+              child: Text(_busy ? (_progress ?? l.saving) : l.submit),
             ),
           ],
         ),

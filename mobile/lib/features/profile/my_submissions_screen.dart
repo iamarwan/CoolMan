@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/error_text.dart';
 import '../../core/format.dart';
+import '../../core/locale.dart';
 import '../../models/cooler.dart';
 import '../../shared/ui.dart';
 import 'profile_repository.dart';
@@ -12,21 +13,19 @@ class MySubmissionsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
     final items = ref.watch(mySubmissionsProvider);
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(title: const Text('My submissions')),
+      appBar: AppBar(title: Text(l.mySubmissions)),
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(mySubmissionsProvider.future),
         child: items.when(
           data: (list) => list.isEmpty
-              ? ListView(children: const [
+              ? ListView(children: [
                   Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Text(
-                      'Nothing yet. Add a cooler from the map to help others find water.',
-                      textAlign: TextAlign.center,
-                    ),
+                    padding: const EdgeInsets.all(32),
+                    child: Text(l.submissionsEmpty, textAlign: TextAlign.center),
                   ),
                 ])
               : ListView.builder(
@@ -36,7 +35,7 @@ class MySubmissionsScreen extends ConsumerWidget {
                 ),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => ListView(children: [
-            Padding(padding: const EdgeInsets.all(32), child: Text(errorText(e), textAlign: TextAlign.center)),
+            Padding(padding: const EdgeInsets.all(32), child: Text(errorText(l, e), textAlign: TextAlign.center)),
           ]),
         ),
       ),
@@ -51,18 +50,19 @@ class _SubmissionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final (label, color, icon) = cooler.isRejected
-        ? ('Rejected', AppColors.broken, Icons.cancel_outlined)
+        ? (l.subRejected, AppColors.broken, Icons.cancel_outlined)
         : !cooler.isApproved
-            ? ('Under review', AppColors.empty, Icons.hourglass_top)
+            ? (l.subUnderReview, AppColors.empty, Icons.hourglass_top)
             : cooler.pendingStatus != null
-                ? ('Status change pending', AppColors.pending, Icons.swap_horiz)
-                : ('Live on the map', AppColors.working, Icons.check_circle_outline);
+                ? (l.subStatusPending, AppColors.pending, Icons.swap_horiz)
+                : (l.subLive, AppColors.working, Icons.check_circle_outline);
     return Card(
       child: ListTile(
         leading: Icon(icon, color: color),
         title: Text(cooler.name),
-        subtitle: Text('$label · added ${timeAgo(cooler.createdAt)}'),
+        subtitle: Text(l.subAdded(label, timeAgo(l, cooler.createdAt))),
         trailing: StatusChip(status: cooler.status),
       ),
     );

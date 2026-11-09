@@ -47,7 +47,8 @@ features/cooler/     detail sheet, add-cooler form, photo picking, repository
 features/auth/       login/register sheet (shown only when contributing)
 features/profile/    profile, stats, leaderboard, my submissions
 features/sponsors/   sponsor list and detail
-features/onboarding/ first-run pages
+features/onboarding/ first-run pages (with a language button)
+l10n/                English + Arabic translations (app_en.arb, app_ar.arb) and generated code
 shared/ui.dart       colours, status styles, snackbars
 ```
 
@@ -57,6 +58,22 @@ State is managed with Riverpod. How the map stays fast:
 3. Late responses from older requests are ignored; pins are clustered at low zoom.
 4. Actions (confirm, report) update the screen first and roll back if the server refuses.
 5. Map tiles are cached on the device by flutter_map.
+
+### Languages (English / Arabic)
+
+- All app text lives in `mobile/lib/l10n/app_en.arb` (English, the template) and
+  `app_ar.arb` (Arabic). Use them in code with `context.l10n.someKey`.
+- To add or change text: edit both `.arb` files, then run `flutter gen-l10n`
+  (also runs automatically on `flutter run` / `flutter build`). A test fails if a
+  key exists in only one language.
+- Choosing Arabic switches the whole app to right-to-left. Layouts use
+  direction-aware padding/alignment (`EdgeInsetsDirectional`, `AlignmentDirectional`).
+- The app follows the phone's language by default; users can change it from
+  the onboarding screen, the guest menu (account icon) or Profile → Language.
+- Server errors carry a `code` that the app translates; cooler and sponsor
+  names are shown exactly as entered.
+- Arabic is drawn with the phone's built-in Arabic font for now; the brand font
+  (covering Arabic and Latin) is chosen and bundled in Phase 6.
 
 ### Key endpoints
 
