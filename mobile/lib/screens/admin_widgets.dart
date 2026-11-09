@@ -143,7 +143,7 @@ class _PhotoGallerySheet extends StatefulWidget {
 }
 
 class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
-  static const _base = 'http://10.0.2.2:8000';
+  static const _base = AppConfig.apiBaseUrl;
   List<CoolerPhoto> _photos = [];
   bool _loading = true;
   String? _error;

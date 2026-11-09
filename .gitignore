@@ -1,8 +1,25 @@
-node_modules/
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
+
+# Runtime data
+uploads/
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+!deploy/.env.production.example
+
+# Code dumps produced by packer.py
+coolman_dump_*.txt
+
+# Misc
+*.log
+.DS_Store
 build/
 dist/
 coverage/
-.DS_Store
-*.log
-.env*
-!.env.example

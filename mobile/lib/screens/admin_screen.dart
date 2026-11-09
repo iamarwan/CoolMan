@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../core/config.dart';
 import '../models/water_cooler.dart';
 import '../services/api_service.dart';
 part 'admin_widgets.dart';

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_parser/http_parser.dart';
 
+import '../core/config.dart';
 import '../models/water_cooler.dart';
 
 MediaType _getMediaType(String path) {
@@ -62,8 +63,7 @@ class LeaderboardEntry {
 // ─────────────────────────────────────────────
 
 class ApiService {
-  // Android emulator -> host machine custom port. Change this to dynamic configurations as outlined.
-  static const _base = 'http://10.0.2.2:8000';
+  static const _base = AppConfig.apiBaseUrl;
 
   static const _timeout = Duration(seconds: 15);
 
@@ -93,15 +93,37 @@ class ApiService {
     await _storage.delete(key: 'user_token');
   }
 
+  /// Restores a saved login without ever blocking start-up.
+  /// The token is only discarded if the server explicitly rejects it (401/403);
+  /// being offline keeps the user logged in.
   static Future<void> restoreSession() async {
-    final stored = await _storage.read(key: 'user_token');
-    if (stored == null) return;
+    String? stored;
+    try {
+      stored = await _storage
+          .read(key: 'user_token')
+          .timeout(const Duration(seconds: 3));
+    } catch (_) {
+      // Corrupted secure storage (e.g. after a reinstall): start logged out.
+      try {
+        await _storage.deleteAll();
+      } catch (_) {}
+      return;
+    }
+    if (stored == null || stored.isEmpty) return;
     _userToken = stored;
     try {
-      _cachedProfile = await ApiService().getUserProfile();
+      final response = await http
+          .get(Uri.parse('$_base/auth/me'),
+              headers: {'Authorization': 'Bearer $stored'})
+          .timeout(_timeout);
+      if (response.statusCode == 200) {
+        _cachedProfile = UserProfile.fromJson(
+            jsonDecode(response.body) as Map<String, dynamic>);
+      } else if (response.statusCode == 401 || response.statusCode == 403) {
+        await clearUserToken();
+      }
     } catch (_) {
-      _userToken = null;
-      await _storage.delete(key: 'user_token');
+      // Offline or server down: keep the token, try again later.
     }
   }
 

@@ -82,6 +82,37 @@ flutter run
 
 ---
 
+## 📲 Part 3: Test on a REAL phone (same Wi-Fi as your PC)
+
+`10.0.2.2` only works inside the Android emulator. A real phone must reach your
+PC through its Wi-Fi IP address.
+
+1. **Start the backend listening on all interfaces** (already the case with the
+   command above: `--host 0.0.0.0`).
+2. **Allow port 8000 through Windows Firewall** (run PowerShell as Administrator, once):
+   ```powershell
+   New-NetFirewallRule -DisplayName "Sabil API 8000" -Direction Inbound -Protocol TCP -LocalPort 8000 -Action Allow -Profile Private
+   ```
+   Your Wi-Fi network must be set to **Private** in Windows network settings.
+3. **Check from the phone's browser:** open `http://<your-pc-ip>:8000/docs`.
+   Find your PC's IP with `ipconfig` (the "IPv4 Address" of your Wi-Fi adapter).
+4. **Build the APK** (auto-detects your PC's IP):
+   ```powershell
+   cd mobile
+   .\build_apk.ps1
+   ```
+5. **Install** `mobile\build\app\outputs\flutter-apk\app-arm64-v8a-release.apk`
+   on the phone (USB: `adb install -r <that file>`, or copy it over and open it).
+
+If your PC's IP changes (new router, DHCP), rebuild with `.\build_apk.ps1` again.
+
+**Expected size:** ~15–20 MB for the arm64 APK (the old single "fat" APK was ~70 MB).
+
+**If something still goes wrong on the phone,** connect it by USB and run
+`adb logcat -s flutter` while opening the app, then send the output.
+
+---
+
 ## 🛠️ Troubleshooting Cheat Sheet
 
 | Symptom | Root Cause | Immediate Action |

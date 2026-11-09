@@ -6,6 +6,7 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
+import '../core/config.dart';
 import '../models/water_cooler.dart';
 import '../services/api_service.dart';
 import '../services/location_service.dart';
@@ -928,9 +929,8 @@ class _MapScreenState extends State<MapScreen> {
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.sabil.app',
+                urlTemplate: AppConfig.tileUrlTemplate,
+                userAgentPackageName: AppConfig.userAgentPackageName,
               ),
               if (_userLocation != null)
                 MarkerLayer(markers: [_buildUserMarker(_userLocation!)]),
