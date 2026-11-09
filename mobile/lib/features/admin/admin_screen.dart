@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../core/config.dart';
-import '../models/water_cooler.dart';
-import '../services/api_service.dart';
+import '../../core/config.dart';
+import 'admin_models.dart';
+import 'admin_api.dart';
 part 'admin_widgets.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen>
     with SingleTickerProviderStateMixin {
-  final ApiService _api = ApiService();
+  final AdminApi _api = AdminApi();
   final ImagePicker _imagePicker = ImagePicker();
 
   late final TabController _tabController;
@@ -428,7 +428,7 @@ class _AdminScreenState extends State<AdminScreen>
 
   bool _handleAdminAuthError(Object e) {
     if (e.toString().contains('401')) {
-      ApiService.clearAdminToken();
+      AdminApi.clearAdminToken();
       _authorized = false;
       _snack('Admin session expired. Please log in again.', isError: true);
       WidgetsBinding.instance.addPostFrameCallback((_) => _authorizeAndLoad());

@@ -3,7 +3,7 @@ part of 'admin_screen.dart';
 class _SponsorsTab extends StatelessWidget {
   final bool loading;
   final List<Sponsor> sponsors;
-  final ApiService api;
+  final AdminApi api;
   final VoidCallback onRefresh;
   final void Function(String message, {bool isError}) snack;
 
@@ -134,7 +134,7 @@ class _SponsorsTab extends StatelessWidget {
 
 class _PhotoGallerySheet extends StatefulWidget {
   final WaterCooler cooler;
-  final ApiService api;
+  final AdminApi api;
 
   const _PhotoGallerySheet({required this.cooler, required this.api});
 
@@ -224,7 +224,7 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
             child: Image.network(
               url,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const Icon(
+              errorBuilder: (_, _, _) => const Icon(
                 Icons.broken_image_outlined,
                 color: Colors.white54,
                 size: 64,
@@ -356,7 +356,7 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
                                       child: Image.network(
                                         url,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) => Container(
+                                        errorBuilder: (_, _, _) => Container(
                                           decoration: BoxDecoration(
                                               color: Colors.grey.shade100,
                                               borderRadius:
@@ -448,7 +448,7 @@ class _PhotoGallerySheetState extends State<_PhotoGallerySheet> {
 
 class _SponsorAssignSheet extends StatefulWidget {
   final WaterCooler cooler;
-  final ApiService api;
+  final AdminApi api;
   final List<Sponsor> sponsors;
   final VoidCallback onAssigned;
   final VoidCallback onRemoved;

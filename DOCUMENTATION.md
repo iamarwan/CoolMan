@@ -26,6 +26,30 @@ The system relies on a two-tier full-stack architecture:
 1.  **Mobile Client (Flutter/Dart)**: Map-first app. Loads only the coolers inside the visible map area (`GET /coolers/map`), clusters them, and fetches full details when a pin is tapped.
 2.  **Server Engine (FastAPI/SQLAlchemy)**: Async API in the `app/` package (routers per area, services for trust rules and image processing). Schema managed with Alembic migrations (`migrations/`).
 
+### Mobile app structure (`mobile/lib/`)
+
+```
+main.dart            start-up (never waits on the network), error boundary
+app/app.dart         MaterialApp, theme, first screen (onboarding or map)
+core/                config (--dart-define), ApiClient, session (login), cache, location, formatting
+models/              Cooler, CoolerPin, Sponsor, UserProfile ...
+features/map/        map screen, viewport pin loading (MapPinsController), clustering, search
+features/cooler/     detail sheet, add-cooler form, photo picking, repository
+features/auth/       login/register sheet (shown only when contributing)
+features/profile/    profile, stats, leaderboard, my submissions
+features/sponsors/   sponsor list and detail
+features/onboarding/ first-run pages
+features/admin/      LEGACY in-app admin (replaced by the web admin in Phase 5)
+shared/ui.dart       colours, status styles, snackbars
+```
+
+State is managed with Riverpod. How the map stays fast:
+1. On launch it shows the pins and camera position saved from the last session.
+2. When the map stops moving (350 ms), it requests only the visible area plus a margin from `GET /coolers/map`, skipping the request if that area was loaded in the last 2 minutes.
+3. Late responses from older requests are ignored; pins are clustered at low zoom.
+4. Actions (confirm, report) update the screen first and roll back if the server refuses.
+5. Map tiles are cached on the device by flutter_map.
+
 ### Key endpoints
 
 | Endpoint | Purpose |

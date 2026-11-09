@@ -79,23 +79,6 @@ async def map_pins(
     return PinsResponse(pins=pins, truncated=len(rows) > limit)
 
 
-@router.get("/nearby", response_model=list[CoolerRead], deprecated=True)
-async def nearby(
-    lat: float = Query(..., ge=-90, le=90),
-    lng: float = Query(..., ge=-180, le=180),
-    radius_km: float = Query(5.0, gt=0, le=20),
-    db: AsyncSession = Depends(get_db),
-):
-    """TEMPORARY: kept so the pre-rework app keeps working. Use /coolers/map."""
-    result = await db.execute(
-        select(WaterCooler)
-        .where(WaterCooler.is_approved, within_meters(lat, lng, radius_km * 1000))
-        .order_by(distance_to(lat, lng))
-        .limit(300)
-    )
-    return [to_public(c) for c in result.scalars().all()]
-
-
 @router.get("/search", response_model=list[CoolerRead])
 async def search(
     q: str = Query(..., min_length=1, max_length=100),

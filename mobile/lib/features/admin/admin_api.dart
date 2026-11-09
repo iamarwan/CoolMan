@@ -1,14 +1,14 @@
-// lib/services/api_service.dart
+// Admin-only API used by the in-app admin screens.
+// LEGACY: replaced by the web admin panel in Phase 5, then deleted.
 
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_parser/http_parser.dart';
 
-import '../core/config.dart';
-import '../models/water_cooler.dart';
+import '../../core/config.dart';
+import 'admin_models.dart';
 
 MediaType _getMediaType(String path) {
   final ext = path.split('.').last.toLowerCase();
@@ -21,114 +21,25 @@ MediaType _getMediaType(String path) {
 // DATA CLASSES
 // ─────────────────────────────────────────────
 
-class UserProfile {
-  final String id;
-  final String username;
-  final int trustScore;
-
-  const UserProfile({
-    required this.id,
-    required this.username,
-    required this.trustScore,
-  });
-
-  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-        id: json['id'],
-        username: json['username'],
-        trustScore: json['trust_score'] as int,
-      );
-}
-
-class LeaderboardEntry {
-  final int rank;
-  final String username;
-  final int trustScore;
-
-  const LeaderboardEntry({
-    required this.rank,
-    required this.username,
-    required this.trustScore,
-  });
-
-  factory LeaderboardEntry.fromJson(Map<String, dynamic> json) =>
-      LeaderboardEntry(
-        rank: json['rank'] as int,
-        username: json['username'],
-        trustScore: json['trust_score'] as int,
-      );
-}
-
 // ─────────────────────────────────────────────
 // API SERVICE
 // ─────────────────────────────────────────────
 
-class ApiService {
+class AdminApi {
   static const _base = AppConfig.apiBaseUrl;
 
   static const _timeout = Duration(seconds: 15);
 
   static String? _adminToken;
-  static String? _userToken;
-  static UserProfile? _cachedProfile;
-
-  static const _storage = FlutterSecureStorage();
 
   // ─── Token management ───
 
   static void setAdminToken(String? token) => _adminToken = token;
   static void clearAdminToken() => _adminToken = null;
 
-  static Future<void> setUserToken(String? token) async {
-    _userToken = token;
-    if (token != null) {
-      await _storage.write(key: 'user_token', value: token);
-    } else {
-      await _storage.delete(key: 'user_token');
-    }
-  }
-
-  static Future<void> clearUserToken() async {
-    _userToken = null;
-    _cachedProfile = null;
-    await _storage.delete(key: 'user_token');
-  }
-
   /// Restores a saved login without ever blocking start-up.
   /// The token is only discarded if the server explicitly rejects it (401/403);
   /// being offline keeps the user logged in.
-  static Future<void> restoreSession() async {
-    String? stored;
-    try {
-      stored = await _storage
-          .read(key: 'user_token')
-          .timeout(const Duration(seconds: 3));
-    } catch (_) {
-      // Corrupted secure storage (e.g. after a reinstall): start logged out.
-      try {
-        await _storage.deleteAll();
-      } catch (_) {}
-      return;
-    }
-    if (stored == null || stored.isEmpty) return;
-    _userToken = stored;
-    try {
-      final response = await http
-          .get(Uri.parse('$_base/auth/me'),
-              headers: {'Authorization': 'Bearer $stored'})
-          .timeout(_timeout);
-      if (response.statusCode == 200) {
-        _cachedProfile = UserProfile.fromJson(
-            jsonDecode(response.body) as Map<String, dynamic>);
-      } else if (response.statusCode == 401 || response.statusCode == 403) {
-        await clearUserToken();
-      }
-    } catch (_) {
-      // Offline or server down: keep the token, try again later.
-    }
-  }
-
-  static bool get isLoggedIn => _userToken != null && _userToken!.isNotEmpty;
-  static UserProfile? get cachedProfile => _cachedProfile;
 
   // ─── Header builders ───
 
@@ -140,106 +51,9 @@ class ApiService {
     return merged;
   }
 
-  Map<String, String> _userHeaders([Map<String, String>? extra]) {
-    final merged = <String, String>{...?extra};
-    if (_userToken != null && _userToken!.isNotEmpty) {
-      merged['Authorization'] = 'Bearer $_userToken';
-    }
-    return merged;
-  }
-
-  // ─── Error extraction helper ───
-
-  String _extractError(http.Response response, String fallback) {
-    try {
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
-      return (body['detail'] ?? fallback).toString();
-    } catch (_) {
-      return fallback;
-    }
-  }
-
   // ─────────────────────────────────────────────
   // AUTH
   // ─────────────────────────────────────────────
-
-  Future<UserProfile> register({
-    required String username,
-    required String password,
-  }) async {
-    final response = await http
-        .post(
-          Uri.parse('$_base/auth/register'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'username': username, 'password': password}),
-        )
-        .timeout(_timeout);
-
-    if (response.statusCode == 201) {
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
-      final token = body['access_token'] as String?;
-      if (token == null || token.isEmpty) {
-        throw Exception('Register response did not include access token.');
-      }
-      await setUserToken(token);
-      final profile = UserProfile.fromJson(body);
-      _cachedProfile = profile;
-      return profile;
-    }
-    if (response.statusCode == 409) throw Exception('Username already taken.');
-    throw Exception(_extractError(response, 'Registration failed (${response.statusCode}).'));
-  }
-
-  Future<UserProfile> userLogin({
-    required String username,
-    required String password,
-  }) async {
-    final response = await http
-        .post(
-          Uri.parse('$_base/auth/login'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'username': username, 'password': password}),
-        )
-        .timeout(_timeout);
-
-    if (response.statusCode == 200) {
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
-      final token = body['access_token'] as String?;
-      if (token == null || token.isEmpty) {
-        throw Exception('Login response did not include access token.');
-      }
-      await setUserToken(token);
-      final profile = UserProfile.fromJson(body);
-      _cachedProfile = profile;
-      return profile;
-    }
-    throw Exception('Invalid username or password.');
-  }
-
-  Future<UserProfile> getUserProfile() async {
-    final response = await http
-        .get(Uri.parse('$_base/auth/me'), headers: _userHeaders())
-        .timeout(_timeout);
-
-    if (response.statusCode == 200) {
-      final profile = UserProfile.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>);
-      _cachedProfile = profile;
-      return profile;
-    }
-    throw Exception('Failed to fetch profile (${response.statusCode}).');
-  }
-
-  Future<List<LeaderboardEntry>> getLeaderboard() async {
-    final response = await http
-        .get(Uri.parse('$_base/users/leaderboard'))
-        .timeout(_timeout);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((e) => LeaderboardEntry.fromJson(e)).toList();
-    }
-    throw Exception('Failed to fetch leaderboard (${response.statusCode}).');
-  }
 
   Future<String> adminLogin({
     required String username,
@@ -268,144 +82,9 @@ class ApiService {
   // COOLERS — READ
   // ─────────────────────────────────────────────
 
-  Future<List<WaterCooler>> fetchNearbyCoolers({
-    required double lat,
-    required double lng,
-    double radiusKm = 5.0,
-  }) async {
-    final uri =
-        Uri.parse('$_base/coolers/nearby?lat=$lat&lng=$lng&radius_km=$radiusKm');
-    final response = await http.get(uri).timeout(_timeout);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((e) => WaterCooler.fromJson(e)).toList();
-    }
-    throw Exception('Failed to fetch nearby coolers (${response.statusCode}).');
-  }
-
-  Future<List<WaterCooler>> searchCoolers(String query) async {
-    final uri = Uri.parse(
-        '$_base/coolers/search?q=${Uri.encodeComponent(query.trim())}');
-    final response = await http.get(uri).timeout(_timeout);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((e) => WaterCooler.fromJson(e)).toList();
-    }
-    throw Exception('Search failed (${response.statusCode}).');
-  }
-
-  Future<List<WaterCooler>> fetchMySubmissions() async {
-    final response = await http
-        .get(Uri.parse('$_base/coolers/my'), headers: _userHeaders())
-        .timeout(_timeout);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((e) => WaterCooler.fromJson(e)).toList();
-    }
-    throw Exception('Failed to fetch submissions (${response.statusCode}).');
-  }
-
-  Future<List<CoolerPhoto>> fetchCoolerPhotos(String coolerId) async {
-    final response = await http
-        .get(Uri.parse('$_base/coolers/$coolerId/photos'))
-        .timeout(_timeout);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((e) => CoolerPhoto.fromJson(e)).toList();
-    }
-    throw Exception('Failed to fetch photos (${response.statusCode}).');
-  }
-
   // ─────────────────────────────────────────────
   // COOLERS — WRITE
   // ─────────────────────────────────────────────
-
-  Future<String> createCoolerAndReturnId({
-    required String name,
-    required double latitude,
-    required double longitude,
-    String status = 'Working',
-    bool? hasCups,
-    String? cupsType,
-  }) async {
-    final body = <String, dynamic>{
-      'name': name,
-      'latitude': latitude,
-      'longitude': longitude,
-      'status': status,
-    };
-    if (hasCups != null) body['has_cups'] = hasCups;
-    if (cupsType != null) body['cups_type'] = cupsType;
-
-    final response = await http
-        .post(
-          Uri.parse('$_base/coolers'),
-          headers: _userHeaders({'Content-Type': 'application/json'}),
-          body: jsonEncode(body),
-        )
-        .timeout(_timeout);
-
-    if (response.statusCode == 201) {
-      final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
-      return responseBody['id'] as String;
-    }
-    throw Exception(_extractError(response, 'Failed to create cooler (${response.statusCode}).'));
-  }
-
-  Future<bool> updateCoolerStatus({
-    required String coolerId,
-    required String newStatus,
-  }) async {
-    final response = await http
-        .patch(
-          Uri.parse('$_base/coolers/$coolerId/status'),
-          headers: _userHeaders({'Content-Type': 'application/json'}),
-          body: jsonEncode({'status': newStatus}),
-        )
-        .timeout(_timeout);
-    if (response.statusCode == 200) return true;
-    throw Exception(
-        _extractError(response, 'Failed to update status (${response.statusCode}).'));
-  }
-
-  Future<Map<String, dynamic>> confirmCoolerWorking(String coolerId) async {
-    final response = await http
-        .post(
-          Uri.parse('$_base/coolers/$coolerId/confirm'),
-          headers: _userHeaders(),
-        )
-        .timeout(_timeout);
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
-    }
-    if (response.statusCode == 429) {
-      throw Exception(_extractError(response, 'Too many confirmations.'));
-    }
-    throw Exception('Failed to confirm cooler (${response.statusCode}).');
-  }
-
-  Future<CoolerPhoto> uploadPhoto({
-    required String coolerId,
-    required File imageFile,
-    String photoCategory = 'Cooler',
-  }) async {
-    final uri = Uri.parse('$_base/coolers/$coolerId/photos');
-    final request = http.MultipartRequest('POST', uri);
-    _userHeaders().forEach((k, v) => request.headers[k] = v);
-    request.files.add(await http.MultipartFile.fromPath(
-      'file',
-      imageFile.path,
-      contentType: _getMediaType(imageFile.path),
-    ));
-    request.fields['photo_category'] = photoCategory;
-
-    final streamed = await request.send().timeout(_timeout);
-    final response = await http.Response.fromStream(streamed);
-    if (response.statusCode == 201) {
-      return CoolerPhoto.fromJson(jsonDecode(response.body));
-    }
-    throw Exception(_extractError(response, 'Failed to upload photo (${response.statusCode}).'));
-  }
 
   // ─────────────────────────────────────────────
   // ADMIN — PHOTOS
@@ -553,16 +232,6 @@ class ApiService {
       return data.map((e) => Sponsor.fromJson(e)).toList();
     }
     throw Exception('Failed to fetch sponsors (${response.statusCode}).');
-  }
-
-  Future<Sponsor> fetchSponsor(String sponsorId) async {
-    final response = await http
-        .get(Uri.parse('$_base/sponsors/$sponsorId'))
-        .timeout(_timeout);
-    if (response.statusCode == 200) {
-      return Sponsor.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-    }
-    throw Exception('Failed to fetch sponsor (${response.statusCode}).');
   }
 
   Future<Sponsor> createSponsor({
