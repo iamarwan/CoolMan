@@ -2,9 +2,11 @@
 
 ## How to use this
 
-1. First run the brand prompt (`docs/prompts/brand-identity-prompt.md`) in Claude.
-2. Replace the `[PASTE BRAND SUMMARY HERE]` block below with Claude's
-   **"Brand Summary for Designers"** section, and replace `[APP NAME]` everywhere.
+1. Replace `[APP NAME]` everywhere (use "Sabil" if the name is not final).
+2. The `BRAND` block below already works without a final identity: colours are
+   placeholders. If you later like a palette, swap the hex values there, or just
+   tell Claude Code the new colours after the build — every colour lives in one
+   place in the app, so changing them later is a small edit.
 3. In Stitch, choose **Mobile** as the target.
 4. Paste **Prompt A (master)** first. Stitch does best with focused prompts, so
    if it skips screens or the quality drops, generate the remaining screens one at a
@@ -22,8 +24,18 @@ for finding public drinking-water coolers in Egyptian cities. Style it like a
 modern mobility app (Rabbit, Lime, Careem): the map is the home screen, and
 details open in bottom sheets. It should feel fast, clean, warm and trustworthy.
 
-BRAND
-[PASTE BRAND SUMMARY HERE]
+BRAND (placeholder — colours will be changed later, so keep them as tokens)
+- Name: [APP NAME]. Use a simple text wordmark with a water-drop symbol; no final logo yet.
+- Personality: practical, fast, warm, trustworthy, community-driven; quiet respect
+  for the charitable roots (sadaqa jariya) without religious imagery.
+- Colour roles (placeholder values): Primary #0F766E (teal), Primary container #CCFBF1,
+  Surface #FFFFFF, Background #F8FAFC, Ink #1E293B, Muted #64748B, Line #E2E8F0.
+  Status: Working #059669, Empty #D97706, Broken #DC2626, Pending #2563EB,
+  Patron/verified #7C3AED.
+- Use ONLY these named colour roles everywhere (no one-off colours), so the whole
+  palette can be swapped later by changing the role values.
+- One font family that supports Arabic and Latin (e.g. IBM Plex Sans Arabic or Cairo).
+- Corner radius 16 for cards/sheets, 12 for buttons/inputs; 4/8 spacing grid.
 
 GLOBAL RULES
 - Phone frame 360x800 dp (mid-range Android). Material 3 foundations, customised to the brand.
@@ -32,7 +44,8 @@ GLOBAL RULES
 - Large touch targets (min 48dp), high contrast for use in bright sunlight.
 - Light shadows only; no heavy blur or glassmorphism (must stay fast on mid-range phones).
 - Every cooler status uses colour + icon + text label together:
-  Working, Empty, Broken, Pending review. Sponsored coolers get a subtle verified badge.
+  Working, Empty, Broken, Pending review. Coolers that have a patron (the family,
+  mosque or business that funded and maintains it) get a subtle patron badge.
 - Bilingual: show each key screen in English (left-to-right) AND Arabic
   (right-to-left, fully mirrored layout, Arabic typography, Arabic text — not lorem ipsum).
 - Include realistic Cairo content (e.g. "Maadi Metro Station", "Road 9",
@@ -53,7 +66,7 @@ SCREENS
      and 2 numbered cluster bubbles.
    - Floating search bar at the top ("Search coolers or places") with a profile
      avatar button.
-   - Small status filter chips under the search bar: All, Working, Has cups, Sponsored.
+   - Small status filter chips under the search bar: All, Working, Has cups.
    - Floating "my location" button, and a prominent "+ Add cooler" button.
    - A compact "nearest working cooler: 120 m · 2 min walk" card above the bottom edge.
 
@@ -61,13 +74,21 @@ SCREENS
    - Name/landmark, status pill, distance and walking time, "Last confirmed 25 min ago".
    - Cups info (Shared cup / Disposable cups / No cups).
    - Horizontal photo strip.
-   - Sponsor card: "Maintained by El-Borg Pharmacy" with verified badge and a contact button.
+   - Patron card (only on coolers that have one): "Sabil for the soul of Hajj Ahmed
+     Mahmoud" or "Maintained by El-Borg Pharmacy", verified badge, small "confirmed
+     working 312 times" impact line; tapping opens the patron detail (screen 11).
    - Primary action "Still working ✓", secondary actions "Report empty",
      "Report broken", "Add photo", and "Directions".
+   - Distance rule: contributions are only allowed within 50 m of the cooler.
+     Show the states: (a) near → buttons enabled; (b) too far → buttons disabled
+     with a clear line "Get closer to confirm — you are 230 m away" and the
+     Directions button highlighted; (c) "Getting an accurate location…" with a
+     small spinner while GPS improves.
 
 5. Add cooler flow (3 short steps in a bottom sheet over the map):
    (1) Place pin — map with a centre crosshair pin, "Move the map to place the
-   pin", "Confirm location"; (2) Details — name/landmark field, cups choice
+   pin", "Confirm location" (only possible within 50 m of the user's position;
+   show the user's dot and a faint 50 m circle); (2) Details — name/landmark field, cups choice
    (Shared / Disposable / None), status; (3) Photos — add up to 3 photos
    (cooler + cups), then "Submit". Then a success state: "Submitted! Waiting
    for review · +50 points when approved".
@@ -84,15 +105,17 @@ SCREENS
    - Avatar, username, trust score with a progress bar to 500 ("Verified
      contributor" badge when reached), counts for coolers added, confirmations, photos.
    - Rows: My submissions, Leaderboard, Language (English / العربية),
-     About, Log out.
+     About, Log out. (No sponsors list here.)
 
 9. My submissions — list of the user's coolers with status chips:
    Approved, Pending review, Rejected, and pending status changes.
 
 10. Leaderboard — top 10 contributors, top 3 highlighted, the current user's rank pinned at the bottom.
 
-11. Sponsors — list of sponsors (Business, Mosque, Individual, NGO) with
-    verified badges and number of coolers; tapping one shows their coolers on the map.
+11. Patron detail — opened only from a cooler's patron card: dedication or
+    business name, type (Family, Mosque, Business, NGO), verified badge, short
+    message, the cooler's impact (times confirmed, last checked, photos), and a
+    contact button for businesses. There is NO general list of patrons.
 
 12. Language picker — English / العربية with a preview of direction (LTR/RTL).
 
@@ -119,7 +142,8 @@ Start each with: *"Same app, same design system as before."* Then one of:
 - `Design the Login/Register bottom sheet shown when a guest tries to contribute.`
 - `Design the Profile screen with trust-score progress and the Language row, English and Arabic RTL.`
 - `Design My submissions and Leaderboard screens.`
-- `Design the Sponsors list and a sponsor's detail state.`
+- `Design the Patron card inside the cooler sheet and the Patron detail screen (family dedication and business versions), English and Arabic RTL.`
+- `Design the cooler sheet's distance states: near (enabled), too far (disabled with distance + directions), and waiting for accurate GPS.`
 - `Design the Onboarding pages with the location-permission request, English and Arabic RTL.`
 - `Design the empty, offline, location-off and loading states over the map.`
-- `Design a component sheet: map pins for Working, Empty, Broken, Pending, Sponsored, cluster bubble, selected pin; buttons; chips; inputs; status pills; toasts.`
+- `Design a component sheet: map pins for Working, Empty, Broken, Pending, Patron, cluster bubble, selected pin; buttons; chips; inputs; status pills; toasts.`
