@@ -58,36 +58,17 @@ close to the cooler.
 - Note: GPS can be spoofed by determined users; this stops casual far-away
   confirmations. Admin review of suspicious patterns can come later.
 
-**Open questions**
-- Distance limit: is **150 m** right? (GPS in dense streets can be off by 30–80 m.)
-- Should the same rule apply to **status reports** (Empty/Broken) and **photo
-  uploads**, or only to "Still working"? Proposal: confirmations **and**
-  status reports; photos too.
-- Adding a **new** cooler already requires placing a pin; should we also check
-  the user is near the pin they drop? Proposal: yes, same limit.
+**Decided (owner)**
+- Radius as tight as practical: **50 m**, with the 40 m GPS-accuracy guard above.
+- Applies to **all** contributions: confirm, status reports, photo uploads,
+  and adding a new cooler (user must be within 50 m of the pin they drop).
+- App copy: "Get closer to this cooler to confirm it (you are 230 m away)".
 
 ---
 
-## 3. Admin: approve or reject individual photos of new cooler submissions
+## 3. ~~Admin: per-photo review of new submissions~~
 
-**Finding:** in the review queue, a **new cooler** shows its photos only as
-small thumbnails. Approving the cooler approves **all** its photos at once, and
-there is no per-photo approve/delete there. (Photos added later to an already
-live cooler do get Approve/Delete buttons in the "Photos" section.)
-
-**Planned change**
-- `app/admin_web/templates/queue.html`: for each new cooler, show each photo
-  as a card with its category and **Approve / Delete** buttons (same as the
-  Photos section).
-- `app/services/moderation.py:approve_cooler`: stop auto-approving photos the
-  admin has not looked at. Proposal: approving the cooler approves only photos
-  that were not individually deleted, and the admin can delete bad ones first;
-  or add an "Approve cooler only" vs "Approve cooler + all photos" choice.
-- Cooler detail page (`cooler.html`) already has per-photo Approve/Delete;
-  link to it from the queue card ("Review in detail").
-
-**Open question:** is this the issue you meant? If you meant something else
-(e.g. buttons missing on the cooler page), point to the screen and we'll adjust.
+**Dropped by owner** — will be handled in the redesign rework.
 
 ---
 
@@ -142,6 +123,6 @@ the Stitch designs), then this item gets a concrete plan.
 ## Suggested order after the Stitch designs
 
 1. Item 1 (small, removes a screen before redesign).
-2. Item 2 (backend + app, needs the distance answers).
-3. Items 3 + 4 together (admin panel queue rework).
+2. Item 2 (backend + app; decisions made).
+3. Item 4 (admin panel queue context).
 4. Item 5 with Phase 6 (needs the sponsor design).
