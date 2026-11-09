@@ -1,4 +1,4 @@
-from tests.conftest import add_cooler, admin_headers, auth, register, set_trust
+from tests.conftest import admin_post, add_cooler, admin_login, auth, register, set_trust
 
 BBOX = {"min_lat": 29.9, "min_lng": 31.2, "max_lat": 30.0, "max_lng": 31.3}
 
@@ -80,17 +80,17 @@ async def test_name_validation(client):
 
 
 async def test_admin_approve_rewards_and_reject_penalizes(client):
-    admin = await admin_headers(client)
+    await admin_login(client)
     good = await register(client, "good")
     bad = await register(client, "bad")
     c1 = (await client.post("/coolers", json={"name": "A", "latitude": 29.96, "longitude": 31.25}, headers=auth(good["access_token"]))).json()
     c2 = (await client.post("/coolers", json={"name": "B", "latitude": 29.97, "longitude": 31.25}, headers=auth(bad["access_token"]))).json()
 
-    pending = await client.get("/admin/coolers/pending", headers=admin)
-    assert {c["id"] for c in pending.json()} == {c1["id"], c2["id"]}
+    queue = await client.get("/admin/queue")
+    assert queue.status_code == 200 and "New coolers (2)" in queue.text
 
-    assert (await client.patch(f"/admin/coolers/{c1['id']}/approve", headers=admin)).status_code == 200
-    assert (await client.patch(f"/admin/coolers/{c2['id']}/reject", headers=admin)).status_code == 200
+    assert (await admin_post(client, f"/admin/coolers/{c1['id']}/approve")).status_code == 303
+    assert (await admin_post(client, f"/admin/coolers/{c2['id']}/reject")).status_code == 303
 
     assert (await client.get("/auth/me", headers=auth(good["access_token"]))).json()["trust_score"] == 50
     assert (await client.get("/auth/me", headers=auth(bad["access_token"]))).json()["trust_score"] == 0

@@ -1,4 +1,4 @@
-from tests.conftest import add_cooler, admin_headers, auth, register, set_trust
+from tests.conftest import admin_post, add_cooler, admin_login, auth, register, set_trust
 
 
 async def test_confirm_rewards_once_per_hour(client):
@@ -30,14 +30,14 @@ async def test_status_report_untrusted_is_pending_and_cooled_down(client):
 
 
 async def test_admin_approves_pending_status_and_resets_confirmations(client):
-    admin = await admin_headers(client)
+    await admin_login(client)
     cid = await add_cooler()
     confirmer = await register(client, "confirmer")
     reporter = await register(client, "reporter")
     await client.post(f"/coolers/{cid}/confirm", headers=auth(confirmer["access_token"]))
     await client.patch(f"/coolers/{cid}/status", json={"status": "Empty"}, headers=auth(reporter["access_token"]))
 
-    assert (await client.patch(f"/admin/coolers/{cid}/approve", headers=admin)).status_code == 200
+    assert (await admin_post(client, f"/admin/coolers/{cid}/approve")).status_code == 303
     detail = (await client.get(f"/coolers/{cid}")).json()
     assert detail["status"] == "Empty" and detail["pending_status"] is None
 

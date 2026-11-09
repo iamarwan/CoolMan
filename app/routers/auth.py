@@ -6,10 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_db
 from app.errors import ApiError
 from app.models import User
-from app.schemas import AdminLogin, AuthResponse, Credentials, Token, UserRead
+from app.schemas import AuthResponse, Credentials, UserRead
 from app.security import (
-    authenticate_admin,
-    create_admin_token,
     create_user_token,
     get_current_user,
     hash_password,
@@ -54,10 +52,3 @@ async def login(payload: Credentials, db: AsyncSession = Depends(get_db)):
 @router.get("/me", response_model=UserRead)
 async def me(user: User = Depends(get_current_user)):
     return user
-
-
-@router.post("/admin/login", response_model=Token)
-async def admin_login(payload: AdminLogin):
-    if not authenticate_admin(payload.username, payload.password):
-        raise ApiError(401, "invalid_credentials", "Invalid credentials.")
-    return Token(access_token=create_admin_token(payload.username))

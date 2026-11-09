@@ -30,11 +30,6 @@ class Credentials(BaseModel):
     password: str = Field(..., min_length=8, max_length=128)
 
 
-class AdminLogin(BaseModel):
-    username: str = Field(..., max_length=128)
-    password: str = Field(..., max_length=256)
-
-
 class UserRead(BaseModel):
     id: uuid.UUID
     username: str
@@ -44,10 +39,6 @@ class UserRead(BaseModel):
 
 
 class AuthResponse(UserRead):
-    access_token: str
-
-
-class Token(BaseModel):
     access_token: str
 
 
@@ -83,10 +74,6 @@ class SponsorRead(BaseModel):
 
 class SponsorReadWithCount(SponsorRead):
     cooler_count: int = 0
-
-
-class SponsorAssign(BaseModel):
-    sponsor_id: uuid.UUID
 
 
 # ── Photos ───────────────────────────────────────────────────────────────────
@@ -167,7 +154,3 @@ class ConfirmResponse(BaseModel):
     message: str
     trust_score: int
     last_verified_at: datetime
-
-
-class Message(BaseModel):
-    message: str

@@ -28,6 +28,9 @@ docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.producti
 curl https://api.yourapp.com/health   # -> {"status":"ok"}
 ```
 
+The admin panel is then at `https://api.yourapp.com/admin`, logging in with
+`SABIL_ADMIN_USERNAME` / `SABIL_ADMIN_PASSWORD` from your `.env.production`.
+
 Caddy obtains the HTTPS certificate automatically on first start (this needs
 ports 80 and 443 open and the DNS record already pointing at the server).
 

@@ -62,10 +62,18 @@ def auth(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
-async def admin_headers(client: AsyncClient) -> dict:
-    r = await client.post("/auth/admin/login", json={"username": "admin", "password": "admin123"})
-    assert r.status_code == 200, r.text
-    return auth(r.json()["access_token"])
+async def admin_login(client: AsyncClient) -> None:
+    """Logs the web admin in; the session cookie stays on `client`."""
+    r = await client.post("/admin/login", data={"username": "admin", "password": "admin123"})
+    assert r.status_code == 303, r.text
+
+
+async def admin_post(client: AsyncClient, path: str, data: dict | None = None, **kw):
+    from app.admin_web.auth import COOKIE, csrf_for
+
+    token = client.cookies.get(COOKIE)
+    assert token, "call admin_login first"
+    return await client.post(path, data={"csrf": csrf_for(token), **(data or {})}, **kw)
 
 
 async def set_trust(username: str, score: int) -> None:

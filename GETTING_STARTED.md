@@ -63,7 +63,11 @@ flutter run
 ```
 
 API docs: http://localhost:8000/docs · Health check: http://localhost:8000/health
-Admin screens login (development): `admin` / `admin123`
+
+**Admin panel:** http://localhost:8000/admin (development login: `admin` / `admin123`).
+Review new coolers, status changes and photos; edit coolers; manage sponsors.
+It also works from any device on your Wi-Fi at `http://<your-pc-ip>:8000/admin`.
+The admin screens are no longer inside the phone app.
 
 Run backend tests: `.\run_backend.ps1 -Test`
 

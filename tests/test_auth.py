@@ -32,8 +32,8 @@ async def test_bad_login_and_missing_token(client):
 
 async def test_user_token_cannot_access_admin(client):
     user = await register(client, "dave")
-    r = await client.get("/admin/coolers/pending", headers=auth(user["access_token"]))
-    assert r.status_code == 401
+    r = await client.get("/admin/queue", headers=auth(user["access_token"]))
+    assert r.status_code == 303 and r.headers["location"].startswith("/admin/login")
 
 
 async def test_production_refuses_insecure_defaults():
@@ -47,5 +47,5 @@ async def test_production_refuses_insecure_defaults():
         env="production",
         jwt_secret="x" * 40,
         admin_password="a-very-long-password",
-        cors_origins="https://admin.example.com",
+        cors_origins="",
     ).validate_for_runtime()

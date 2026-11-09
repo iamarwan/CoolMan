@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from tests.conftest import add_cooler, admin_headers, auth, jpeg_bytes, register
+from tests.conftest import admin_post, add_cooler, admin_login, auth, jpeg_bytes, register
 
 
 def _upload_dir() -> Path:
@@ -30,12 +30,12 @@ async def test_photo_resized_thumbnailed_and_hidden_until_approved(client):
 
     # Not visible publicly until approved.
     assert (await client.get(f"/coolers/{cid}")).json()["photos"] == []
-    admin = await admin_headers(client)
-    await client.patch(f"/admin/photos/{photo['id']}/approve", headers=admin)
+    await admin_login(client)
+    await admin_post(client, f"/admin/photos/{photo['id']}/approve")
     assert len((await client.get(f"/coolers/{cid}")).json()["photos"]) == 1
 
     # Deleting removes the files from disk.
-    await client.delete(f"/admin/photos/{photo['id']}", headers=admin)
+    await admin_post(client, f"/admin/photos/{photo['id']}/delete")
     assert not (_upload_dir() / photo["file_path"].removeprefix("/uploads/")).exists()
 
 

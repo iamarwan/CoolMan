@@ -39,7 +39,9 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     max_upload_mb: int = 8
 
-    # Comma-separated list of allowed browser origins (the mobile app does not need CORS).
+    # Comma-separated browser origins allowed to call the API from other sites.
+    # The mobile app and the built-in /admin panel do not need this; leave it
+    # empty in production unless you add a separate web front-end.
     cors_origins: str = "*"
 
     @property
@@ -58,7 +60,7 @@ class Settings(BaseSettings):
         if self.admin_password == _DEV_ADMIN_PASSWORD or len(self.admin_password) < 12:
             problems.append("SABIL_ADMIN_PASSWORD must be set (12+ characters)")
         if "*" in self.cors_origin_list:
-            problems.append("SABIL_CORS_ORIGINS must list real origins, not '*'")
+            problems.append("SABIL_CORS_ORIGINS must not be '*' (leave it empty or list origins)")
         if problems:
             if self.is_production:
                 raise RuntimeError("Insecure production settings:\n- " + "\n- ".join(problems))

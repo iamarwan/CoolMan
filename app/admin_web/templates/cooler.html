@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% from "_macros.html" import post, status_pill, who, map_link with context %}
+{% block title %}{{ cooler.name }}{% endblock %}
+{% block content %}
+<p><a href="/admin/coolers">← All coolers</a></p>
+<h1>{{ cooler.name }} {{ status_pill(cooler.status) }}
+  {% if cooler.is_rejected %}<span class="pill rejected">Rejected</span>{% elif not cooler.is_approved %}<span class="pill pending">Waiting for review</span>{% endif %}</h1>
+
+<div class="card">
+  <p class="muted" style="margin-top:0">
+    Added {{ cooler.created_at|ago }} by {{ who(users, cooler.user_id) }} · last confirmed {{ cooler.last_verified_at|ago }}<br>
+    {{ '%.6f'|format(cooler.latitude) }}, {{ '%.6f'|format(cooler.longitude) }} · {{ map_link(cooler) }}<br>
+    Cups: {{ 'yes' if cooler.has_cups else ('no' if cooler.has_cups == false else 'unknown') }}{% if cooler.cups_type %} ({{ cooler.cups_type.value }}){% endif %}
+  </p>
+  <div class="row">
+    {% if not cooler.is_approved and not cooler.is_rejected %}
+      {{ post('/admin/coolers/%s/approve' % cooler.id, 'Approve (+50 pts)', 'ok') }}
+      {{ post('/admin/coolers/%s/reject' % cooler.id, 'Reject (−100 pts)', 'danger', confirm='Reject this cooler?') }}
+    {% elif cooler.is_rejected %}
+      {{ post('/admin/coolers/%s/restore' % cooler.id, 'Restore (make live)', 'ok') }}
+    {% else %}
+      {{ post('/admin/coolers/%s/reject' % cooler.id, 'Hide from map', 'danger', confirm='Hide this cooler from the map?') }}
+    {% endif %}
+    {{ post('/admin/coolers/%s/delete' % cooler.id, 'Delete permanently', 'danger', confirm='Delete this cooler and all its photos? This cannot be undone.') }}
+  </div>
+</div>
+
+{% if cooler.pending_status %}
+<div class="card row">
+  <div class="grow">Pending status change: {{ status_pill(cooler.status) }} → {{ status_pill(cooler.pending_status) }}
+    <span class="muted">by {{ who(users, cooler.pending_status_user_id) }}</span></div>
+  {{ post('/admin/coolers/%s/approve' % cooler.id, 'Accept change', 'ok') }}
+  {{ post('/admin/coolers/%s/reject-status' % cooler.id, 'Dismiss', 'danger') }}
+</div>
+{% endif %}
+
+<h2>Set status</h2>
+<div class="card row">
+  {% for s in statuses %}{% if s != cooler.status %}
+    {{ post('/admin/coolers/%s/status' % cooler.id, 'Mark ' ~ s.value, '', extra={'status': s.value}) }}
+  {% endif %}{% endfor %}
+</div>
+
+<h2>Sponsor</h2>
+<form class="card row" method="post" action="/admin/coolers/{{ cooler.id }}/sponsor">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="next" value="{{ here }}">
+  <select name="sponsor_id" class="grow">
+    <option value="">No sponsor</option>
+    {% for s in sponsors %}<option value="{{ s.id }}" {{ 'selected' if cooler.sponsor_id == s.id }}>{{ s.name }} ({{ s.sponsor_type.value }}){{ ' ✓' if s.verified }}</option>{% endfor %}
+  </select>
+  <button class="primary">Save</button>
+  <a href="/admin/sponsors" class="muted">Manage sponsors</a>
+</form>
+
+<h2>Photos ({{ cooler.photos|length }})</h2>
+<div class="photos">
+{% for p in cooler.photos %}
+  <div class="card photo">
+    <a href="{{ p.file_path }}" target="_blank"><img src="{{ p.thumb_path or p.file_path }}" alt=""></a>
+    <div class="muted" style="margin:6px 0">{{ p.photo_category.value }} · {{ p.uploaded_at|ago }}
+      {% if not p.is_approved %}<br><span class="pill pending">Not public yet</span>{% endif %}</div>
+    {% if not p.is_approved %}{{ post('/admin/photos/%s/approve' % p.id, 'Approve', 'ok') }}{% endif %}
+    {{ post('/admin/photos/%s/delete' % p.id, 'Delete', 'danger', confirm='Delete this photo?') }}
+  </div>
+{% else %}<p class="empty">No photos.</p>{% endfor %}
+</div>
+<form class="card row" method="post" action="/admin/coolers/{{ cooler.id }}/photos" enctype="multipart/form-data">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="next" value="{{ here }}">
+  <input type="file" name="file" accept="image/*" required class="grow">
+  <select name="photo_category">{% for c in categories %}<option value="{{ c.value }}">{{ c.value }}</option>{% endfor %}</select>
+  <button class="primary">Upload photo</button>
+</form>
+{% endblock %}

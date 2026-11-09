@@ -11,7 +11,6 @@ import '../../core/location_service.dart';
 import '../../core/providers.dart';
 import '../../models/cooler.dart';
 import '../../shared/ui.dart';
-import '../admin/admin_screen.dart';
 import '../auth/auth_sheet.dart';
 import '../cooler/add_cooler_sheet.dart';
 import '../cooler/cooler_sheet.dart';
@@ -38,8 +37,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   late final bool _hadSavedCamera;
   bool _userMovedMap = false;
   bool _placing = false;
-  int _logoTaps = 0;
-  DateTime? _firstLogoTap;
 
   @override
   void initState() {
@@ -126,20 +123,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
   }
 
-  /// Hidden admin entrance (tap the logo 5 times within 3 s). Removed in Phase 5.
-  void _onLogoTap() {
-    final now = DateTime.now();
-    if (_firstLogoTap == null || now.difference(_firstLogoTap!) > const Duration(seconds: 3)) {
-      _firstLogoTap = now;
-      _logoTaps = 0;
-    }
-    if (++_logoTaps >= 5) {
-      _logoTaps = 0;
-      _firstLogoTap = null;
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminScreen()));
-    }
-  }
-
   // ── Adding a cooler ──────────────────────────────────────────────────────
 
   Future<void> _startPlacing() async {
@@ -214,7 +197,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               MapSearchBar(
                 onSelected: _onSearchSelected,
                 onProfile: _openProfile,
-                onLogoTap: _onLogoTap,
               ),
               const _LoadingBar(),
             ]),

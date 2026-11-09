@@ -26,6 +26,15 @@ The system relies on a two-tier full-stack architecture:
 1.  **Mobile Client (Flutter/Dart)**: Map-first app. Loads only the coolers inside the visible map area (`GET /coolers/map`), clusters them, and fetches full details when a pin is tapped.
 2.  **Server Engine (FastAPI/SQLAlchemy)**: Async API in the `app/` package (routers per area, services for trust rules and image processing). Schema managed with Alembic migrations (`migrations/`).
 
+### Admin panel (`app/admin_web/`)
+
+Server-rendered pages at `/admin`: review queue (new coolers, status changes,
+photos), cooler list and detail (status, sponsor, photos, hide/restore/delete),
+sponsors. Login is the `SABIL_ADMIN_USERNAME` / `SABIL_ADMIN_PASSWORD` account;
+the session is an HttpOnly, SameSite=Strict cookie scoped to `/admin`, every
+form carries a CSRF token, and pages send strict security headers. Moderation
+logic lives in `app/services/moderation.py`.
+
 ### Mobile app structure (`mobile/lib/`)
 
 ```
@@ -39,7 +48,6 @@ features/auth/       login/register sheet (shown only when contributing)
 features/profile/    profile, stats, leaderboard, my submissions
 features/sponsors/   sponsor list and detail
 features/onboarding/ first-run pages
-features/admin/      LEGACY in-app admin (replaced by the web admin in Phase 5)
 shared/ui.dart       colours, status styles, snackbars
 ```
 
@@ -59,7 +67,7 @@ State is managed with Riverpod. How the map stays fast:
 | `GET /coolers/search?q&lat&lng` | Name search, nearest first when lat/lng given |
 | `POST /coolers` · `PATCH /coolers/{id}/status` · `POST /coolers/{id}/confirm` · `POST /coolers/{id}/photos` | Contributions (login required) |
 | `GET /users/me/stats` · `GET /users/leaderboard` | Profile numbers, top 10 |
-| `/admin/*` | Moderation (admin token) |
+| `/admin` | Web admin panel (HTML, cookie login, CSRF-protected forms) |
 | `GET /health` | Liveness + database check |
 
 Errors look like `{"detail": "...", "code": "cooler_duplicate"}`; the app translates `code`.

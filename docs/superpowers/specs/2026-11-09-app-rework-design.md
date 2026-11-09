@@ -1,6 +1,6 @@
 # Sabil / CoolMan — Full Rework Design
 
-Status: **Phases 1–3 implemented** (4–6 pending)
+Status: **Phases 1–3 and 5 implemented** (4 in progress, 6 pending)
 Date: 2026-11-09
 Stack (kept): Flutter (Android first) · FastAPI · PostgreSQL + PostGIS
 

@@ -15,12 +15,10 @@ class MapSearchBar extends ConsumerStatefulWidget {
     super.key,
     required this.onSelected,
     required this.onProfile,
-    required this.onLogoTap,
   });
 
   final void Function(Cooler cooler) onSelected;
   final VoidCallback onProfile;
-  final VoidCallback onLogoTap;
 
   @override
   ConsumerState<MapSearchBar> createState() => _MapSearchBarState();
@@ -90,12 +88,9 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
         borderRadius: BorderRadius.circular(16),
         color: Colors.white,
         child: Row(children: [
-          GestureDetector(
-            onTap: widget.onLogoTap,
-            child: const Padding(
-              padding: EdgeInsetsDirectional.only(start: 14, end: 8),
-              child: Icon(Icons.water_drop_rounded, color: AppColors.primary),
-            ),
+          const Padding(
+            padding: EdgeInsetsDirectional.only(start: 14, end: 8),
+            child: Icon(Icons.water_drop_rounded, color: AppColors.primary),
           ),
           Expanded(
             child: TextField(

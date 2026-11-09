@@ -1,0 +1,18 @@
+{% macro post(action, label, cls='', confirm=None, extra={}) -%}
+<form class="inline" method="post" action="{{ action }}"{% if confirm %} onsubmit="return confirm('{{ confirm }}')"{% endif %}>
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="next" value="{{ here }}">
+  {% for k, v in extra.items() %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+  <button class="{{ cls }}">{{ label }}</button>
+</form>
+{%- endmacro %}
+
+{% macro status_pill(s) -%}<span class="pill {{ s.value }}">{{ s.value }}</span>{%- endmacro %}
+
+{% macro who(users, user_id) -%}
+{% if user_id and user_id in users %}{{ users[user_id][0] }} <span class="muted">({{ users[user_id][1] }} pts)</span>{% else %}<span class="muted">unknown</span>{% endif %}
+{%- endmacro %}
+
+{% macro map_link(c) -%}
+<a href="https://www.openstreetmap.org/?mlat={{ c.latitude }}&mlon={{ c.longitude }}#map=18/{{ c.latitude }}/{{ c.longitude }}" target="_blank" rel="noopener">map ↗</a>
+{%- endmacro %}
