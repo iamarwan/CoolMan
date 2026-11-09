@@ -23,8 +23,22 @@ This document describes the software architecture, data schemas, verification me
 ```
 
 The system relies on a two-tier full-stack architecture:
-1.  **Mobile Client (Flutter/Dart)**: An immersive single-page map controller with visual overlays, legend overlays, bottom detail drawers, and onboarding pages. Recharts OSM map tiles with high-performance marker clustering (`flutter_map_marker_cluster`) to avoid slow layouts.
-2.  **Server Engine (FastAPI/SQLAlchemy)**: A fully asynchronous backend processing REST queries, rate limiter, and authentication. Coordinates GIS spatial filters via PostGIS native SQL directives.
+1.  **Mobile Client (Flutter/Dart)**: Map-first app. Loads only the coolers inside the visible map area (`GET /coolers/map`), clusters them, and fetches full details when a pin is tapped.
+2.  **Server Engine (FastAPI/SQLAlchemy)**: Async API in the `app/` package (routers per area, services for trust rules and image processing). Schema managed with Alembic migrations (`migrations/`).
+
+### Key endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /coolers/map?min_lat&min_lng&max_lat&max_lng&limit` | Minimal pins inside the visible map area |
+| `GET /coolers/{id}` | Full cooler detail (approved photos only) |
+| `GET /coolers/search?q&lat&lng` | Name search, nearest first when lat/lng given |
+| `POST /coolers` · `PATCH /coolers/{id}/status` · `POST /coolers/{id}/confirm` · `POST /coolers/{id}/photos` | Contributions (login required) |
+| `GET /users/me/stats` · `GET /users/leaderboard` | Profile numbers, top 10 |
+| `/admin/*` | Moderation (admin token) |
+| `GET /health` | Liveness + database check |
+
+Errors look like `{"detail": "...", "code": "cooler_duplicate"}`; the app translates `code`.
 
 ---
 
@@ -84,7 +98,8 @@ The main spatial entity representing physical drinking water stations.
 Tracks verification photos uploaded for security review.
 *   `id` (UUID): Primary Key.
 *   `cooler_id` (UUID, Foreign Key): Owning cooler.
-*   `file_path` (String(512)): File address on the disk or S3 bucket.
+*   `file_path` (String(512)): Full image URL path (max 1600 px JPEG, EXIF/GPS stripped).
+*   `thumb_path` (String(512)): Thumbnail URL path (max 400 px).
 *   `uploaded_at` (DateTime): Time of upload.
 *   `is_approved` (Boolean): Admin approved for public view.
 *   `photo_category` (Enum): Cooler, Cups.
@@ -101,7 +116,8 @@ All client credentials utilize cryptographic standards:
 ### JWT Structure
 Tokens are signed server-side using **HMAC-SHA256**:
 *   *Audience parameters*: `sabil-user` or `sabil-admin`.
-*   *Expirations*: Standard user token is set to **7 days** (10,080 minutes), while admin tokens auto-invalidate after **8 hours** to limit hijacking windows.
+*   *Expirations*: User tokens last **30 days**; admin tokens **8 hours**.
+*   In production (`SABIL_ENV=production`) the server refuses to start with default/weak secrets.
 
 ---
 
@@ -114,7 +130,9 @@ A central gamified trust loop handles review queues and defends the database aga
     *   If the submitter is a **Verified Reporter (Trust Score ≥ 500)**, the cooler is auto-approved and goes live instantly.
 2.  **Trust Flow Calculations**:
     *   *Add New Cooler*: Approved: **+50 Trust** to the reporter. Rejected: **-100 Trust**.
-    *   *Verify / Confirm*: Tap "Still Working" (restricted by 1-hour cooldown per cooler): **+5 Trust**.
-    *   *Propose Status Update*: Suggested status change: **+10 Trust** upon submission. If trust ≥ 500, the status updates instantly. Otherwise, it is staged as `pending_status` for admin approval.
+    *   *Verify / Confirm*: Tap "Still Working" (1-hour cooldown per cooler per user): **+5 Trust**.
+    *   *Propose Status Update*: **+10 Trust** (1-hour cooldown per cooler per user). If trust ≥ 500, the status updates instantly; otherwise it is staged as `pending_status` for admin approval.
+    *   Cooldowns are stored in the `user_actions` table, so they survive restarts. When a cooler's status changes, everyone may confirm it again.
+    *   Submission limits: 10 new coolers and 30 photos per user per hour.
 3.  **GPS Duplication Guard**:
-    *   The database rejects adding a cooler if another cooler exists within a **15-meter radius** (determined via PostGIS `ST_DWithin` on the coordinates index). This blocks multiple reports for the same cooler.
+    *   The API rejects adding a cooler if a non-rejected cooler exists within **15 meters** (bounding-box index pre-filter + geodesic `ST_DWithin`).

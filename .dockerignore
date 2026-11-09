@@ -1,0 +1,10 @@
+.git
+mobile
+docs
+tests
+venv
+.venv
+uploads
+**/__pycache__
+deploy/.env.production
+*.md

@@ -1,123 +1,112 @@
-# 🚀 SABIL (CoolMan) Project Runbook & Getting Started
+# Sabil (CoolMan) — Getting Started
 
-Welcome to the Sabil Project! This guide provides a detailed operational map separating what has **already been set up once** from what you need to run **every single time** you start a development session.
+## Project layout
 
----
-
-## ✅ Part 1: Tasks Done ONCE (Completed Setup)
-
-> [!NOTE]
-> **These steps have already been successfully completed on your machine.** You do **NOT** need to run these commands again unless you reinstall your environment or clone to a clean machine.
-
-### 1. Database & Spatial Extensions Setup
-- PostgreSQL is installed locally.
-- The `sabil_db` database is created with owner `sabil` (password: `sabil_pass`).
-- PostGIS spatial extensions are enabled.
-
-### 2. Backend Environment Configuration
-- A Python virtual environment has been created inside the project root:
-  ```bash
-  python -m venv venv
-  ```
-- All required dependencies (`fastapi`, `uvicorn`, `sqlalchemy`, `asyncpg`, `geoalchemy2`, `pydantic`, `pydantic-settings`, `python-multipart`) have been installed in this environment.
-- Core table structures and initial Egyptian seed data (in Maadi, Cairo) have been successfully migration-mapped (`db_fix.py` and `seed.py` have been executed).
-
-### 3. Flutter Client SDK & Package Setup
-- The Flutter SDK has been added to your system path.
-- Android Studio is configured along with the Android SDK licenses.
-- Project packages have been successfully pulled:
-  ```bash
-  cd mobile
-  flutter pub get
-  ```
+| Folder | What it is |
+|---|---|
+| `app/` | FastAPI backend (routers, models, services) |
+| `migrations/` | Database migrations (Alembic) |
+| `scripts/` | `reset_db.py`, `seed.py` |
+| `tests/` | Backend tests (pytest) |
+| `mobile/` | Flutter Android app |
+| `deploy/` | Production files — **inactive until you deploy** (see `deploy/DEPLOY.md`) |
+| `docs/` | Rework plan and design prompts |
 
 ---
 
-## 💻 Part 2: Tasks to Do EVERY TIME (Session Runbook)
+## Part 1 — One-time setup
 
-Follow this precise order of actions every time you start a development session to test the app locally.
-
-### 🗄️ Step 1: Start the PostgreSQL Database Service
-Ensure the PostgreSQL server is running:
-- **Windows (Native)**: Open `services.msc`, locate **PostgreSQL**, and ensure the status is set to **Running** (or start it via the services window).
-- **If using Docker (Alternative)**:
-  ```powershell
-  docker start sabil-postgis
-  ```
-
----
-
-### 🐍 Step 2: Spin up the FastAPI Backend Server
-Open a terminal in the project root directory and execute:
-
+### Database (PostgreSQL + PostGIS on port 5433)
+Either your native Windows PostgreSQL (with PostGIS) or Docker:
 ```powershell
-# 1. Activate the Python Virtual Environment
-venv\Scripts\activate
+docker compose up -d
+```
+Database `sabil_db`, user `sabil`, password `sabil_pass`.
 
-# 2. Set the local database connection URL
-$env:SABIL_DATABASE_URL="postgresql+asyncpg://sabil:sabil_pass@localhost:5433/sabil_db?ssl=disable"
-
-# 3. Start the FastAPI development server with hot-reload enabled (excluding build and library folders to prevent lag)
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-exclude "venv" --reload-exclude "mobile" --reload-exclude "uploads"
+For backend tests, create a second database once:
+```powershell
+createdb -U sabil -p 5433 sabil_test
+# Docker: docker exec sabil-postgis createdb -U sabil sabil_test
 ```
 
-> [!TIP]
-> - Once the server is running, you can access the interactive Swagger API documentation at: **`http://localhost:8000/docs`**
-> - If you ever need to reset or re-seed sample Egyptian coordinates (e.g. for testing Maadi Metro Station / Road 9 coolers), run `python seed.py` while the database is running.
+### Backend
+```powershell
+python -m venv venv
+venv\Scripts\pip install -r requirements-dev.txt
+```
+
+### ⚠️ One-time database reset (after this rework)
+The schema changed. Your database only had test data, so wipe and re-create it:
+```powershell
+.\run_backend.ps1 -Reset
+```
+This creates sample coolers in Maadi plus two test accounts:
+`tester` / `tester1234` (new user) and `trusted` / `trusted1234` (instant approval).
+
+### Flutter
+```powershell
+cd mobile
+flutter pub get
+```
 
 ---
 
-### 📱 Step 3: Launch Android Emulator & Connect the Client App
-1. Open your Android Emulator (via Android Studio, VS Code device selector, or CLI).
-2. Set the emulator's mock GPS location to Cairo, Egypt (e.g. `29.9596, 31.2575` in Maadi) to see the seeded coolers on the map.
-3. Open a second terminal window, navigate to the `mobile` directory, and run the client:
+## Part 2 — Every session
 
 ```powershell
+# 1. Database running (Windows service, or: docker start sabil-postgis)
+# 2. Backend (applies new migrations automatically, then starts on port 8000)
+.\run_backend.ps1
+# 3. App on the emulator
 cd mobile
 flutter run
 ```
 
-> [!IMPORTANT]
-> The Flutter application connects to the local computer server using the dedicated loopback bridge IP **`10.0.2.2:8000`** (defined in `api_service.dart`). Do not change this unless you are deploying to a physical device on the same local Wi-Fi.
+API docs: http://localhost:8000/docs · Health check: http://localhost:8000/health
+Admin screens login (development): `admin` / `admin123`
+
+Run backend tests: `.\run_backend.ps1 -Test`
 
 ---
 
-## 📲 Part 3: Test on a REAL phone (same Wi-Fi as your PC)
+## Part 3 — Test on a REAL phone (same Wi-Fi as your PC)
 
 `10.0.2.2` only works inside the Android emulator. A real phone must reach your
 PC through its Wi-Fi IP address.
 
-1. **Start the backend listening on all interfaces** (already the case with the
-   command above: `--host 0.0.0.0`).
-2. **Allow port 8000 through Windows Firewall** (run PowerShell as Administrator, once):
+1. **Start the backend** with `.\run_backend.ps1` (it listens on all interfaces).
+2. **Allow port 8000 through Windows Firewall** (PowerShell as Administrator, once):
    ```powershell
    New-NetFirewallRule -DisplayName "Sabil API 8000" -Direction Inbound -Protocol TCP -LocalPort 8000 -Action Allow -Profile Private
    ```
    Your Wi-Fi network must be set to **Private** in Windows network settings.
-3. **Check from the phone's browser:** open `http://<your-pc-ip>:8000/docs`.
-   Find your PC's IP with `ipconfig` (the "IPv4 Address" of your Wi-Fi adapter).
+3. **Check from the phone's browser:** open `http://<your-pc-ip>:8000/health`.
+   Find your PC's IP with `ipconfig` (the "IPv4 Address" of the Wi-Fi adapter).
 4. **Build the APK** (auto-detects your PC's IP):
    ```powershell
    cd mobile
    .\build_apk.ps1
    ```
 5. **Install** `mobile\build\app\outputs\flutter-apk\app-arm64-v8a-release.apk`
-   on the phone (USB: `adb install -r <that file>`, or copy it over and open it).
+   (USB: `adb install -r <that file>`, or copy it to the phone and open it).
 
-If your PC's IP changes (new router, DHCP), rebuild with `.\build_apk.ps1` again.
+If your PC's IP changes, rebuild with `.\build_apk.ps1`.
+To run on a USB-connected phone in debug mode instead:
+`flutter run --dart-define=API_BASE_URL=http://<your-pc-ip>:8000`
 
 **Expected size:** ~15–20 MB for the arm64 APK (the old single "fat" APK was ~70 MB).
 
-**If something still goes wrong on the phone,** connect it by USB and run
-`adb logcat -s flutter` while opening the app, then send the output.
+**If something goes wrong on the phone,** connect it by USB, run
+`adb logcat -s flutter` while opening the app, and send the output.
 
 ---
 
-## 🛠️ Troubleshooting Cheat Sheet
+## Troubleshooting
 
-| Symptom | Root Cause | Immediate Action |
-| :--- | :--- | :--- |
-| **ST_DWithin function not found** | PostGIS extension is missing | Run database console and execute: <br> `CREATE EXTENSION IF NOT EXISTS postgis;` |
-| **Flutter app cannot fetch results** | Server not running / IP config error | Ensure the FastAPI server is running on port 8000. Verify the emulator uses `10.0.2.2` in `api_service.dart`. |
-| **JWT credentials rejected** | Out-of-sync session token | Tap **Logout** in the profile screen to clear tokens, or run `flutter clean` to wipe build caches. |
-| **Cannot fetch current location** | Emulator location services disabled | Toggle location settings inside the emulator's extended settings (`...` menu). |
+| Symptom | Fix |
+|---|---|
+| `type "geometry" does not exist` / PostGIS errors | Run `CREATE EXTENSION postgis;` in `sabil_db` |
+| Backend won't start: "relation already exists" | Run `.\run_backend.ps1 -Reset` once (old schema) |
+| Phone shows "Failed to load coolers" | Phone and PC on the same Wi-Fi? Firewall rule added? `http://<pc-ip>:8000/health` opens in the phone browser? |
+| Emulator can't reach the API | The emulator uses `10.0.2.2:8000` automatically; make sure the backend is running |
+| Login rejected after reset | Old saved login — log out in Profile, or reinstall the app |
