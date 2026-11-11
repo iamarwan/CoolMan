@@ -58,10 +58,11 @@ class CoolerRepository {
   Future<Cooler> reportStatus(String id, CoolerStatus status) async => Cooler.fromJson(
       await _api.patch('/coolers/$id/status', {'status': status.api}) as Map<String, dynamic>);
 
-  Future<({int trustScore, DateTime verifiedAt})> confirm(String id) async {
+  Future<({int trustScore, int pointsAwarded, DateTime verifiedAt})> confirm(String id) async {
     final json = await _api.post('/coolers/$id/confirm') as Map<String, dynamic>;
     return (
       trustScore: json['trust_score'] as int,
+      pointsAwarded: json['points_awarded'] as int? ?? 0,
       verifiedAt: DateTime.tryParse(json['last_verified_at'] as String? ?? '')?.toLocal() ??
           DateTime.now(),
     );

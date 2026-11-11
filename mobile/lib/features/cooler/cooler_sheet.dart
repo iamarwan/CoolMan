@@ -95,7 +95,14 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
     try {
       final r = await _repo.confirm(before.id);
       ref.read(sessionProvider.notifier).updateScore(r.trustScore);
-      if (mounted) showSnack(context, context.l10n.thanksConfirm);
+      if (mounted) {
+        showSnack(
+          context,
+          r.pointsAwarded > 0
+              ? context.l10n.thanksConfirmPoints(r.pointsAwarded)
+              : context.l10n.thanksConfirmNoPoints,
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() => _cooler = before);
@@ -127,7 +134,7 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
       ref.read(sessionProvider.notifier).refreshProfile();
       showSnack(
         context,
-        trusted ? context.l10n.statusUpdatedPoints : context.l10n.reportReviewedPoints,
+        trusted ? context.l10n.statusUpdated : context.l10n.reportReviewed,
       );
     } catch (e) {
       if (!mounted) return;

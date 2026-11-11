@@ -31,6 +31,7 @@ class ApiClient {
     http.Client? httpClient,
     String? baseUrl,
     this.tokenProvider,
+    this.onUnauthorized,
     this.timeout = const Duration(seconds: 15),
   })  : _http = httpClient ?? http.Client(),
         _base = baseUrl ?? AppConfig.apiBaseUrl;
@@ -41,6 +42,10 @@ class ApiClient {
 
   /// Returns the current user token, if any.
   final String? Function()? tokenProvider;
+
+  /// Called when the server rejects the saved login (expired or no longer
+  /// valid), so the app can log the user out instead of failing forever.
+  final void Function()? onUnauthorized;
 
   Uri uri(String path, [Map<String, Object?>? query]) {
     final q = <String, String>{
@@ -74,8 +79,11 @@ class ApiClient {
         body: body == null ? null : jsonEncode(body),
       ));
 
-  Future<dynamic> delete(String path) =>
-      _send(() => _http.delete(uri(path), headers: _headers()));
+  Future<dynamic> delete(String path, [Object? body]) => _send(() => _http.delete(
+        uri(path),
+        headers: _headers(json: body != null),
+        body: body == null ? null : jsonEncode(body),
+      ));
 
   Future<dynamic> uploadFile(
     String path, {
@@ -113,7 +121,11 @@ class ApiClient {
 
     final body = _decode(res);
     if (res.statusCode >= 200 && res.statusCode < 300) return body;
-    throw errorFrom(res.statusCode, body);
+    final error = errorFrom(res.statusCode, body);
+    if (error.code == 'token_expired' || error.code == 'token_invalid') {
+      onUnauthorized?.call();
+    }
+    throw error;
   }
 
   static dynamic _decode(http.Response res) {

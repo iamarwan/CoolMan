@@ -40,9 +40,9 @@ class FakeCoolerRepository extends CoolerRepository {
   Future<Cooler> detail(String id) async => detailResult;
 
   @override
-  Future<({int trustScore, DateTime verifiedAt})> confirm(String id) async {
+  Future<({int trustScore, int pointsAwarded, DateTime verifiedAt})> confirm(String id) async {
     confirmCalls++;
-    return (trustScore: 5, verifiedAt: DateTime.now());
+    return (trustScore: 5, pointsAwarded: 5, verifiedAt: DateTime.now());
   }
 }
 

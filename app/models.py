@@ -7,6 +7,7 @@ from typing import Optional
 
 from geoalchemy2 import Geometry
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     DateTime,
     Enum as SAEnum,
@@ -15,6 +16,8 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    func,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -57,9 +60,11 @@ class ActionType(str, enum.Enum):
 
 class User(Base):
     __tablename__ = "users"
+    # Usernames are unique ignoring case ("Alice" blocks "alice").
+    __table_args__ = (Index("ix_users_username_lower", func.lower(text("username")), unique=True),)
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    username: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    username: Mapped[str] = mapped_column(String(64))
     hashed_password: Mapped[str] = mapped_column(String(256))
     trust_score: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
@@ -95,6 +100,8 @@ class WaterCooler(Base):
         SAEnum(CoolerStatus, name="coolerstatus"), default=CoolerStatus.Working
     )
     last_verified_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    # When the status last changed; confirmations made before it no longer block new ones.
+    status_changed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     is_approved: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     is_rejected: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
@@ -160,4 +167,17 @@ class UserAction(Base):
         ForeignKey("water_coolers.id", ondelete="CASCADE")
     )
     action: Mapped[ActionType] = mapped_column(SAEnum(ActionType, name="actiontype"))
+    # Trust points this action earned (0 once the daily cap is reached).
+    points: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class RateHit(Base):
+    """One counted event for rate limiting (failed login, registration, ...)."""
+
+    __tablename__ = "rate_hits"
+    __table_args__ = (Index("ix_rate_hits_bucket_time", "bucket", "created_at"),)
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    bucket: Mapped[str] = mapped_column(String(200))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

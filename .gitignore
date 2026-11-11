@@ -9,6 +9,7 @@ venv/
 uploads/
 
 # Secrets / local config
+.dev-secret
 .env
 .env.*
 !.env.example

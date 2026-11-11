@@ -26,7 +26,8 @@ async def test_status_report_untrusted_is_pending_and_cooled_down(client):
     # Previously this could be repeated forever for +10 each time.
     r = await client.patch(f"/coolers/{cid}/status", json={"status": "Broken"}, headers=h)
     assert r.status_code == 429 and r.json()["code"] == "status_report_cooldown"
-    assert (await client.get("/auth/me", headers=h)).json()["trust_score"] == 10
+    # Points arrive only when an admin accepts the report.
+    assert (await client.get("/auth/me", headers=h)).json()["trust_score"] == 0
 
 
 async def test_admin_approves_pending_status_and_resets_confirmations(client):

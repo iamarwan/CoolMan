@@ -335,15 +335,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uploading => 'جارٍ الرفع…';
 
   @override
-  String get thanksConfirm => 'شكرًا على التأكيد! +5 نقاط';
-
-  @override
-  String get statusUpdatedPoints => 'تم تحديث الحالة. +10 نقاط';
-
-  @override
-  String get reportReviewedPoints => 'شكرًا! ستتم مراجعة بلاغك. +10 نقاط';
-
-  @override
   String get photoAdded => 'تمت إضافة الصورة. شكرًا لك!';
 
   @override
@@ -568,4 +559,49 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get onb3Body =>
       'اكسب 50 نقطة عن كل مبرد تتم الموافقة عليه. عند 500 نقطة تظهر إضافاتك فورًا.';
+
+  @override
+  String thanksConfirmPoints(int points) {
+    return 'شكرًا على التأكيد! +$points نقاط';
+  }
+
+  @override
+  String get thanksConfirmNoPoints => 'شكرًا على التأكيد!';
+
+  @override
+  String get statusUpdated => 'تم تحديث الحالة. شكرًا لك!';
+
+  @override
+  String get reportReviewed =>
+      'شكرًا! ستتم مراجعة بلاغك، وتحصل على 10 نقاط عند قبوله.';
+
+  @override
+  String errTooManyAttempts(int minutes) {
+    return 'محاولات كثيرة. حاول مرة أخرى بعد $minutes دقيقة.';
+  }
+
+  @override
+  String get errWrongPassword => 'كلمة المرور غير صحيحة.';
+
+  @override
+  String get errStatusUnchanged => 'المبرد بهذه الحالة بالفعل.';
+
+  @override
+  String get deleteAccount => 'حذف الحساب';
+
+  @override
+  String get deleteAccountTitle => 'حذف حسابك؟';
+
+  @override
+  String get deleteAccountBody =>
+      'سيتم حذف حسابك ونقاطك وسجلك نهائيًا. تبقى المبردات والصور التي أضفتها على الخريطة. أدخل كلمة المرور للتأكيد.';
+
+  @override
+  String get deleteAccountDone => 'تم حذف حسابك.';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get errOpenLink => 'تعذّر فتح الصفحة.';
 }

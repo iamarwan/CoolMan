@@ -323,16 +323,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uploading => 'Uploading…';
 
   @override
-  String get thanksConfirm => 'Thanks for confirming! +5 points';
-
-  @override
-  String get statusUpdatedPoints => 'Status updated. +10 points';
-
-  @override
-  String get reportReviewedPoints =>
-      'Thanks! Your report will be reviewed. +10 points';
-
-  @override
   String get photoAdded => 'Photo added. Thank you!';
 
   @override
@@ -553,4 +543,49 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onb3Body =>
       'Earn +50 points for each approved cooler. At 500 points your additions go live instantly.';
+
+  @override
+  String thanksConfirmPoints(int points) {
+    return 'Thanks for confirming! +$points points';
+  }
+
+  @override
+  String get thanksConfirmNoPoints => 'Thanks for confirming!';
+
+  @override
+  String get statusUpdated => 'Status updated. Thank you!';
+
+  @override
+  String get reportReviewed =>
+      'Thanks! Your report will be reviewed. You earn 10 points if it is accepted.';
+
+  @override
+  String errTooManyAttempts(int minutes) {
+    return 'Too many attempts. Try again in $minutes min.';
+  }
+
+  @override
+  String get errWrongPassword => 'Wrong password.';
+
+  @override
+  String get errStatusUnchanged => 'The cooler already has this status.';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountTitle => 'Delete your account?';
+
+  @override
+  String get deleteAccountBody =>
+      'This permanently deletes your account, points and history. Coolers and photos you added stay on the map. Enter your password to confirm.';
+
+  @override
+  String get deleteAccountDone => 'Your account was deleted.';
+
+  @override
+  String get privacyPolicy => 'Privacy policy';
+
+  @override
+  String get errOpenLink => 'Could not open the page.';
 }

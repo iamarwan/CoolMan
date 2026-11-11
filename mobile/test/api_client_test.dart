@@ -63,4 +63,30 @@ void main() {
     final api = clientWith((_) async => http.Response.bytes(utf8.encode(jsonEncode({'name': 'مسجد'})), 200));
     expect(await api.get('/x'), {'name': 'مسجد'});
   });
+
+  test('a rejected login token triggers the unauthorized hook; a wrong password does not', () async {
+    var calls = 0;
+    ApiClient make(String code) => ApiClient(
+          httpClient: MockClient((_) async =>
+              http.Response(jsonEncode({'detail': 'x', 'code': code}), 401)),
+          baseUrl: 'http://api.test',
+          tokenProvider: () => 'abc',
+          onUnauthorized: () => calls++,
+        );
+    await expectLater(make('token_expired').get('/x'), throwsA(isA<ApiException>()));
+    expect(calls, 1);
+    await expectLater(make('invalid_credentials').post('/auth/login', {}), throwsA(isA<ApiException>()));
+    expect(calls, 1);
+  });
+
+  test('DELETE can carry a JSON body', () async {
+    late http.Request seen;
+    final api = clientWith((req) async {
+      seen = req;
+      return http.Response('', 204);
+    });
+    await api.delete('/auth/me', {'password': 'p'});
+    expect(seen.method, 'DELETE');
+    expect(jsonDecode(seen.body), {'password': 'p'});
+  });
 }

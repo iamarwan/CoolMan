@@ -107,7 +107,13 @@ async def my_coolers(user: User = Depends(get_current_user), db: AsyncSession = 
         .where(or_(WaterCooler.user_id == user.id, WaterCooler.pending_status_user_id == user.id))
         .order_by(WaterCooler.created_at.desc())
     )
-    return result.scalars().all()
+    out = []
+    for cooler in result.scalars().all():
+        visible = {p.id for p in cooler.photos if p.is_approved or p.user_id == user.id}
+        data = CoolerRead.model_validate(cooler)
+        data.photos = [p for p in data.photos if p.id in visible]
+        out.append(data)
+    return out
 
 
 @router.get("/{cooler_id}", response_model=CoolerRead)
@@ -130,6 +136,7 @@ async def create_cooler(
 ):
     await trust.enforce_submission_limits(db, user.id, photos=False)
 
+    await trust.lock(db, "create-cooler")  # two identical submissions cannot both pass
     duplicate = await db.scalar(
         select(WaterCooler.id).where(
             WaterCooler.is_rejected.is_(False),
@@ -172,24 +179,24 @@ async def report_status(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Report Working/Empty/Broken. Trusted users apply it instantly; others
-    create a pending change for admin review. Rewarded once per hour per cooler."""
+    """Report Working/Empty/Broken. Trusted users apply it instantly and earn
+    points now; others create a pending change and earn points only if an
+    admin accepts it. Once per hour per cooler."""
     cooler = await get_public_cooler(db, cooler_id)
-    await trust.enforce_cooldown(db, user.id, cooler.id, ActionType.status_report)
+    if payload.status == cooler.status:
+        raise ApiError(400, "status_unchanged", "The cooler already has this status.")
+    await trust.enforce_cooldown(db, user.id, cooler, ActionType.status_report)
 
     if trust.is_trusted(user):
-        if cooler.status != payload.status:
-            await trust.reset_confirmations(db, cooler.id)
-        cooler.status = payload.status
-        cooler.pending_status = None
-        cooler.pending_status_user_id = None
-        cooler.last_verified_at = datetime.now(timezone.utc)
+        trust.set_status(cooler, payload.status)
+        await trust.record_action(
+            db, user.id, cooler.id, ActionType.status_report, reward=trust.STATUS_REPORT_REWARD
+        )
     else:
         cooler.pending_status = payload.status
         cooler.pending_status_user_id = user.id
+        await trust.record_action(db, user.id, cooler.id, ActionType.status_report)
 
-    trust.record_action(db, user.id, cooler.id, ActionType.status_report)
-    await trust.add_trust(db, user.id, trust.STATUS_REPORT_REWARD)
     await db.commit()
     return to_public(await load_fresh(db, cooler.id))
 
@@ -202,14 +209,19 @@ async def confirm_working(
 ):
     """One-tap "still working" confirmation. Once per hour per cooler."""
     cooler = await get_public_cooler(db, cooler_id)
-    await trust.enforce_cooldown(db, user.id, cooler.id, ActionType.confirm)
+    await trust.enforce_cooldown(db, user.id, cooler, ActionType.confirm)
 
     cooler.last_verified_at = datetime.now(timezone.utc)
-    trust.record_action(db, user.id, cooler.id, ActionType.confirm)
-    score = await trust.add_trust(db, user.id, trust.CONFIRM_REWARD)
     verified_at = cooler.last_verified_at
+    points, score = await trust.record_action(
+        db, user.id, cooler.id, ActionType.confirm, reward=trust.CONFIRM_REWARD
+    )
+    if score is None:
+        score = await db.scalar(select(User.trust_score).where(User.id == user.id))
     await db.commit()
-    return ConfirmResponse(message="Confirmed", trust_score=score, last_verified_at=verified_at)
+    return ConfirmResponse(
+        message="Confirmed", trust_score=score, points_awarded=points, last_verified_at=verified_at
+    )
 
 
 @router.post("/{cooler_id}/photos", response_model=PhotoRead, status_code=201)

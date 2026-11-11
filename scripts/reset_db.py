@@ -13,7 +13,11 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.config import get_settings
 
-TABLES = ["user_actions", "cooler_photos", "water_coolers", "sponsors", "users", "alembic_version"]
+from app import models  # noqa: E402,F401  (registers every table)
+from app.db import Base  # noqa: E402
+
+# Every table the app defines, plus Alembic's bookkeeping table.
+TABLES = [t.name for t in Base.metadata.sorted_tables] + ["alembic_version"]
 TYPES = ["actiontype", "photocategory", "cupstype", "coolerstatus", "sponsortype"]
 
 

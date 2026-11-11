@@ -27,7 +27,7 @@ from app.models import (
 )
 from app.schemas import clean_text
 from app.security import authenticate_admin, create_admin_token
-from app.services import moderation
+from app.services import moderation, ratelimit
 from app.services.coolers import get_cooler
 
 from .auth import COOKIE, admin_action, admin_page, csrf_for, safe_next
@@ -103,6 +103,7 @@ def _render(request: Request, name: str, csrf: str, counts: dict, **ctx) -> HTML
             "is_error": request.query_params.get("error") == "1",
             "here": request.url.path + (f"?{request.url.query}" if request.url.query else ""),
             "statuses": list(CoolerStatus),
+            "default_password": get_settings().uses_default_admin_password,
             **ctx,
         },
     )
@@ -126,8 +127,17 @@ async def login(
     username: str = Form(..., max_length=128),
     password: str = Form(..., max_length=256),
     next: str | None = Form(None),
+    db: AsyncSession = Depends(get_db),
 ):
+    bucket = f"admin-login:ip:{ratelimit.client_ip(request)}"
+    try:
+        await ratelimit.check(db, bucket, get_settings().admin_login_failures_per_ip)
+    except ApiError as e:
+        return templates.TemplateResponse(
+            request, "login.html", {"next": safe_next(next), "error": e.detail}, status_code=429
+        )
     if not authenticate_admin(username, password):
+        await ratelimit.record(db, bucket)
         await asyncio.sleep(1)  # slow down password guessing
         return templates.TemplateResponse(
             request,

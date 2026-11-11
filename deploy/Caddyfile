@@ -6,6 +6,10 @@
 {$API_DOMAIN} {
 	encode zstd gzip
 
+	# Browsers must always use HTTPS for this domain (1 year).
+	header Strict-Transport-Security "max-age=31536000"
+	header -Server
+
 	# Uploaded photos never change once written: cache them for a long time.
 	@uploads path /uploads/*
 	header @uploads Cache-Control "public, max-age=2592000, immutable"

@@ -8,7 +8,9 @@ services:
       POSTGRES_PASSWORD: sabil_pass
       POSTGRES_DB: sabil_db
     ports:
-      - "5433:5432"
+      # Bound to this computer only: the development password must not be
+      # reachable from other devices on the network.
+      - "127.0.0.1:5433:5432"
     volumes:
       - sabil_pgdata:/var/lib/postgresql/data
 

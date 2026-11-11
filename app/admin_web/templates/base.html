@@ -57,6 +57,8 @@
 </div></header>
 {% endblock %}
 <main class="wrap">
+  {% if default_password %}<div class="flash error">This panel is using the default development password.
+    Anyone on your Wi-Fi can log in. Set SABIL_ADMIN_PASSWORD in a .env file (see .env.example).</div>{% endif %}
   {% if msg %}<div class="flash {{ 'error' if is_error }}">{{ msg }}</div>{% endif %}
   {% block content %}{% endblock %}
 </main>

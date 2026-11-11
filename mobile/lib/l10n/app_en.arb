@@ -174,9 +174,6 @@
   "somethingChanged": "Something changed?",
   "addPhoto": "Add photo",
   "uploading": "Uploading…",
-  "thanksConfirm": "Thanks for confirming! +5 points",
-  "statusUpdatedPoints": "Status updated. +10 points",
-  "reportReviewedPoints": "Thanks! Your report will be reviewed. +10 points",
   "photoAdded": "Photo added. Thank you!",
   "photoSentForReview": "Photo sent for review. Thank you!",
   "maintainedBy": "Maintained by {name}",
@@ -301,5 +298,32 @@
   "onb2Title": "Add and update\ncoolers around you",
   "onb2Body": "Spotted a public water cooler? Tap \"Add cooler\" to list it. Empty or broken? Report it so others know.",
   "onb3Title": "Earn trust\nand level up",
-  "onb3Body": "Earn +50 points for each approved cooler. At 500 points your additions go live instantly."
+  "onb3Body": "Earn +50 points for each approved cooler. At 500 points your additions go live instantly.",
+  "thanksConfirmPoints": "Thanks for confirming! +{points} points",
+  "@thanksConfirmPoints": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "thanksConfirmNoPoints": "Thanks for confirming!",
+  "statusUpdated": "Status updated. Thank you!",
+  "reportReviewed": "Thanks! Your report will be reviewed. You earn 10 points if it is accepted.",
+  "errTooManyAttempts": "Too many attempts. Try again in {minutes} min.",
+  "@errTooManyAttempts": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "errWrongPassword": "Wrong password.",
+  "errStatusUnchanged": "The cooler already has this status.",
+  "deleteAccount": "Delete account",
+  "deleteAccountTitle": "Delete your account?",
+  "deleteAccountBody": "This permanently deletes your account, points and history. Coolers and photos you added stay on the map. Enter your password to confirm.",
+  "deleteAccountDone": "Your account was deleted.",
+  "privacyPolicy": "Privacy policy",
+  "errOpenLink": "Could not open the page."
 }

@@ -12,8 +12,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /srv
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements.txt constraints.txt ./
+# constraints.txt pins the exact versions that passed the tests.
+RUN pip install -r requirements.txt -c constraints.txt
 
 COPY app ./app
 COPY migrations ./migrations

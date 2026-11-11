@@ -19,6 +19,7 @@ from app.admin_web.auth import LoginRequired
 from app.config import get_settings
 from app.db import engine
 from app.errors import install_error_handlers
+from app.public_web import routes as public_web
 from app.routers import auth, coolers, sponsors, users
 
 logging.basicConfig(level=logging.INFO)
@@ -58,9 +59,10 @@ def create_app() -> FastAPI:
         return RedirectResponse(exc.next_url, status_code=303)
 
     @app.middleware("http")
-    async def _admin_security_headers(request: Request, call_next):
+    async def _security_headers(request: Request, call_next):
         response = await call_next(request)
-        if request.url.path.startswith("/admin"):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        if request.url.path.startswith(("/admin", "/account", "/privacy")):
             response.headers["Content-Security-Policy"] = (
                 "default-src 'self'; img-src 'self' data:; style-src 'unsafe-inline'; "
                 "script-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'"
@@ -73,6 +75,7 @@ def create_app() -> FastAPI:
     for module in (auth, users, coolers, sponsors):
         app.include_router(module.router)
     app.include_router(admin_web.router)  # web admin panel at /admin
+    app.include_router(public_web.router)  # /privacy and /account/delete
 
     upload_dir = Path(settings.upload_dir)
     (upload_dir / "photos").mkdir(parents=True, exist_ok=True)

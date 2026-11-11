@@ -596,24 +596,6 @@ abstract class AppLocalizations {
   /// **'Uploading…'**
   String get uploading;
 
-  /// No description provided for @thanksConfirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Thanks for confirming! +5 points'**
-  String get thanksConfirm;
-
-  /// No description provided for @statusUpdatedPoints.
-  ///
-  /// In en, this message translates to:
-  /// **'Status updated. +10 points'**
-  String get statusUpdatedPoints;
-
-  /// No description provided for @reportReviewedPoints.
-  ///
-  /// In en, this message translates to:
-  /// **'Thanks! Your report will be reviewed. +10 points'**
-  String get reportReviewedPoints;
-
   /// No description provided for @photoAdded.
   ///
   /// In en, this message translates to:
@@ -991,6 +973,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Earn +50 points for each approved cooler. At 500 points your additions go live instantly.'**
   String get onb3Body;
+
+  /// No description provided for @thanksConfirmPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for confirming! +{points} points'**
+  String thanksConfirmPoints(int points);
+
+  /// No description provided for @thanksConfirmNoPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for confirming!'**
+  String get thanksConfirmNoPoints;
+
+  /// No description provided for @statusUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Status updated. Thank you!'**
+  String get statusUpdated;
+
+  /// No description provided for @reportReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks! Your report will be reviewed. You earn 10 points if it is accepted.'**
+  String get reportReviewed;
+
+  /// No description provided for @errTooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Try again in {minutes} min.'**
+  String errTooManyAttempts(int minutes);
+
+  /// No description provided for @errWrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong password.'**
+  String get errWrongPassword;
+
+  /// No description provided for @errStatusUnchanged.
+  ///
+  /// In en, this message translates to:
+  /// **'The cooler already has this status.'**
+  String get errStatusUnchanged;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your account, points and history. Coolers and photos you added stay on the map. Enter your password to confirm.'**
+  String get deleteAccountBody;
+
+  /// No description provided for @deleteAccountDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account was deleted.'**
+  String get deleteAccountDone;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @errOpenLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the page.'**
+  String get errOpenLink;
 }
 
 class _AppLocalizationsDelegate

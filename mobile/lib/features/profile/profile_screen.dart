@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/config.dart';
 import '../../core/error_text.dart';
 import '../../core/locale.dart';
 import '../../core/session.dart';
@@ -9,6 +11,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/ui.dart';
 import '../../shared/language_picker.dart';
 import '../sponsors/sponsors_list_screen.dart';
+import 'delete_account_dialog.dart';
 import 'my_submissions_screen.dart';
 import 'profile_repository.dart';
 
@@ -131,11 +134,37 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const Divider(height: 1),
               ListTile(
-                leading: const Icon(Icons.logout, color: AppColors.broken),
-                title: Text(l.logout, style: const TextStyle(color: AppColors.broken)),
+                leading: const Icon(Icons.privacy_tip_outlined),
+                title: Text(l.privacyPolicy),
+                trailing: const Icon(Icons.open_in_new, size: 18),
+                onTap: () async {
+                  final url = Uri.parse(AppConfig.absoluteUrl('/privacy'));
+                  var opened = false;
+                  try {
+                    opened = await launchUrl(url, mode: LaunchMode.externalApplication);
+                  } catch (_) {}
+                  if (!opened && context.mounted) showSnack(context, l.errOpenLink, error: true);
+                },
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: Text(l.logout),
                 onTap: () async {
                   await ref.read(sessionProvider.notifier).logout();
                   if (context.mounted) Navigator.of(context).pop();
+                },
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.delete_forever_outlined, color: AppColors.broken),
+                title: Text(l.deleteAccount, style: const TextStyle(color: AppColors.broken)),
+                onTap: () async {
+                  final deleted = await showDeleteAccountDialog(context);
+                  if (deleted && context.mounted) {
+                    showSnack(context, l.deleteAccountDone);
+                    Navigator.of(context).pop();
+                  }
                 },
               ),
             ]),

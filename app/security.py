@@ -21,28 +21,57 @@ from app.models import User
 _ISSUER = "sabil-api"
 _AUD_USER = "sabil-user"
 _AUD_ADMIN = "sabil-admin"
-_PBKDF2_ITERATIONS = 260_000
 
 _bearer = HTTPBearer(auto_error=False)
 
 
 # ── Passwords ────────────────────────────────────────────────────────────────
-# PBKDF2 is deliberately slow (~0.2 s); run it in a thread so it never blocks
-# other requests.
+# PBKDF2-HMAC-SHA256. Stored as  pbkdf2_sha256$<iterations>$<salt>$<hash>  so
+# the work factor can be raised later; older "salt$hash" values (260,000
+# iterations) still verify and are upgraded at the next login.
+# Hashing is deliberately slow, so it runs in a thread.
+
+_LEGACY_ITERATIONS = 260_000
+_SCHEME = "pbkdf2_sha256"
+
+
+def _derive(password: str, salt: str, iterations: int) -> str:
+    return hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), iterations).hex()
+
 
 def _hash_sync(password: str) -> str:
+    iterations = get_settings().password_iterations
     salt = secrets.token_hex(16)
-    dk = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), _PBKDF2_ITERATIONS)
-    return f"{salt}${dk.hex()}"
+    return f"{_SCHEME}${iterations}${salt}${_derive(password, salt, iterations)}"
+
+
+def _hash_legacy_for_tests(password: str) -> str:
+    salt = secrets.token_hex(16)
+    return f"{salt}${_derive(password, salt, _LEGACY_ITERATIONS)}"
+
+
+def _parse(hashed: str) -> tuple[int, str, str] | None:
+    parts = hashed.split("$")
+    if len(parts) == 4 and parts[0] == _SCHEME and parts[1].isdigit():
+        return int(parts[1]), parts[2], parts[3]
+    if len(parts) == 2:
+        return _LEGACY_ITERATIONS, parts[0], parts[1]
+    return None
 
 
 def _verify_sync(password: str, hashed: str) -> bool:
-    try:
-        salt, dk_hex = hashed.split("$", 1)
-    except ValueError:
+    parsed = _parse(hashed)
+    if parsed is None:
         return False
-    dk = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), _PBKDF2_ITERATIONS)
-    return secrets.compare_digest(dk.hex(), dk_hex)
+    iterations, salt, expected = parsed
+    return secrets.compare_digest(_derive(password, salt, iterations), expected)
+
+
+def needs_rehash(hashed: str) -> bool:
+    if not hashed.startswith(_SCHEME + "$"):
+        return True  # old "salt$hash" format
+    parsed = _parse(hashed)
+    return parsed is None or parsed[0] < get_settings().password_iterations
 
 
 async def hash_password(password: str) -> str:
@@ -51,6 +80,12 @@ async def hash_password(password: str) -> str:
 
 async def verify_password(password: str, hashed: str) -> bool:
     return await run_in_threadpool(_verify_sync, password, hashed)
+
+
+async def burn_time_like_a_real_check(password: str) -> None:
+    """Spend the same time as a real password check when the username does not
+    exist, so response time does not reveal which usernames are registered."""
+    await run_in_threadpool(_derive, password, "0" * 32, get_settings().password_iterations)
 
 
 # ── JWT (HS256) ──────────────────────────────────────────────────────────────

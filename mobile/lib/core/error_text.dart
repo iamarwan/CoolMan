@@ -20,7 +20,11 @@ String errorText(AppLocalizations l, Object error) {
     'photo_too_large' => l.errPhotoTooLarge,
     'photo_invalid' => l.errPhotoInvalid,
     'validation_error' => l.errValidation,
-    // Unknown server error: show its message if any, else a generic one.
-    _ => error.message.isEmpty ? l.errGeneric : error.message,
+    'too_many_attempts' || 'rate_limited' => l.errTooManyAttempts(error.retryAfterMinutes ?? 15),
+    'wrong_password' => l.errWrongPassword,
+    'status_unchanged' => l.errStatusUnchanged,
+    // Unknown code: server messages are English only, so show a translated
+    // generic message rather than English text in an Arabic screen.
+    _ => l.errGeneric,
   };
 }

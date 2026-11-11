@@ -78,6 +78,12 @@ class SessionController extends Notifier<SessionState> {
     }
   }
 
+  /// Permanently deletes the account on the server, then logs out.
+  Future<void> deleteAccount(String password) async {
+    await _api.delete('/auth/me', {'password': password});
+    await logout();
+  }
+
   void updateScore(int score) {
     final p = state.profile;
     if (p != null) state = SessionState(token: state.token, profile: p.withScore(score));

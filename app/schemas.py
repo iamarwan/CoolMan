@@ -153,4 +153,5 @@ class CoolerRead(BaseModel):
 class ConfirmResponse(BaseModel):
     message: str
     trust_score: int
+    points_awarded: int = 0
     last_verified_at: datetime

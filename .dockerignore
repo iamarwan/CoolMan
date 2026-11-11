@@ -8,3 +8,5 @@ uploads
 **/__pycache__
 deploy/.env.production
 *.md
+.dev-secret
+.github
