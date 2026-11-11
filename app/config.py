@@ -49,6 +49,12 @@ class Settings(BaseSettings):
     # empty in production unless you add a separate web front-end.
     cors_origins: str = "*"
 
+    # The "be there" rule: confirm, report, add photos and add coolers only
+    # within this distance of the spot. 0 switches the rule off (development).
+    max_action_distance_m: int = 50
+    # Refuse a position whose reported GPS error is larger than this.
+    max_gps_accuracy_m: int = 40
+
     # Abuse limits (per 15 minutes unless stated).
     login_failures_per_user_ip: int = 10
     login_failures_per_user: int = 30

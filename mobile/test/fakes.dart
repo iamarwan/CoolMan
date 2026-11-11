@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/misc.dart';
 import 'package:sabil/core/api_client.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:sabil/core/cache_store.dart';
+import 'package:sabil/core/location_service.dart';
 import 'package:sabil/core/providers.dart';
 import 'package:sabil/features/cooler/cooler_repository.dart';
 import 'package:sabil/features/map/bbox.dart';
@@ -29,6 +31,7 @@ class FakeCoolerRepository extends CoolerRepository {
   final List<Bbox> pinRequests = [];
   Cooler detailResult = cooler();
   int confirmCalls = 0;
+  Fix? confirmedAt;
 
   @override
   Future<({List<CoolerPin> pins, bool truncated})> pins(Bbox area, {int limit = 600}) {
@@ -40,13 +43,33 @@ class FakeCoolerRepository extends CoolerRepository {
   Future<Cooler> detail(String id) async => detailResult;
 
   @override
-  Future<({int trustScore, int pointsAwarded, DateTime verifiedAt})> confirm(String id) async {
+  Future<({int trustScore, int pointsAwarded, DateTime verifiedAt})> confirm(String id, {Fix? at}) async {
     confirmCalls++;
+    confirmedAt = at;
     return (trustScore: 5, pointsAwarded: 5, verifiedAt: DateTime.now());
   }
 }
 
-List<Override> baseOverrides(FakeCoolerRepository repo, {CacheStore? cache}) => [
+/// A phone standing [fix] (default: 12 m from the test cooler, good GPS).
+class FakeLocationService extends LocationService {
+  FakeLocationService([this.fix]);
+
+  final Fix? fix;
+
+  static Fix nearCooler() => Fix(const LatLng(29.9601, 31.25005), 8, DateTime.now());
+  static Fix farFromCooler() => Fix(const LatLng(29.9620, 31.25), 8, DateTime.now());
+
+  @override
+  Future<Fix?> lastKnown() async => fix;
+
+  @override
+  Future<LocationResult> current({bool precise = false}) async =>
+      fix == null ? const LocationResult.failed(LocationProblem.denied) : LocationResult.found(fix!);
+}
+
+List<Override> baseOverrides(FakeCoolerRepository repo, {CacheStore? cache, Fix? at, bool noLocation = false}) => [
       cacheStoreProvider.overrideWithValue(cache ?? CacheStore(null)),
       coolerRepositoryProvider.overrideWithValue(repo),
+      locationServiceProvider.overrideWithValue(
+          FakeLocationService(noLocation ? null : (at ?? FakeLocationService.nearCooler()))),
     ];

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}Admin{% endblock %} · Sabil admin</title>
+<title>{% block title %}Admin{% endblock %} · Nwasy admin</title>
 <style>
   :root { --primary:#0F766E; --ink:#1E293B; --muted:#64748B; --line:#E2E8F0; --bg:#F8FAFC;
           --ok:#059669; --warn:#D97706; --bad:#DC2626; --info:#2563EB; }
@@ -48,7 +48,7 @@
 <body>
 {% block header %}
 <header><div class="wrap">
-  <span class="brand">Sabil admin</span>
+  <span class="brand">Nwasy admin</span>
   {% set total = counts.new + counts.status + counts.photos %}
   <a href="/admin/queue" class="{{ 'on' if request.url.path.startswith('/admin/queue') }}">Review queue {% if total %}<span class="badge">{{ total }}</span>{% endif %}</a>
   <a href="/admin/coolers" class="{{ 'on' if request.url.path.startswith('/admin/coolers') }}">Coolers</a>

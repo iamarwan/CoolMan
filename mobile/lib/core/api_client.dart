@@ -11,7 +11,7 @@ import 'package:http_parser/http_parser.dart';
 import 'config.dart';
 
 class ApiException implements Exception {
-  const ApiException(this.code, this.message, {this.status, this.retryAfterMinutes});
+  const ApiException(this.code, this.message, {this.status, this.retryAfterMinutes, this.distanceM});
 
   /// Stable code from the server (e.g. "cooler_duplicate") or a client-side
   /// one: "offline", "timeout", "server_error", "validation_error", "unknown".
@@ -19,6 +19,9 @@ class ApiException implements Exception {
   final String message;
   final int? status;
   final int? retryAfterMinutes;
+
+  /// For "too_far": how far the server measured the user from the spot.
+  final int? distanceM;
 
   bool get isAuthError => status == 401;
 
@@ -147,6 +150,7 @@ class ApiClient {
           detail,
           status: status,
           retryAfterMinutes: body['retry_after_minutes'] as int?,
+          distanceM: body['distance_m'] as int?,
         );
       }
       if (detail is List) {

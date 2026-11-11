@@ -18,7 +18,3 @@ final leaderboardProvider = FutureProvider.autoDispose<List<LeaderboardEntry>>((
 final mySubmissionsProvider = FutureProvider.autoDispose<List<Cooler>>(
   (ref) => ref.watch(coolerRepositoryProvider).mine(),
 );
-
-final sponsorsProvider = FutureProvider.autoDispose<List<Sponsor>>(
-  (ref) => ref.watch(coolerRepositoryProvider).sponsors(),
-);

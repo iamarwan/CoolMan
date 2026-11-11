@@ -28,15 +28,16 @@ void main() {
     container.read(localeProvider.notifier).set(const Locale('ar'));
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: const SabilApp(home: Scaffold(body: CoolerSheet(coolerId: 'c1'))),
+      child: const NwasyApp(home: Scaffold(body: CoolerSheet(coolerId: 'c1'))),
     ));
     await tester.pumpAndSettle();
 
     expect(Directionality.of(tester.element(find.byType(CoolerSheet))), TextDirection.rtl);
-    expect(find.text('ما زالت تعمل'), findsOneWidget); // Still working
+    expect(find.text('ما زالت تعمل (+5 نقاط)'), findsOneWidget); // Still working
     expect(find.text('تعمل'), findsOneWidget); // Working
     expect(find.text('آخر تأكيد منذ 25 دقيقة'), findsOneWidget);
     expect(find.text('الإبلاغ: فارغة'), findsOneWidget);
+    expect(find.textContaining('أنت عند هذا المبرد'), findsOneWidget); // within 50 m
     container.dispose();
   });
 }

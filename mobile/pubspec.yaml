@@ -1,5 +1,5 @@
 name: sabil
-description: A water cooler locator app for Egypt.
+description: Nwasy - find what is on the street corner, starting with free drinking water.
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -32,3 +32,13 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  # One family for Arabic and Latin (SIL Open Font License, see assets/fonts/OFL.txt).
+  fonts:
+    - family: IBMPlexSansArabic
+      fonts:
+        - asset: assets/fonts/IBMPlexSansArabic-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/IBMPlexSansArabic-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/IBMPlexSansArabic-Bold.ttf
+          weight: 700

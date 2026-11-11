@@ -54,6 +54,7 @@ void main() {
     expect(ago(const Duration(minutes: 25)), 'منذ 25 دقيقة');
     expect(ago(const Duration(days: 3)), 'منذ 3 أيام');
     expect(formatDistance(l, 2500), '2.5 كم');
-    expect(l.sponsorCoolerCount(2), 'مبردان');
+    expect(l.confirmedTimes(2), 'تم تأكيد عمله مرتين');
+    expect(l.confirmedTimes(5), 'تم تأكيد عمله 5 مرات');
   });
 }

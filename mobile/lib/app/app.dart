@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/locale.dart';
 import '../core/providers.dart';
 import '../core/session.dart';
-import '../features/map/map_screen.dart';
+import '../features/home/home_shell.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../l10n/app_localizations.dart';
-import '../shared/ui.dart';
+import 'theme.dart';
 
-class SabilApp extends ConsumerWidget {
-  const SabilApp({super.key, this.home});
+class NwasyApp extends ConsumerWidget {
+  const NwasyApp({super.key, this.home});
 
   /// Optional override, used by tests.
   final Widget? home;
@@ -24,18 +24,7 @@ class SabilApp extends ConsumerWidget {
       locale: ref.watch(localeProvider),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      theme: ThemeData(
-        colorSchemeSeed: AppColors.primary,
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
-        cardTheme: const CardThemeData(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-            side: BorderSide(color: AppColors.line),
-          ),
-        ),
-      ),
+      theme: buildTheme(),
       home: home ?? const _Root(),
     );
   }
@@ -62,5 +51,5 @@ class _RootState extends ConsumerState<_Root> {
 
   @override
   Widget build(BuildContext context) =>
-      _showOnboarding ? const OnboardingScreen() : const MapScreen();
+      _showOnboarding ? const OnboardingScreen() : const HomeShell();
 }

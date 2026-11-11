@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../core/api_client.dart';
+import '../../core/location_service.dart';
 import '../../core/providers.dart';
 import '../../models/cooler.dart';
 import '../map/bbox.dart';
@@ -43,6 +44,7 @@ class CoolerRepository {
     required CoolerStatus status,
     bool? hasCups,
     CupsType? cupsType,
+    Fix? at,
   }) async {
     final json = await _api.post('/coolers', {
       'name': name,
@@ -51,15 +53,19 @@ class CoolerRepository {
       'status': status.api,
       'has_cups': hasCups,
       if (hasCups == true && cupsType != null) 'cups_type': cupsType.api,
+      if (at != null) 'user_location': at.toJson(),
     }) as Map<String, dynamic>;
     return Cooler.fromJson(json);
   }
 
-  Future<Cooler> reportStatus(String id, CoolerStatus status) async => Cooler.fromJson(
-      await _api.patch('/coolers/$id/status', {'status': status.api}) as Map<String, dynamic>);
+  Future<Cooler> reportStatus(String id, CoolerStatus status, {Fix? at}) async =>
+      Cooler.fromJson(await _api.patch('/coolers/$id/status', {
+        'status': status.api,
+        if (at != null) 'location': at.toJson(),
+      }) as Map<String, dynamic>);
 
-  Future<({int trustScore, int pointsAwarded, DateTime verifiedAt})> confirm(String id) async {
-    final json = await _api.post('/coolers/$id/confirm') as Map<String, dynamic>;
+  Future<({int trustScore, int pointsAwarded, DateTime verifiedAt})> confirm(String id, {Fix? at}) async {
+    final json = await _api.post('/coolers/$id/confirm', at?.toJson()) as Map<String, dynamic>;
     return (
       trustScore: json['trust_score'] as int,
       pointsAwarded: json['points_awarded'] as int? ?? 0,
@@ -68,17 +74,17 @@ class CoolerRepository {
     );
   }
 
-  Future<CoolerPhoto> uploadPhoto(String id, String filePath, PhotoCategory category) async =>
+  Future<CoolerPhoto> uploadPhoto(String id, String filePath, PhotoCategory category, {Fix? at}) async =>
       CoolerPhoto.fromJson(await _api.uploadFile(
         '/coolers/$id/photos',
         filePath: filePath,
-        fields: {'photo_category': category.api},
+        fields: {
+          'photo_category': category.api,
+          if (at != null) 'lat': '${at.position.latitude}',
+          if (at != null) 'lng': '${at.position.longitude}',
+          if (at?.accuracyM != null) 'accuracy': '${at!.accuracyM}',
+        },
       ) as Map<String, dynamic>);
-
-  Future<List<Sponsor>> sponsors() async {
-    final list = await _api.get('/sponsors') as List;
-    return [for (final s in list) Sponsor.fromJson(s as Map<String, dynamic>)];
-  }
 }
 
 final coolerRepositoryProvider =

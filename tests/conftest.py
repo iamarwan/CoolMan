@@ -16,6 +16,7 @@ os.environ["SABIL_DATABASE_URL"] = TEST_DB
 os.environ["SABIL_UPLOAD_DIR"] = tempfile.mkdtemp(prefix="sabil-test-uploads-")
 os.environ["SABIL_ENV"] = "development"
 os.environ["SABIL_PASSWORD_ITERATIONS"] = "1000"  # fast hashing in tests
+os.environ["SABIL_MAX_ACTION_DISTANCE_M"] = "0"  # distance rule is tested in test_distance.py
 
 import pytest  # noqa: E402
 from httpx import ASGITransport, AsyncClient  # noqa: E402

@@ -36,7 +36,7 @@ def create_app() -> FastAPI:
     settings.validate_for_runtime()
 
     app = FastAPI(
-        title="Sabil API",
+        title="Nwasy API",
         version="3.0.0",
         lifespan=lifespan,
         # Hide interactive docs in production.

@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Sabil",
+  "appTitle": "Nwasy",
   "tryAgain": "Try again",
   "retry": "Retry",
   "cancel": "Cancel",
@@ -170,21 +170,11 @@
       }
     }
   },
-  "stillWorking": "Still working",
-  "somethingChanged": "Something changed?",
   "addPhoto": "Add photo",
   "uploading": "Uploading…",
   "photoAdded": "Photo added. Thank you!",
   "photoSentForReview": "Photo sent for review. Thank you!",
-  "maintainedBy": "Maintained by {name}",
-  "@maintainedBy": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "verifiedSponsor": "Verified sponsor",
+  "verifiedSponsor": "Verified patron",
   "photoWhat": "What does the photo show?",
   "photoCooler": "The cooler",
   "photoCups": "The cups",
@@ -239,7 +229,6 @@
   "statConfirmations": "Confirmations",
   "statPhotos": "Photos",
   "mySubmissions": "My submissions",
-  "sponsors": "Sponsors",
   "logout": "Log out",
   "topContributors": "Top contributors",
   "you": "{name} (you)",
@@ -271,21 +260,11 @@
       }
     }
   },
-  "sponsorTitle": "Sponsor",
+  "sponsorTitle": "Patron",
   "sponsorTypeMosque": "Mosque",
-  "sponsorTypeIndividual": "Individual donor",
   "sponsorTypeNgo": "NGO",
   "sponsorTypeBusiness": "Local business",
-  "sponsorThanks": "This sponsor helps keep public water coolers working. Thank you!",
-  "sponsorsEmpty": "No sponsors yet.",
-  "sponsorCoolerCount": "{count, plural, =1{1 cooler} other{{count} coolers}}",
-  "@sponsorCoolerCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "sponsorThanks": "This patron helps keep free drinking water available here. Thank you!",
   "language": "Language",
   "languageSystem": "Phone default",
   "languageEnglish": "English",
@@ -294,7 +273,7 @@
   "onbNext": "Next",
   "onbStart": "Get started",
   "onb1Title": "Find clean water,\nsimple and free",
-  "onb1Body": "Sabil shows community-reported public water coolers near you, with up-to-date status.",
+  "onb1Body": "Nwasy shows the public water coolers near you, reported by people in the area, with up-to-date status.",
   "onb2Title": "Add and update\ncoolers around you",
   "onb2Body": "Spotted a public water cooler? Tap \"Add cooler\" to list it. Empty or broken? Report it so others know.",
   "onb3Title": "Earn trust\nand level up",
@@ -325,5 +304,133 @@
   "deleteAccountBody": "This permanently deletes your account, points and history. Coolers and photos you added stay on the map. Enter your password to confirm.",
   "deleteAccountDone": "Your account was deleted.",
   "privacyPolicy": "Privacy policy",
-  "errOpenLink": "Could not open the page."
+  "errOpenLink": "Could not open the page.",
+  "navMap": "Map",
+  "navReports": "My reports",
+  "navAccount": "Account",
+  "filterAll": "All",
+  "filterWorking": "Working",
+  "filterCups": "Has cups",
+  "filterPatron": "With patron",
+  "nearestWorking": "Nearest working cooler",
+  "patronBadge": "Patron",
+  "details": "Details",
+  "distance": "Distance",
+  "cups": "Cups",
+  "stepOf": "Step {current} of {total}",
+  "@stepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "placeTitle": "Put the pin on the cooler",
+  "placeFree": "Move the map until the pin is on the cooler.",
+  "placeInRange": "Within reach: {meters} m from where you stand",
+  "@placeInRange": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "placeTooFar": "Too far ({distance}). Stand within {max} m of the cooler.",
+  "@placeTooFar": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "rangeLocating": "Getting an accurate location…",
+  "rangeNeedLocation": "Turn on location to contribute.",
+  "rangeNear": "You are at this cooler ({meters} m). You can confirm it now.",
+  "@rangeNear": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "rangeFar": "Get within {max} m to confirm. You are {distance} away.",
+  "@rangeFar": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "rangeInaccurate": "Your location is not accurate enough yet. Step into the open and try again.",
+  "errTooFar": "You are {distance} m away. Get within {max} m of the cooler.",
+  "@errTooFar": {
+    "placeholders": {
+      "distance": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "stillWorkingPoints": "Still working (+5 points)",
+  "confirmedTimes": "{count, plural, =0{Not confirmed yet} =1{Confirmed working once} other{Confirmed working {count} times}}",
+  "@confirmedTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "photosTitle": "Photos ({count})",
+  "@photosTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waitingReview": "Waiting for review. Only you can see this cooler for now.",
+  "patronFamily": "Family dedication",
+  "patronImpact": "Impact",
+  "lastChecked": "Last confirmed",
+  "viewOnMap": "Back to the map",
+  "cupsDisposableHint": "Single-use cups are provided",
+  "cupsSharedHint": "One cup shared by everyone",
+  "cupsNoneHint": "Bring your own bottle",
+  "cupsUnknownHint": "I did not check",
+  "submitCooler": "Submit (+50 points when approved)",
+  "reviewNote": "Every new cooler is reviewed before it appears on the map for everyone.",
+  "locationConfirmed": "Location confirmed",
+  "trustScore": "Trust score",
+  "trustTrack": "Verified contributor track",
+  "myActivity": "My activity",
+  "leaderboard": "Leaderboard",
+  "rankValue": "#{rank}",
+  "@rankValue": {
+    "placeholders": {
+      "rank": {
+        "type": "int"
+      }
+    }
+  },
+  "preferences": "Settings",
+  "missionTitle": "Why Nwasy",
+  "missionBody": "Nwasy maps the useful things on every street corner, starting with free cold drinking water, and keeps the map accurate with the help of people nearby.",
+  "signInPrompt": "Log in to see the coolers you added and the reports you sent.",
+  "onbAllowTitle": "Allow location to find water nearby",
+  "onbAllowBody": "Nwasy uses your location only while you use the app: to show coolers near you and the walking distance, and to check you are at a cooler when you confirm it.",
+  "onbAllow": "Allow location access",
+  "onbNotNow": "Not now",
+  "onbNoTracking": "No tracking in the background",
+  "onbFifty": "Checked within 50 m"
 }

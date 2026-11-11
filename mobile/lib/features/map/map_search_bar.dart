@@ -15,11 +15,11 @@ class MapSearchBar extends ConsumerStatefulWidget {
   const MapSearchBar({
     super.key,
     required this.onSelected,
-    required this.onProfile,
+    required this.onAccount,
   });
 
   final void Function(Cooler cooler) onSelected;
-  final VoidCallback onProfile;
+  final VoidCallback onAccount;
 
   @override
   ConsumerState<MapSearchBar> createState() => _MapSearchBarState();
@@ -83,16 +83,21 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final loggedIn = ref.watch(sessionProvider.select((s) => s.isLoggedIn));
+    final session = ref.watch(sessionProvider);
+    final initial = session.profile?.username.characters.first.toUpperCase();
     return Column(mainAxisSize: MainAxisSize.min, children: [
-      Material(
-        elevation: 2,
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white,
+      Container(
+        height: 52,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          border: Border.all(color: AppColors.line),
+          boxShadow: cardShadow,
+        ),
         child: Row(children: [
           const Padding(
-            padding: EdgeInsetsDirectional.only(start: 14, end: 8),
-            child: Icon(Icons.water_drop_rounded, color: AppColors.primary),
+            padding: EdgeInsetsDirectional.only(start: 14, end: 10),
+            child: Icon(Icons.search, color: AppColors.muted),
           ),
           Expanded(
             child: TextField(
@@ -103,7 +108,13 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
               onSubmitted: (t) => t.trim().isEmpty ? null : _search(t.trim()),
               decoration: InputDecoration(
                 hintText: l.searchHint,
+                hintStyle: const TextStyle(color: AppColors.muted),
+                filled: false,
                 border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+                isCollapsed: true,
               ),
             ),
           ),
@@ -114,12 +125,23 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
             )
           else if (_controller.text.isNotEmpty)
             IconButton(onPressed: _clear, icon: const Icon(Icons.close), tooltip: l.searchClear),
-          IconButton(
-            onPressed: widget.onProfile,
-            tooltip: loggedIn ? l.profile : l.authLogin,
-            icon: Icon(
-              loggedIn ? Icons.account_circle : Icons.account_circle_outlined,
-              color: loggedIn ? AppColors.primary : AppColors.muted,
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 8),
+            child: Tooltip(
+              message: session.isLoggedIn ? l.navAccount : l.authLogin,
+              child: InkWell(
+                onTap: widget.onAccount,
+                customBorder: const CircleBorder(),
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.primaryContainer,
+                  child: initial == null
+                      ? const Icon(Icons.person_outline, size: 20, color: AppColors.primaryDark)
+                      : Text(initial,
+                          style: const TextStyle(
+                              color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+                ),
+              ),
             ),
           ),
         ]),
@@ -129,8 +151,8 @@ class _MapSearchBarState extends ConsumerState<MapSearchBar> {
           padding: const EdgeInsets.only(top: 6),
           child: Material(
             elevation: 2,
-            borderRadius: BorderRadius.circular(16),
-            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            color: AppColors.surface,
             clipBehavior: Clip.antiAlias,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 280),

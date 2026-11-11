@@ -2,6 +2,7 @@
 
 import '../l10n/app_localizations.dart';
 import 'api_client.dart';
+import 'config.dart';
 
 String errorText(AppLocalizations l, Object error) {
   if (error is! ApiException) return l.errGeneric;
@@ -23,6 +24,9 @@ String errorText(AppLocalizations l, Object error) {
     'too_many_attempts' || 'rate_limited' => l.errTooManyAttempts(error.retryAfterMinutes ?? 15),
     'wrong_password' => l.errWrongPassword,
     'status_unchanged' => l.errStatusUnchanged,
+    'too_far' => l.errTooFar(error.distanceM ?? 0, AppConfig.maxActionDistanceM),
+    'location_required' => l.rangeNeedLocation,
+    'location_inaccurate' => l.rangeInaccurate,
     // Unknown code: server messages are English only, so show a translated
     // generic message rather than English text in an Arabic screen.
     _ => l.errGeneric,

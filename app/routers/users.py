@@ -32,6 +32,7 @@ class UserStats(BaseModel):
     coolers_approved: int
     confirmations: int
     photos: int
+    rank: int
 
 
 @router.get("/me/stats", response_model=UserStats)
@@ -46,6 +47,13 @@ async def my_stats(user: User = Depends(get_current_user), db: AsyncSession = De
         )
     )
     photos = await db.scalar(select(func.count()).where(CoolerPhoto.user_id == user.id))
+    # Rank: people with more points, then earlier sign-ups among equals.
+    ahead = await db.scalar(
+        select(func.count(User.id)).where(
+            (User.trust_score > user.trust_score)
+            | ((User.trust_score == user.trust_score) & (User.created_at < user.created_at))
+        )
+    )
     return UserStats(
         trust_score=user.trust_score,
         trusted_threshold=AUTO_APPROVE_THRESHOLD,
@@ -53,4 +61,5 @@ async def my_stats(user: User = Depends(get_current_user), db: AsyncSession = De
         coolers_approved=approved or 0,
         confirmations=confirms or 0,
         photos=photos or 0,
+        rank=(ahead or 0) + 1,
     )

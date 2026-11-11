@@ -36,6 +36,7 @@ class UserStats {
     required this.coolersApproved,
     required this.confirmations,
     required this.photos,
+    this.rank,
   });
 
   final int trustScore;
@@ -44,6 +45,7 @@ class UserStats {
   final int coolersApproved;
   final int confirmations;
   final int photos;
+  final int? rank;
 
   factory UserStats.fromJson(Map<String, dynamic> j) => UserStats(
         trustScore: j['trust_score'] as int? ?? 0,
@@ -52,5 +54,6 @@ class UserStats {
         coolersApproved: j['coolers_approved'] as int? ?? 0,
         confirmations: j['confirmations'] as int? ?? 0,
         photos: j['photos'] as int? ?? 0,
+        rank: j['rank'] as int?,
       );
 }

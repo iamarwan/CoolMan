@@ -36,7 +36,7 @@ Future<void> main() async {
       // Network errors are shown to the user with a retry button instead of
       // silently retrying in the background.
       retry: (_, _) => null,
-      child: const SabilApp(),
+      child: const NwasyApp(),
     ));
   }, (error, stack) {
     debugPrint('Uncaught error: $error\n$stack');

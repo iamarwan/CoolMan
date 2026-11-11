@@ -92,6 +92,15 @@ class PhotoRead(BaseModel):
 
 # ── Coolers ──────────────────────────────────────────────────────────────────
 
+class UserLocation(BaseModel):
+    """Where the user's phone says it is, sent with each contribution.
+    It is checked and then discarded; it is never stored."""
+
+    lat: float = Field(..., ge=-90, le=90)
+    lng: float = Field(..., ge=-180, le=180)
+    accuracy: Optional[float] = Field(None, ge=0, le=100_000)  # metres
+
+
 class CoolerCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     latitude: float = Field(..., ge=-90, le=90)
@@ -100,6 +109,7 @@ class CoolerCreate(BaseModel):
     has_cups: Optional[bool] = None
     cups_type: Optional[CupsType] = None
     is_wheelchair_accessible: Optional[bool] = None
+    user_location: Optional[UserLocation] = None
 
     @field_validator("name")
     @classmethod
@@ -109,6 +119,7 @@ class CoolerCreate(BaseModel):
 
 class StatusUpdate(BaseModel):
     status: CoolerStatus
+    location: Optional[UserLocation] = None
 
 
 class CoolerPin(BaseModel):
@@ -120,6 +131,7 @@ class CoolerPin(BaseModel):
     status: CoolerStatus
     has_cups: Optional[bool] = None
     sponsored: bool = False
+    pending: bool = False  # the caller's own cooler, still waiting for review
 
 
 class PinsResponse(BaseModel):
@@ -146,6 +158,7 @@ class CoolerRead(BaseModel):
     user_id: Optional[uuid.UUID] = None
     sponsor: Optional[SponsorRead] = None
     photos: list[PhotoRead] = []
+    confirmations_count: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 

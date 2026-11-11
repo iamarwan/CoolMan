@@ -13,7 +13,7 @@ async def test_map_returns_only_approved_pins_inside_bbox(client):
     body = r.json()
     assert [p["id"] for p in body["pins"]] == [inside]
     assert body["truncated"] is False
-    assert set(body["pins"][0]) == {"id", "lat", "lng", "status", "has_cups", "sponsored"}
+    assert set(body["pins"][0]) == {"id", "lat", "lng", "status", "has_cups", "sponsored", "pending"}
 
 
 async def test_map_truncation_and_invalid_bbox(client):

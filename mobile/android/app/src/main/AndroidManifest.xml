@@ -14,7 +14,7 @@
       reinstall, a known cause of start-up crashes with secure storage.
     -->
     <application
-        android:label="sabil"
+        android:label="Nwasy"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="${usesCleartextTraffic}"

@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'سبيل';
+  String get appTitle => 'نواصي';
 
   @override
   String get tryAgain => 'حاول مرة أخرى';
@@ -323,12 +323,6 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get stillWorking => 'ما زالت تعمل';
-
-  @override
-  String get somethingChanged => 'هل تغيّر شيء؟';
-
-  @override
   String get addPhoto => 'إضافة صورة';
 
   @override
@@ -339,11 +333,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get photoSentForReview => 'تم إرسال الصورة للمراجعة. شكرًا لك!';
-
-  @override
-  String maintainedBy(String name) {
-    return 'برعاية $name';
-  }
 
   @override
   String get verifiedSponsor => 'راعٍ موثّق';
@@ -433,9 +422,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mySubmissions => 'إضافاتي';
 
   @override
-  String get sponsors => 'الرعاة';
-
-  @override
   String get logout => 'تسجيل الخروج';
 
   @override
@@ -489,9 +475,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sponsorTypeMosque => 'مسجد';
 
   @override
-  String get sponsorTypeIndividual => 'متبرع فرد';
-
-  @override
   String get sponsorTypeNgo => 'جمعية أهلية';
 
   @override
@@ -499,24 +482,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get sponsorThanks =>
-      'يساعد هذا الراعي في استمرار عمل مبردات المياه العامة. شكرًا لهم!';
-
-  @override
-  String get sponsorsEmpty => 'لا يوجد رعاة بعد.';
-
-  @override
-  String sponsorCoolerCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count مبردًا',
-      few: '$count مبردات',
-      two: 'مبردان',
-      one: 'مبرد واحد',
-      zero: 'لا مبردات',
-    );
-    return '$_temp0';
-  }
+      'يساعد هذا الراعي في توفير مياه الشرب المجانية هنا. شكرًا لهم!';
 
   @override
   String get language => 'اللغة';
@@ -544,7 +510,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onb1Body =>
-      'يعرض لك سبيل مبردات المياه العامة القريبة منك كما يبلغ عنها المجتمع، مع حالتها المحدثة.';
+      'يعرض لك نواصي مبردات المياه العامة القريبة منك كما يبلغ عنها أهل المنطقة، مع حالتها المحدثة.';
 
   @override
   String get onb2Title => 'أضف وحدّث\nالمبردات من حولك';
@@ -604,4 +570,196 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errOpenLink => 'تعذّر فتح الصفحة.';
+
+  @override
+  String get navMap => 'الخريطة';
+
+  @override
+  String get navReports => 'بلاغاتي';
+
+  @override
+  String get navAccount => 'حسابي';
+
+  @override
+  String get filterAll => 'الكل';
+
+  @override
+  String get filterWorking => 'تعمل الآن';
+
+  @override
+  String get filterCups => 'بها أكواب';
+
+  @override
+  String get filterPatron => 'برعاية';
+
+  @override
+  String get nearestWorking => 'أقرب مبرد يعمل';
+
+  @override
+  String get patronBadge => 'راعٍ';
+
+  @override
+  String get details => 'التفاصيل';
+
+  @override
+  String get distance => 'المسافة';
+
+  @override
+  String get cups => 'الأكواب';
+
+  @override
+  String stepOf(int current, int total) {
+    return 'الخطوة $current من $total';
+  }
+
+  @override
+  String get placeTitle => 'ضع الدبوس على المبرد';
+
+  @override
+  String get placeFree => 'حرّك الخريطة حتى يكون الدبوس على المبرد.';
+
+  @override
+  String placeInRange(int meters) {
+    return 'في النطاق: على بُعد $meters م من مكانك';
+  }
+
+  @override
+  String placeTooFar(String distance, int max) {
+    return 'بعيد ($distance). قف على بُعد $max م من المبرد على الأكثر.';
+  }
+
+  @override
+  String get rangeLocating => 'جارٍ تحديد موقعك بدقة…';
+
+  @override
+  String get rangeNeedLocation => 'فعّل خدمة الموقع لتتمكن من المساهمة.';
+
+  @override
+  String rangeNear(int meters) {
+    return 'أنت عند هذا المبرد ($meters م). يمكنك التأكيد الآن.';
+  }
+
+  @override
+  String rangeFar(int max, String distance) {
+    return 'اقترب حتى $max م لتتمكن من التأكيد. أنت على بُعد $distance.';
+  }
+
+  @override
+  String get rangeInaccurate =>
+      'موقعك غير دقيق بعد. قف في مكان مفتوح وحاول مرة أخرى.';
+
+  @override
+  String errTooFar(int distance, int max) {
+    return 'أنت على بُعد $distance م. اقترب حتى $max م من المبرد.';
+  }
+
+  @override
+  String get stillWorkingPoints => 'ما زالت تعمل (+5 نقاط)';
+
+  @override
+  String confirmedTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم تأكيد عمله $count مرة',
+      few: 'تم تأكيد عمله $count مرات',
+      two: 'تم تأكيد عمله مرتين',
+      one: 'تم تأكيد عمله مرة واحدة',
+      zero: 'لم يتم تأكيده بعد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String photosTitle(int count) {
+    return 'الصور ($count)';
+  }
+
+  @override
+  String get waitingReview =>
+      'في انتظار المراجعة. لا يرى هذا المبرد غيرك حاليًا.';
+
+  @override
+  String get patronFamily => 'وقف عائلي';
+
+  @override
+  String get patronImpact => 'الأثر';
+
+  @override
+  String get lastChecked => 'آخر تأكيد';
+
+  @override
+  String get viewOnMap => 'العودة للخريطة';
+
+  @override
+  String get cupsDisposableHint => 'تتوفر أكواب للاستخدام مرة واحدة';
+
+  @override
+  String get cupsSharedHint => 'كوب واحد يستخدمه الجميع';
+
+  @override
+  String get cupsNoneHint => 'أحضر زجاجتك معك';
+
+  @override
+  String get cupsUnknownHint => 'لم أتحقق';
+
+  @override
+  String get submitCooler => 'إرسال (+50 نقطة عند الموافقة)';
+
+  @override
+  String get reviewNote =>
+      'تتم مراجعة كل مبرد جديد قبل ظهوره للجميع على الخريطة.';
+
+  @override
+  String get locationConfirmed => 'تم تأكيد الموقع';
+
+  @override
+  String get trustScore => 'نقاط الثقة';
+
+  @override
+  String get trustTrack => 'مسار المساهم الموثّق';
+
+  @override
+  String get myActivity => 'نشاطي';
+
+  @override
+  String get leaderboard => 'لوحة المتصدرين';
+
+  @override
+  String rankValue(int rank) {
+    return '#$rank';
+  }
+
+  @override
+  String get preferences => 'الإعدادات';
+
+  @override
+  String get missionTitle => 'لماذا نواصي';
+
+  @override
+  String get missionBody =>
+      'نواصي يرسم خريطة ما ينفع الناس على كل ناصية، بدايةً بمياه الشرب الباردة المجانية، ويحافظ على دقتها بمساعدة أهل المنطقة.';
+
+  @override
+  String get signInPrompt =>
+      'سجّل الدخول لترى المبردات التي أضفتها والبلاغات التي أرسلتها.';
+
+  @override
+  String get onbAllowTitle => 'اسمح بالموقع للعثور على الماء القريب';
+
+  @override
+  String get onbAllowBody =>
+      'يستخدم نواصي موقعك أثناء استخدام التطبيق فقط: لعرض المبردات القريبة ومسافة السير، وللتأكد من وجودك عند المبرد وقت التأكيد.';
+
+  @override
+  String get onbAllow => 'السماح بالوصول للموقع';
+
+  @override
+  String get onbNotNow => 'ليس الآن';
+
+  @override
+  String get onbNoTracking => 'لا تتبّع في الخلفية';
+
+  @override
+  String get onbFifty => 'تحقق في حدود 50 م';
 }

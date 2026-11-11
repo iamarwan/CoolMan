@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sabil'**
+  /// **'Nwasy'**
   String get appTitle;
 
   /// No description provided for @tryAgain.
@@ -572,18 +572,6 @@ abstract class AppLocalizations {
   /// **'Last confirmed {time}'**
   String lastConfirmed(String time);
 
-  /// No description provided for @stillWorking.
-  ///
-  /// In en, this message translates to:
-  /// **'Still working'**
-  String get stillWorking;
-
-  /// No description provided for @somethingChanged.
-  ///
-  /// In en, this message translates to:
-  /// **'Something changed?'**
-  String get somethingChanged;
-
   /// No description provided for @addPhoto.
   ///
   /// In en, this message translates to:
@@ -608,16 +596,10 @@ abstract class AppLocalizations {
   /// **'Photo sent for review. Thank you!'**
   String get photoSentForReview;
 
-  /// No description provided for @maintainedBy.
-  ///
-  /// In en, this message translates to:
-  /// **'Maintained by {name}'**
-  String maintainedBy(String name);
-
   /// No description provided for @verifiedSponsor.
   ///
   /// In en, this message translates to:
-  /// **'Verified sponsor'**
+  /// **'Verified patron'**
   String get verifiedSponsor;
 
   /// No description provided for @photoWhat.
@@ -758,12 +740,6 @@ abstract class AppLocalizations {
   /// **'My submissions'**
   String get mySubmissions;
 
-  /// No description provided for @sponsors.
-  ///
-  /// In en, this message translates to:
-  /// **'Sponsors'**
-  String get sponsors;
-
   /// No description provided for @logout.
   ///
   /// In en, this message translates to:
@@ -851,7 +827,7 @@ abstract class AppLocalizations {
   /// No description provided for @sponsorTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sponsor'**
+  /// **'Patron'**
   String get sponsorTitle;
 
   /// No description provided for @sponsorTypeMosque.
@@ -859,12 +835,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mosque'**
   String get sponsorTypeMosque;
-
-  /// No description provided for @sponsorTypeIndividual.
-  ///
-  /// In en, this message translates to:
-  /// **'Individual donor'**
-  String get sponsorTypeIndividual;
 
   /// No description provided for @sponsorTypeNgo.
   ///
@@ -881,20 +851,8 @@ abstract class AppLocalizations {
   /// No description provided for @sponsorThanks.
   ///
   /// In en, this message translates to:
-  /// **'This sponsor helps keep public water coolers working. Thank you!'**
+  /// **'This patron helps keep free drinking water available here. Thank you!'**
   String get sponsorThanks;
-
-  /// No description provided for @sponsorsEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'No sponsors yet.'**
-  String get sponsorsEmpty;
-
-  /// No description provided for @sponsorCoolerCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 cooler} other{{count} coolers}}'**
-  String sponsorCoolerCount(int count);
 
   /// No description provided for @language.
   ///
@@ -947,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @onb1Body.
   ///
   /// In en, this message translates to:
-  /// **'Sabil shows community-reported public water coolers near you, with up-to-date status.'**
+  /// **'Nwasy shows the public water coolers near you, reported by people in the area, with up-to-date status.'**
   String get onb1Body;
 
   /// No description provided for @onb2Title.
@@ -1051,6 +1009,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open the page.'**
   String get errOpenLink;
+
+  /// No description provided for @navMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get navMap;
+
+  /// No description provided for @navReports.
+  ///
+  /// In en, this message translates to:
+  /// **'My reports'**
+  String get navReports;
+
+  /// No description provided for @navAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get navAccount;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get filterWorking;
+
+  /// No description provided for @filterCups.
+  ///
+  /// In en, this message translates to:
+  /// **'Has cups'**
+  String get filterCups;
+
+  /// No description provided for @filterPatron.
+  ///
+  /// In en, this message translates to:
+  /// **'With patron'**
+  String get filterPatron;
+
+  /// No description provided for @nearestWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest working cooler'**
+  String get nearestWorking;
+
+  /// No description provided for @patronBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Patron'**
+  String get patronBadge;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @distance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get distance;
+
+  /// No description provided for @cups.
+  ///
+  /// In en, this message translates to:
+  /// **'Cups'**
+  String get cups;
+
+  /// No description provided for @stepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String stepOf(int current, int total);
+
+  /// No description provided for @placeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Put the pin on the cooler'**
+  String get placeTitle;
+
+  /// No description provided for @placeFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the map until the pin is on the cooler.'**
+  String get placeFree;
+
+  /// No description provided for @placeInRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Within reach: {meters} m from where you stand'**
+  String placeInRange(int meters);
+
+  /// No description provided for @placeTooFar.
+  ///
+  /// In en, this message translates to:
+  /// **'Too far ({distance}). Stand within {max} m of the cooler.'**
+  String placeTooFar(String distance, int max);
+
+  /// No description provided for @rangeLocating.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting an accurate location…'**
+  String get rangeLocating;
+
+  /// No description provided for @rangeNeedLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location to contribute.'**
+  String get rangeNeedLocation;
+
+  /// No description provided for @rangeNear.
+  ///
+  /// In en, this message translates to:
+  /// **'You are at this cooler ({meters} m). You can confirm it now.'**
+  String rangeNear(int meters);
+
+  /// No description provided for @rangeFar.
+  ///
+  /// In en, this message translates to:
+  /// **'Get within {max} m to confirm. You are {distance} away.'**
+  String rangeFar(int max, String distance);
+
+  /// No description provided for @rangeInaccurate.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location is not accurate enough yet. Step into the open and try again.'**
+  String get rangeInaccurate;
+
+  /// No description provided for @errTooFar.
+  ///
+  /// In en, this message translates to:
+  /// **'You are {distance} m away. Get within {max} m of the cooler.'**
+  String errTooFar(int distance, int max);
+
+  /// No description provided for @stillWorkingPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Still working (+5 points)'**
+  String get stillWorkingPoints;
+
+  /// No description provided for @confirmedTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Not confirmed yet} =1{Confirmed working once} other{Confirmed working {count} times}}'**
+  String confirmedTimes(int count);
+
+  /// No description provided for @photosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos ({count})'**
+  String photosTitle(int count);
+
+  /// No description provided for @waitingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for review. Only you can see this cooler for now.'**
+  String get waitingReview;
+
+  /// No description provided for @patronFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family dedication'**
+  String get patronFamily;
+
+  /// No description provided for @patronImpact.
+  ///
+  /// In en, this message translates to:
+  /// **'Impact'**
+  String get patronImpact;
+
+  /// No description provided for @lastChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'Last confirmed'**
+  String get lastChecked;
+
+  /// No description provided for @viewOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the map'**
+  String get viewOnMap;
+
+  /// No description provided for @cupsDisposableHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Single-use cups are provided'**
+  String get cupsDisposableHint;
+
+  /// No description provided for @cupsSharedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'One cup shared by everyone'**
+  String get cupsSharedHint;
+
+  /// No description provided for @cupsNoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring your own bottle'**
+  String get cupsNoneHint;
+
+  /// No description provided for @cupsUnknownHint.
+  ///
+  /// In en, this message translates to:
+  /// **'I did not check'**
+  String get cupsUnknownHint;
+
+  /// No description provided for @submitCooler.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit (+50 points when approved)'**
+  String get submitCooler;
+
+  /// No description provided for @reviewNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Every new cooler is reviewed before it appears on the map for everyone.'**
+  String get reviewNote;
+
+  /// No description provided for @locationConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Location confirmed'**
+  String get locationConfirmed;
+
+  /// No description provided for @trustScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust score'**
+  String get trustScore;
+
+  /// No description provided for @trustTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified contributor track'**
+  String get trustTrack;
+
+  /// No description provided for @myActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'My activity'**
+  String get myActivity;
+
+  /// No description provided for @leaderboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaderboard'**
+  String get leaderboard;
+
+  /// No description provided for @rankValue.
+  ///
+  /// In en, this message translates to:
+  /// **'#{rank}'**
+  String rankValue(int rank);
+
+  /// No description provided for @preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get preferences;
+
+  /// No description provided for @missionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why Nwasy'**
+  String get missionTitle;
+
+  /// No description provided for @missionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nwasy maps the useful things on every street corner, starting with free cold drinking water, and keeps the map accurate with the help of people nearby.'**
+  String get missionBody;
+
+  /// No description provided for @signInPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in to see the coolers you added and the reports you sent.'**
+  String get signInPrompt;
+
+  /// No description provided for @onbAllowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow location to find water nearby'**
+  String get onbAllowTitle;
+
+  /// No description provided for @onbAllowBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nwasy uses your location only while you use the app: to show coolers near you and the walking distance, and to check you are at a cooler when you confirm it.'**
+  String get onbAllowBody;
+
+  /// No description provided for @onbAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow location access'**
+  String get onbAllow;
+
+  /// No description provided for @onbNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get onbNotNow;
+
+  /// No description provided for @onbNoTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'No tracking in the background'**
+  String get onbNoTracking;
+
+  /// No description provided for @onbFifty.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked within 50 m'**
+  String get onbFifty;
 }
 
 class _AppLocalizationsDelegate

@@ -50,6 +50,7 @@ class CoolerPin {
     required this.status,
     this.hasCups,
     this.sponsored = false,
+    this.pending = false,
   });
 
   final String id;
@@ -59,6 +60,9 @@ class CoolerPin {
   final bool? hasCups;
   final bool sponsored;
 
+  /// The user's own cooler, still waiting for review (only they can see it).
+  final bool pending;
+
   factory CoolerPin.fromJson(Map<String, dynamic> j) => CoolerPin(
         id: j['id'] as String,
         lat: (j['lat'] as num).toDouble(),
@@ -66,6 +70,7 @@ class CoolerPin {
         status: CoolerStatus.parse(j['status']),
         hasCups: j['has_cups'] as bool?,
         sponsored: j['sponsored'] as bool? ?? false,
+        pending: j['pending'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -75,6 +80,7 @@ class CoolerPin {
         'status': status.api,
         'has_cups': hasCups,
         'sponsored': sponsored,
+        'pending': pending,
       };
 
   CoolerPin copyWith({CoolerStatus? status}) => CoolerPin(
@@ -84,6 +90,7 @@ class CoolerPin {
         status: status ?? this.status,
         hasCups: hasCups,
         sponsored: sponsored,
+        pending: pending,
       );
 }
 
@@ -155,6 +162,7 @@ class Cooler {
     this.cupsType,
     this.sponsor,
     this.photos = const [],
+    this.confirmationsCount = 0,
   });
 
   final String id;
@@ -171,6 +179,9 @@ class Cooler {
   final CupsType? cupsType;
   final Sponsor? sponsor;
   final List<CoolerPhoto> photos;
+
+  /// How many times people confirmed this cooler as working.
+  final int confirmationsCount;
 
   factory Cooler.fromJson(Map<String, dynamic> j) => Cooler(
         id: j['id'] as String,
@@ -194,6 +205,7 @@ class Cooler {
           for (final p in (j['photos'] as List? ?? const []))
             if (p is Map<String, dynamic>) CoolerPhoto.fromJson(p),
         ],
+        confirmationsCount: j['confirmations_count'] as int? ?? 0,
       );
 
   CoolerPin toPin() => CoolerPin(
@@ -203,6 +215,7 @@ class Cooler {
         status: status,
         hasCups: hasCups,
         sponsored: sponsor != null,
+        pending: !isApproved && !isRejected,
       );
 
   Cooler copyWith({
@@ -211,6 +224,7 @@ class Cooler {
     CoolerStatus? pendingStatus,
     bool clearPending = false,
     List<CoolerPhoto>? photos,
+    int? confirmationsCount,
   }) =>
       Cooler(
         id: id,
@@ -227,5 +241,6 @@ class Cooler {
         cupsType: cupsType,
         sponsor: sponsor,
         photos: photos ?? this.photos,
+        confirmationsCount: confirmationsCount ?? this.confirmationsCount,
       );
 }

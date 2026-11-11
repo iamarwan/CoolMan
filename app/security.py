@@ -180,6 +180,20 @@ async def get_current_user(
     return user
 
 
+async def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
+    db: AsyncSession = Depends(get_db),
+) -> User | None:
+    """For public endpoints that show a little more to a logged-in user.
+    A missing or bad token simply means "anonymous"."""
+    if credentials is None:
+        return None
+    try:
+        return await get_current_user(credentials, db)
+    except ApiError:
+        return None
+
+
 def require_admin(
     credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
 ) -> dict:

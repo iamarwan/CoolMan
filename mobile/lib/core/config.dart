@@ -29,6 +29,19 @@ class AppConfig {
   /// Identifies the app to tile servers (required by OSM's usage policy).
   static const String userAgentPackageName = 'com.example.sabil';
 
+  /// Contributions (confirm, report, photo, add) are only allowed within this
+  /// many metres of the spot. The server enforces the same rule; this value
+  /// lets the app explain it before the user taps. 0 switches the check off
+  /// in the app (emulators and browsers without GPS):
+  ///   flutter run --dart-define=MAX_ACTION_DISTANCE_M=0
+  static const int maxActionDistanceM = int.fromEnvironment(
+    'MAX_ACTION_DISTANCE_M',
+    defaultValue: 50,
+  );
+
+  /// A GPS fix less accurate than this (metres) is not trusted for the rule.
+  static const int maxGpsAccuracyM = 40;
+
   /// Builds an absolute URL for a server-relative path such as /uploads/x.jpg.
   static String absoluteUrl(String path) =>
       path.startsWith('http') ? path : '$apiBaseUrl$path';

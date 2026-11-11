@@ -3,8 +3,8 @@
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, File, Form, Query, UploadFile
-from sqlalchemy import func, or_, select
+from fastapi import APIRouter, Body, Depends, File, Form, Query, UploadFile
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
@@ -18,10 +18,13 @@ from app.schemas import (
     PhotoRead,
     PinsResponse,
     StatusUpdate,
+    UserLocation,
 )
-from app.security import get_current_user
-from app.services import trust
+from app.security import get_current_user, get_optional_user
+from app.services import geo, trust
 from app.services.coolers import (
+    confirmations_count,
+    get_visible_cooler,
     distance_to,
     get_cooler,
     get_public_cooler,
@@ -45,12 +48,20 @@ async def map_pins(
     max_lat: float = Query(..., ge=-90, le=90),
     max_lng: float = Query(..., ge=-180, le=180),
     limit: int = Query(500, ge=1, le=2000),
+    viewer: User | None = Depends(get_optional_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Approved coolers inside the visible map area, as minimal pins."""
+    """Approved coolers inside the visible map area, as minimal pins. A
+    logged-in user also gets their own coolers that are waiting for review."""
     if min_lat > max_lat or min_lng > max_lng:
         raise ApiError(422, "bbox_invalid", "min values must be smaller than max values.")
     envelope = func.ST_MakeEnvelope(min_lng, min_lat, max_lng, max_lat, 4326)
+    visible = WaterCooler.is_approved
+    if viewer is not None:
+        visible = or_(
+            WaterCooler.is_approved,
+            and_(WaterCooler.user_id == viewer.id, WaterCooler.is_rejected.is_(False)),
+        )
     rows = (
         await db.execute(
             select(
@@ -60,8 +71,9 @@ async def map_pins(
                 WaterCooler.status,
                 WaterCooler.has_cups,
                 WaterCooler.sponsor_id,
+                WaterCooler.is_approved,
             )
-            .where(WaterCooler.is_approved, WaterCooler.geom.op("&&")(envelope))
+            .where(visible, WaterCooler.geom.op("&&")(envelope))
             .limit(limit + 1)
         )
     ).all()
@@ -73,6 +85,7 @@ async def map_pins(
             status=r.status,
             has_cups=r.has_cups,
             sponsored=r.sponsor_id is not None,
+            pending=not r.is_approved,
         )
         for r in rows[:limit]
     ]
@@ -117,8 +130,16 @@ async def my_coolers(user: User = Depends(get_current_user), db: AsyncSession = 
 
 
 @router.get("/{cooler_id}", response_model=CoolerRead)
-async def cooler_detail(cooler_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
-    return to_public(await get_public_cooler(db, cooler_id))
+async def cooler_detail(
+    cooler_id: uuid.UUID,
+    viewer: User | None = Depends(get_optional_user),
+    db: AsyncSession = Depends(get_db),
+):
+    viewer_id = viewer.id if viewer else None
+    cooler = await get_visible_cooler(db, cooler_id, viewer_id)
+    data = to_public(cooler, viewer_id)
+    data.confirmations_count = await confirmations_count(db, cooler.id)
+    return data
 
 
 @router.get("/{cooler_id}/photos", response_model=list[PhotoRead])
@@ -134,6 +155,8 @@ async def create_cooler(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    # The pin must be where the user is standing.
+    geo.enforce_near(payload.user_location, payload.latitude, payload.longitude)
     await trust.enforce_submission_limits(db, user.id, photos=False)
 
     await trust.lock(db, "create-cooler")  # two identical submissions cannot both pass
@@ -185,6 +208,7 @@ async def report_status(
     cooler = await get_public_cooler(db, cooler_id)
     if payload.status == cooler.status:
         raise ApiError(400, "status_unchanged", "The cooler already has this status.")
+    geo.enforce_near(payload.location, cooler.latitude, cooler.longitude)
     await trust.enforce_cooldown(db, user.id, cooler, ActionType.status_report)
 
     if trust.is_trusted(user):
@@ -204,11 +228,14 @@ async def report_status(
 @router.post("/{cooler_id}/confirm", response_model=ConfirmResponse)
 async def confirm_working(
     cooler_id: uuid.UUID,
+    location: UserLocation | None = Body(None),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """One-tap "still working" confirmation. Once per hour per cooler."""
+    """One-tap "still working" confirmation, made at the cooler. Once per
+    hour per cooler."""
     cooler = await get_public_cooler(db, cooler_id)
+    geo.enforce_near(location, cooler.latitude, cooler.longitude)
     await trust.enforce_cooldown(db, user.id, cooler, ActionType.confirm)
 
     cooler.last_verified_at = datetime.now(timezone.utc)
@@ -229,6 +256,9 @@ async def upload_photo(
     cooler_id: uuid.UUID,
     file: UploadFile = File(...),
     photo_category: PhotoCategory = Form(PhotoCategory.Cooler),
+    lat: float | None = Form(None, ge=-90, le=90),
+    lng: float | None = Form(None, ge=-180, le=180),
+    accuracy: float | None = Form(None, ge=0),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -238,6 +268,8 @@ async def upload_photo(
     # Anyone may add photos to approved coolers; only the submitter to pending ones.
     if not cooler.is_approved and cooler.user_id != user.id:
         raise ApiError(404, "cooler_not_found", "Cooler not found.")
+    here = UserLocation(lat=lat, lng=lng, accuracy=accuracy) if lat is not None and lng is not None else None
+    geo.enforce_near(here, cooler.latitude, cooler.longitude)
     await trust.enforce_submission_limits(db, user.id, photos=True)
 
     file_path, thumb_path = await save_photo(file)

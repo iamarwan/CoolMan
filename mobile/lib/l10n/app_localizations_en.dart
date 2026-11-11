@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Sabil';
+  String get appTitle => 'Nwasy';
 
   @override
   String get tryAgain => 'Try again';
@@ -311,12 +311,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get stillWorking => 'Still working';
-
-  @override
-  String get somethingChanged => 'Something changed?';
-
-  @override
   String get addPhoto => 'Add photo';
 
   @override
@@ -329,12 +323,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get photoSentForReview => 'Photo sent for review. Thank you!';
 
   @override
-  String maintainedBy(String name) {
-    return 'Maintained by $name';
-  }
-
-  @override
-  String get verifiedSponsor => 'Verified sponsor';
+  String get verifiedSponsor => 'Verified patron';
 
   @override
   String get photoWhat => 'What does the photo show?';
@@ -420,9 +409,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mySubmissions => 'My submissions';
 
   @override
-  String get sponsors => 'Sponsors';
-
-  @override
   String get logout => 'Log out';
 
   @override
@@ -470,13 +456,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get sponsorTitle => 'Sponsor';
+  String get sponsorTitle => 'Patron';
 
   @override
   String get sponsorTypeMosque => 'Mosque';
-
-  @override
-  String get sponsorTypeIndividual => 'Individual donor';
 
   @override
   String get sponsorTypeNgo => 'NGO';
@@ -486,21 +469,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sponsorThanks =>
-      'This sponsor helps keep public water coolers working. Thank you!';
-
-  @override
-  String get sponsorsEmpty => 'No sponsors yet.';
-
-  @override
-  String sponsorCoolerCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count coolers',
-      one: '1 cooler',
-    );
-    return '$_temp0';
-  }
+      'This patron helps keep free drinking water available here. Thank you!';
 
   @override
   String get language => 'Language';
@@ -528,7 +497,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onb1Body =>
-      'Sabil shows community-reported public water coolers near you, with up-to-date status.';
+      'Nwasy shows the public water coolers near you, reported by people in the area, with up-to-date status.';
 
   @override
   String get onb2Title => 'Add and update\ncoolers around you';
@@ -588,4 +557,194 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errOpenLink => 'Could not open the page.';
+
+  @override
+  String get navMap => 'Map';
+
+  @override
+  String get navReports => 'My reports';
+
+  @override
+  String get navAccount => 'Account';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterWorking => 'Working';
+
+  @override
+  String get filterCups => 'Has cups';
+
+  @override
+  String get filterPatron => 'With patron';
+
+  @override
+  String get nearestWorking => 'Nearest working cooler';
+
+  @override
+  String get patronBadge => 'Patron';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get cups => 'Cups';
+
+  @override
+  String stepOf(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get placeTitle => 'Put the pin on the cooler';
+
+  @override
+  String get placeFree => 'Move the map until the pin is on the cooler.';
+
+  @override
+  String placeInRange(int meters) {
+    return 'Within reach: $meters m from where you stand';
+  }
+
+  @override
+  String placeTooFar(String distance, int max) {
+    return 'Too far ($distance). Stand within $max m of the cooler.';
+  }
+
+  @override
+  String get rangeLocating => 'Getting an accurate location…';
+
+  @override
+  String get rangeNeedLocation => 'Turn on location to contribute.';
+
+  @override
+  String rangeNear(int meters) {
+    return 'You are at this cooler ($meters m). You can confirm it now.';
+  }
+
+  @override
+  String rangeFar(int max, String distance) {
+    return 'Get within $max m to confirm. You are $distance away.';
+  }
+
+  @override
+  String get rangeInaccurate =>
+      'Your location is not accurate enough yet. Step into the open and try again.';
+
+  @override
+  String errTooFar(int distance, int max) {
+    return 'You are $distance m away. Get within $max m of the cooler.';
+  }
+
+  @override
+  String get stillWorkingPoints => 'Still working (+5 points)';
+
+  @override
+  String confirmedTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Confirmed working $count times',
+      one: 'Confirmed working once',
+      zero: 'Not confirmed yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String photosTitle(int count) {
+    return 'Photos ($count)';
+  }
+
+  @override
+  String get waitingReview =>
+      'Waiting for review. Only you can see this cooler for now.';
+
+  @override
+  String get patronFamily => 'Family dedication';
+
+  @override
+  String get patronImpact => 'Impact';
+
+  @override
+  String get lastChecked => 'Last confirmed';
+
+  @override
+  String get viewOnMap => 'Back to the map';
+
+  @override
+  String get cupsDisposableHint => 'Single-use cups are provided';
+
+  @override
+  String get cupsSharedHint => 'One cup shared by everyone';
+
+  @override
+  String get cupsNoneHint => 'Bring your own bottle';
+
+  @override
+  String get cupsUnknownHint => 'I did not check';
+
+  @override
+  String get submitCooler => 'Submit (+50 points when approved)';
+
+  @override
+  String get reviewNote =>
+      'Every new cooler is reviewed before it appears on the map for everyone.';
+
+  @override
+  String get locationConfirmed => 'Location confirmed';
+
+  @override
+  String get trustScore => 'Trust score';
+
+  @override
+  String get trustTrack => 'Verified contributor track';
+
+  @override
+  String get myActivity => 'My activity';
+
+  @override
+  String get leaderboard => 'Leaderboard';
+
+  @override
+  String rankValue(int rank) {
+    return '#$rank';
+  }
+
+  @override
+  String get preferences => 'Settings';
+
+  @override
+  String get missionTitle => 'Why Nwasy';
+
+  @override
+  String get missionBody =>
+      'Nwasy maps the useful things on every street corner, starting with free cold drinking water, and keeps the map accurate with the help of people nearby.';
+
+  @override
+  String get signInPrompt =>
+      'Log in to see the coolers you added and the reports you sent.';
+
+  @override
+  String get onbAllowTitle => 'Allow location to find water nearby';
+
+  @override
+  String get onbAllowBody =>
+      'Nwasy uses your location only while you use the app: to show coolers near you and the walking distance, and to check you are at a cooler when you confirm it.';
+
+  @override
+  String get onbAllow => 'Allow location access';
+
+  @override
+  String get onbNotNow => 'Not now';
+
+  @override
+  String get onbNoTracking => 'No tracking in the background';
+
+  @override
+  String get onbFifty => 'Checked within 50 m';
 }

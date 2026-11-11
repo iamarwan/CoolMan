@@ -52,11 +52,39 @@ async def get_public_cooler(db: AsyncSession, cooler_id: uuid.UUID) -> WaterCool
     return cooler
 
 
-def to_public(cooler: WaterCooler) -> CoolerRead:
-    """Serialize for the public: only approved photos are visible."""
+async def get_visible_cooler(
+    db: AsyncSession, cooler_id: uuid.UUID, viewer_id: uuid.UUID | None
+) -> WaterCooler:
+    """An approved cooler, or the viewer's own cooler that is still in review."""
+    cooler = await get_cooler(db, cooler_id)
+    own_pending = (
+        viewer_id is not None and cooler.user_id == viewer_id and not cooler.is_rejected
+    )
+    if not cooler.is_approved and not own_pending:
+        raise not_found("cooler")
+    return cooler
+
+
+def to_public(cooler: WaterCooler, viewer_id: uuid.UUID | None = None) -> CoolerRead:
+    """Serialize for the public: approved photos, plus the viewer's own."""
+    visible = {
+        p.id for p in cooler.photos if p.is_approved or (viewer_id and p.user_id == viewer_id)
+    }
     data = CoolerRead.model_validate(cooler)
-    data.photos = [p for p in data.photos if p.is_approved]
+    data.photos = [p for p in data.photos if p.id in visible]
     return data
+
+
+async def confirmations_count(db: AsyncSession, cooler_id: uuid.UUID) -> int:
+    from app.models import ActionType, UserAction
+
+    return (
+        await db.scalar(
+            select(func.count(UserAction.id)).where(
+                UserAction.cooler_id == cooler_id, UserAction.action == ActionType.confirm
+            )
+        )
+    ) or 0
 
 
 async def load_fresh(db: AsyncSession, cooler_id: uuid.UUID) -> WaterCooler:
