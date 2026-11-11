@@ -120,6 +120,27 @@ the Stitch designs), then this item gets a concrete plan.
 
 ---
 
+## 6. Show a user their own cooler while it waits for review
+
+**Found in:** quality audit (2026-11-11). A cooler added by an untrusted user
+vanishes from the map until an admin approves it, which looks like a failure.
+
+**Planned change**
+- Backend: `GET /coolers/map` also returns the caller's own pending coolers
+  when a login token is sent (flag `pending: true` on those pins).
+- App: grey "waiting for review" pin style; the cooler sheet shows
+  "Waiting for review" and hides confirm/report buttons.
+
+---
+
+## 7. Security items that need the redesign or owner decisions
+
+See `docs/master-plan/06-security-audit.md` (open risks R1 to R5):
+distance check (this file, item 2), limits and undo for trusted accounts,
+phone-number login, server-side logout, per-admin accounts.
+
+---
+
 ## Suggested order after the Stitch designs
 
 1. Item 1 (small, removes a screen before redesign).
