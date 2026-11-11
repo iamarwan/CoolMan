@@ -21,6 +21,7 @@ import '../auth/auth_sheet.dart';
 import '../map/map_pins_controller.dart';
 import '../map/user_location_controller.dart';
 import '../patron/patron_screen.dart';
+import '../profile/profile_repository.dart';
 import 'cooler_repository.dart';
 import 'photo_picker.dart';
 import 'photo_viewer.dart';
@@ -121,6 +122,7 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
     try {
       final r = await _repo.confirm(before.id, at: ready.fix);
       ref.read(sessionProvider.notifier).updateScore(r.trustScore);
+      refreshMyData(ref);
       if (mounted) {
         showSnack(
           context,
@@ -159,6 +161,7 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
       setState(() => _cooler = updated.copyWith(confirmationsCount: before.confirmationsCount));
       pins.setStatus(updated.id, updated.status);
       ref.read(sessionProvider.notifier).refreshProfile();
+      refreshMyData(ref);
       showSnack(context, trusted ? context.l10n.statusUpdated : context.l10n.reportReviewed);
     } catch (e) {
       if (!mounted) return;
@@ -179,6 +182,7 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
     try {
       final photo = await _repo.uploadPhoto(_cooler!.id, picked.path, picked.category, at: ready.fix);
       if (!mounted) return;
+      refreshMyData(ref);
       if (photo.isApproved) {
         setState(() => _cooler = _cooler!.copyWith(photos: [photo, ..._cooler!.photos]));
         showSnack(context, context.l10n.photoAdded);
@@ -239,7 +243,8 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
           ),
         ]),
         const SizedBox(height: 14),
-        Row(children: [
+        IntrinsicHeight(
+          child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Expanded(
             child: _InfoTile(
               icon: Icons.directions_walk,
@@ -257,7 +262,7 @@ class _CoolerSheetState extends ConsumerState<CoolerSheet> {
               value: cupsLabel(l, c.hasCups, c.cupsType),
             ),
           ),
-        ]),
+        ])),
         const SizedBox(height: 16),
         _PhotoStrip(
           photos: c.photos,

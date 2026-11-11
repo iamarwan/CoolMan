@@ -1,9 +1,12 @@
-# Sabil (CoolMan)
+# Nwasy (نواصي)
 
-Community map of public drinking-water coolers in Egypt.
+A map of the useful things on every street corner, starting with free public
+drinking-water coolers in Egypt. (The repository is still named CoolMan; the
+product was called Sabil before.)
 
 - `mobile/` – Flutter Android app
-- backend – FastAPI + PostgreSQL/PostGIS (repository root)
-- `docs/` – rework plan and design prompts
+- `app/` – FastAPI + PostgreSQL/PostGIS backend and the web admin panel
+- `docs/master-plan/` – business plan, identity, audits and roadmap
+- `docs/` – design notes, backlog and prompts
 
 **Start here:** [GETTING_STARTED.md](GETTING_STARTED.md)

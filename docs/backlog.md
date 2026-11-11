@@ -1,76 +1,31 @@
-# Backlog: feedback from first phone test (2026-11-09)
+# Backlog
 
-Status: **parked until the Google Stitch designs are ready**. Each item lists
-the agreed behaviour, the files involved and the planned change, so work can
-start without re-investigating. Items marked *Open question* need a quick
-answer from the owner before coding.
+Updated 2026-11-11 after the Nwasy redesign.
 
----
+## Done in the redesign (2026-11-11)
 
-## 1. Sponsors must not appear in the user's profile
+| Item | Result |
+|---|---|
+| 1. Sponsors out of the profile | Done. No sponsors list; a cooler's patron is reachable only from that cooler. |
+| 2. Confirm only when near | Done. 50 m rule enforced by the server on confirming, reporting, photos and new coolers; the app shows near / too far / waiting for GPS. GPS less accurate than 40 m is refused. |
+| 3. Per-photo review of new submissions | Dropped by the owner. |
+| 6. Show a user their own cooler while it waits | Done. Blue "waiting" pin and an "Under review" entry, visible to the author only. |
 
-**Agreed behaviour:** sponsors are only visible on the cooler they sponsor
-(the "Maintained by …" card in the cooler sheet, which opens the sponsor page).
-There is no general sponsors list in the app.
+## From the Stitch designs, not built yet (each needs data the app does not have)
 
-**Planned change**
-- `mobile/lib/features/profile/profile_screen.dart`: remove the "Sponsors" row.
-- Delete `mobile/lib/features/sponsors/sponsors_list_screen.dart` and
-  `sponsorsProvider` in `mobile/lib/features/profile/profile_repository.dart`.
-- Keep `sponsor_screen.dart` (opened from the cooler sheet's sponsor card).
-- Remove `CoolerRepository.sponsors()` if nothing else uses it, and the now
-  unused ARB keys (`sponsors`, `sponsorsEmpty`, `sponsorCoolerCount`) from both
-  `app_en.arb` and `app_ar.arb`.
-- Backend `GET /sponsors` (list) can stay for the admin, or be removed if unused.
-  `GET /sponsors/{id}` stays.
-- Update the Stitch prompt (`docs/prompts/google-stitch-prompt.md`): remove
-  screen 11 "Sponsors list" and the Sponsors row from the Profile screen.
+| Design element | What it needs first |
+|---|---|
+| Saved coolers (bookmark buttons, "Saved" tab) | A saved-places list per user on the server |
+| Live community activity feed on a cooler | Showing other users' names and actions: a privacy decision, then an activity endpoint |
+| Key specifications (filter stages, temperature, number of taps) | New fields on a cooler and a way to collect them |
+| Tap cleanliness rating, "water tasting" notes | A rating feature and its abuse rules |
+| Patron dedication story, patron photos, "about 450 people a day" | Patron profile fields in the admin panel; a real way to count people served |
+| Offline map download, community alerts switch | Offline tile packs; push notifications |
+| Voice search, weather chip, share buttons | Low priority; share needs links that open the app |
+| Profile photo, location and "member since" | Photo upload for users; currently accounts are a username only |
+| Bottom navigation has 3 tabs instead of 4 | The 4th ("Saved") arrives with saved coolers |
 
----
-
-## 2. Only allow confirming (and reporting) when the user is near the cooler
-
-**Agreed behaviour:** "Still working" only counts if the user is physically
-close to the cooler.
-
-**Planned change**
-- **Backend is the source of truth** (the app alone can be bypassed):
-  - `POST /coolers/{id}/confirm` and `PATCH /coolers/{id}/status` accept the
-    user's `lat`, `lng` and GPS `accuracy` (metres) in the request body.
-  - Reject with code `too_far` (HTTP 403) if the distance between the user and
-    the cooler is more than `MAX_ACTION_DISTANCE_M` (proposed **150 m**), and
-    code `location_required` if no location is sent.
-  - Constant in `app/services/trust.py`; distance check with PostGIS
-    (`ST_DWithin` on geography, as in `app/services/coolers.py:within_meters`).
-  - Tests in `tests/test_trust.py`: near → ok, far → 403 `too_far`,
-    missing location → `location_required`.
-- **App** (`mobile/lib/features/cooler/cooler_sheet.dart`):
-  - Before confirming/reporting, get a fresh GPS fix via
-    `userLocationProvider.notifier.locate()`; send it with the request.
-  - If the user is too far: disable the button and show
-    "Get within 150 m of this cooler to confirm it" (+ distance), instead of
-    letting them tap and fail.
-  - If location is off/denied: show the existing location messages with a
-    Settings action.
-  - New ARB strings (EN + AR): `tooFarToConfirm(distance)`,
-    `locationNeededToConfirm`, error codes `too_far`, `location_required` in
-    `core/error_text.dart`.
-- Note: GPS can be spoofed by determined users; this stops casual far-away
-  confirmations. Admin review of suspicious patterns can come later.
-
-**Decided (owner)**
-- Radius as tight as practical: **50 m**, with the 40 m GPS-accuracy guard above.
-- Applies to **all** contributions: confirm, status reports, photo uploads,
-  and adding a new cooler (user must be within 50 m of the pin they drop).
-- App copy: "Get closer to this cooler to confirm it (you are 230 m away)".
-
----
-
-## 3. ~~Admin: per-photo review of new submissions~~
-
-**Dropped by owner** — will be handled in the redesign rework.
-
----
+## Still open
 
 ## 4. Admin: more context for photos added to an existing cooler
 
@@ -97,7 +52,7 @@ keeping the link to the cooler page.
 
 ---
 
-## 5. Sponsors: needs more work
+## 5. Patrons: needs more work
 
 **Status:** owner wants to improve sponsors; details to be agreed.
 
@@ -120,30 +75,20 @@ the Stitch designs), then this item gets a concrete plan.
 
 ---
 
-## 6. Show a user their own cooler while it waits for review
-
-**Found in:** quality audit (2026-11-11). A cooler added by an untrusted user
-vanishes from the map until an admin approves it, which looks like a failure.
-
-**Planned change**
-- Backend: `GET /coolers/map` also returns the caller's own pending coolers
-  when a login token is sent (flag `pending: true` on those pins).
-- App: grey "waiting for review" pin style; the cooler sheet shows
-  "Waiting for review" and hides confirm/report buttons.
-
----
-
 ## 7. Security items that need the redesign or owner decisions
 
 See `docs/master-plan/06-security-audit.md` (open risks R1 to R5):
-distance check (this file, item 2), limits and undo for trusted accounts,
+limits and undo for trusted accounts,
 phone-number login, server-side logout, per-admin accounts.
 
 ---
 
-## Suggested order after the Stitch designs
+## 8. Code tidy-up after the redesign
 
-1. Item 1 (small, removes a screen before redesign).
-2. Item 2 (backend + app; decisions made).
-3. Item 4 (admin panel queue context).
-4. Item 5 with Phase 6 (needs the sponsor design).
+- `mobile/lib/features/map/map_screen.dart` (542 lines) and
+  `features/cooler/cooler_sheet.dart` (586 lines) are above the 400-line
+  target; move their private widgets into their own files.
+- The server settings still use the `SABIL_` prefix and the Dart package is
+  still named `sabil`. Renaming them is safe but touches every setup step, so
+  it is left for a quiet moment.
+- Android application id is still `com.example.sabil` (see the quality audit, B1).

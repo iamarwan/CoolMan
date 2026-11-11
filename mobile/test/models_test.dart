@@ -39,6 +39,7 @@ void main() {
     expect(timeAgo(l, now.subtract(const Duration(minutes: 25)), now: now), '25 min ago');
     expect(timeAgo(l, now.subtract(const Duration(days: 2)), now: now), '2 days ago');
     expect(freshnessOf(now.subtract(const Duration(days: 20)), now: now), Freshness.stale);
+    expect(formatDistance(l, 14.2), '14 m');
     expect(formatDistance(l, 123), '120 m');
     expect(formatDistance(l, 2500), '2.5 km');
     expect(walkingTime(l, 160), '2 min walk');

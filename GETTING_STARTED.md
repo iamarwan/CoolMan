@@ -1,4 +1,4 @@
-# Sabil (CoolMan) — Getting Started
+# Nwasy (repository: CoolMan) — Getting Started
 
 ## Project layout
 
@@ -101,6 +101,13 @@ PC through its Wi-Fi IP address.
 If your PC's IP changes, rebuild with `.\build_apk.ps1`.
 To run on a USB-connected phone in debug mode instead:
 `flutter run --dart-define=API_BASE_URL=http://<your-pc-ip>:8000`
+
+**The 50 m rule while testing.** You can only confirm, report, add photos or
+add a cooler when your phone is within 50 m of the spot. The sample coolers are
+in Maadi, so from anywhere else those buttons are disabled. To test freely:
+put `SABIL_MAX_ACTION_DISTANCE_M=0` in a `.env` file next to `run_backend.ps1`,
+restart the backend, and build with `.\build_apk.ps1 -NoDistanceCheck`. Adding
+a new cooler where you stand works without this.
 
 **Expected size:** ~15–20 MB for the arm64 APK (the old single "fat" APK was ~70 MB).
 

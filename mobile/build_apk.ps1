@@ -6,6 +6,8 @@
     .\build_apk.ps1 -ApiUrl http://192.168.1.20:8000
     .\build_apk.ps1 -ApiUrl https://api.your-domain.com   # production (HTTPS only)
     .\build_apk.ps1 -Emulator               # Android emulator (http://10.0.2.2:8000)
+    .\build_apk.ps1 -NoDistanceCheck        # testing only: allow confirming from anywhere
+                                            # (also set SABIL_MAX_ACTION_DISTANCE_M=0 in the backend .env)
 
   OUTPUT:
     build\app\outputs\flutter-apk\app-arm64-v8a-release.apk   <- install THIS on almost any phone
@@ -18,6 +20,7 @@
 param(
   [string]$ApiUrl = "",
   [switch]$Emulator,
+  [switch]$NoDistanceCheck,
   [string]$TileUrl = ""
 )
 
@@ -51,6 +54,10 @@ Write-Host ""
 
 $defines = @("--dart-define=API_BASE_URL=$ApiUrl")
 if ($TileUrl) { $defines += "--dart-define=TILE_URL=$TileUrl" }
+if ($NoDistanceCheck) {
+  $defines += "--dart-define=MAX_ACTION_DISTANCE_M=0"
+  Write-Host "  50 m rule switched OFF in this build (testing only)" -ForegroundColor Yellow
+}
 
 flutter build apk --release `
   --split-per-abi `

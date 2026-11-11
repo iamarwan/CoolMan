@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/locale.dart';
+import '../../core/session.dart';
 import '../map/map_screen.dart';
 import '../profile/my_submissions_screen.dart';
+import '../profile/profile_repository.dart';
 import '../profile/profile_screen.dart';
 
 class HomeTabController extends Notifier<int> {
@@ -25,6 +27,8 @@ class HomeShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final tab = ref.watch(homeTabProvider);
+    // A different user (or none): drop the previous user's numbers and lists.
+    ref.listen(sessionProvider.select((s) => s.token), (_, _) => refreshMyData(ref));
     return Scaffold(
       // The map stays alive behind the other tabs, so it never reloads.
       body: IndexedStack(

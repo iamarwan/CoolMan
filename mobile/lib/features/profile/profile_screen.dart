@@ -88,7 +88,8 @@ class _SignedIn extends ConsumerWidget {
     }
 
     final s = stats.value;
-    final score = s?.trustScore ?? profile?.trustScore ?? 0;
+    // The session's score is updated the moment points are earned.
+    final score = profile?.trustScore ?? s?.trustScore ?? 0;
     final level = trustLevel(l, score);
     final remaining = trustedThreshold - score;
 

@@ -47,7 +47,7 @@ class MySubmissionsScreen extends ConsumerWidget {
       );
     }
 
-    return Scaffold(appBar: AppBar(title: Text(l.mySubmissions)), body: body);
+    return Scaffold(appBar: AppBar(title: Text(l.navReports)), body: body);
   }
 }
 

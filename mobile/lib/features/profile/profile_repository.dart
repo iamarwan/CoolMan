@@ -18,3 +18,11 @@ final leaderboardProvider = FutureProvider.autoDispose<List<LeaderboardEntry>>((
 final mySubmissionsProvider = FutureProvider.autoDispose<List<Cooler>>(
   (ref) => ref.watch(coolerRepositoryProvider).mine(),
 );
+
+/// Call after any contribution so the Account and My reports tabs (which stay
+/// alive behind the map) show fresh numbers.
+void refreshMyData(WidgetRef ref) {
+  ref.invalidate(myStatsProvider);
+  ref.invalidate(mySubmissionsProvider);
+  ref.invalidate(leaderboardProvider);
+}

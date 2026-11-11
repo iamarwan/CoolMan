@@ -26,9 +26,12 @@ Freshness freshnessOf(DateTime lastVerified, {DateTime? now}) {
 
 double metersBetween(LatLng a, LatLng b) => _distance.as(LengthUnit.Meter, a, b);
 
-String formatDistance(AppLocalizations l, double meters) => meters < 1000
-    ? l.distanceMeters((meters / 10).round() * 10)
-    : l.distanceKm((meters / 1000).toStringAsFixed(1));
+/// Exact metres when close (it matters for the 50 m rule), rounded farther out.
+String formatDistance(AppLocalizations l, double meters) {
+  if (meters < 100) return l.distanceMeters(meters.round());
+  if (meters < 1000) return l.distanceMeters((meters / 10).round() * 10);
+  return l.distanceKm((meters / 1000).toStringAsFixed(1));
+}
 
 /// Walking at ~80 m per minute.
 String walkingTime(AppLocalizations l, double meters) {

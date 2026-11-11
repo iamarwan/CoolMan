@@ -13,6 +13,7 @@ import '../../core/session.dart';
 import '../../models/cooler.dart';
 import '../../shared/ui.dart';
 import '../map/map_pins_controller.dart';
+import '../profile/profile_repository.dart';
 import 'cooler_repository.dart';
 import 'photo_picker.dart';
 
@@ -102,6 +103,7 @@ class _AddCoolerSheetState extends ConsumerState<_AddCoolerSheet> {
       // Show it on the map right away; a cooler in review is visible to its author only.
       ref.read(mapPinsProvider.notifier).upsert(cooler.toPin());
       ref.read(sessionProvider.notifier).refreshProfile();
+      refreshMyData(ref);
       if (!mounted) return;
       if (failed > 0) showSnack(context, context.l10n.photosFailed(failed), error: true);
       Navigator.of(context).pop(cooler);

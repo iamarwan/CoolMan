@@ -1,4 +1,4 @@
-# SABIL (CoolMan) Software Documentation
+# Nwasy Software Documentation (repository: CoolMan)
 
 This document describes the software architecture, data schemas, verification mechanisms, and API topologies for the Sabil public water locator application.
 
@@ -46,10 +46,12 @@ features/map/        map screen, viewport pin loading (MapPinsController), clust
 features/cooler/     detail sheet, add-cooler form, photo picking, repository
 features/auth/       login/register sheet (shown only when contributing)
 features/profile/    profile, stats, leaderboard, my submissions
-features/sponsors/   sponsor list and detail
+features/home/       bottom navigation (map, my reports, account)
+features/patron/     a cooler's patron page (opened from the cooler only)
 features/onboarding/ first-run pages (with a language button)
 l10n/                English + Arabic translations (app_en.arb, app_ar.arb) and generated code
-shared/ui.dart       colours, status styles, snackbars
+app/theme.dart       the Nwasy theme (from the Stitch design system)
+shared/ui.dart       design tokens (AppColors), pills, cards, buttons
 ```
 
 State is managed with Riverpod. How the map stays fast:
@@ -86,6 +88,13 @@ State is managed with Riverpod. How the map stays fast:
 | `GET /users/me/stats` · `GET /users/leaderboard` | Profile numbers, top 10 |
 | `/admin` | Web admin panel (HTML, cookie login, CSRF-protected forms) |
 | `GET /health` | Liveness + database check |
+| `DELETE /auth/me`, `/account/delete`, `/privacy` | Account deletion (app and web) and the privacy page |
+
+**The "be there" rule.** Confirming, reporting, photo uploads and new coolers
+must carry the phone's position (`lat`, `lng`, `accuracy`) and are refused
+beyond `SABIL_MAX_ACTION_DISTANCE_M` (default 50) or when GPS accuracy is worse
+than `SABIL_MAX_GPS_ACCURACY_M` (default 40). The position is checked and
+discarded. Error codes: `too_far`, `location_required`, `location_inaccurate`.
 
 Errors look like `{"detail": "...", "code": "cooler_duplicate"}`; the app translates `code`.
 
