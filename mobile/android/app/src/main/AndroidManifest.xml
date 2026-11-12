@@ -1,8 +1,26 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Network: map tiles + API. Without this, release builds cannot go online. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- "Coolers near me" -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <!--
+      usesCleartextTraffic is set by build.gradle.kts from API_BASE_URL:
+        http://...  (emulator / PC on your Wi-Fi) -> true
+        https://... (production server)           -> false
+      allowBackup=false avoids restoring stale encrypted login tokens after a
+      reinstall, a known cause of start-up crashes with secure storage.
+    -->
     <application
-        android:label="sabil"
+        android:label="Nwasy"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="${usesCleartextTraffic}"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:exported="true"

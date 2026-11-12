@@ -1,0 +1,436 @@
+{
+  "@@locale": "en",
+  "appTitle": "Nwasy",
+  "tryAgain": "Try again",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "loading": "Loading…",
+  "settings": "Settings",
+  "yes": "Yes",
+  "no": "No",
+  "notSure": "Not sure",
+  "submit": "Submit",
+  "saving": "Saving…",
+  "errGeneric": "Something went wrong. Please try again.",
+  "errOffline": "No connection. Check your internet and try again.",
+  "errTimeout": "The server is not responding. Please try again.",
+  "errServer": "Server problem. Please try again in a moment.",
+  "errAuth": "Please log in again.",
+  "errInvalidCredentials": "Wrong username or password.",
+  "errUsernameTaken": "That username is already taken.",
+  "errDuplicate": "A cooler is already listed at this spot.",
+  "errCoolerNotFound": "This cooler is no longer available.",
+  "errConfirmCooldown": "You already confirmed this cooler. Try again in {minutes} min.",
+  "@errConfirmCooldown": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "errReportCooldown": "You already reported this cooler. Try again in {minutes} min.",
+  "@errReportCooldown": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "errTooMany": "Too many submissions. Please try again later.",
+  "errPhotoTooLarge": "That photo is too large.",
+  "errPhotoInvalid": "That file is not a supported photo.",
+  "errValidation": "Please check the entered details.",
+  "errCameraGallery": "Could not open the camera or gallery.",
+  "errDirections": "Could not open directions.",
+  "errContact": "Could not open contact.",
+  "timeJustNow": "just now",
+  "timeMinutesAgo": "{count, plural, =1{1 min ago} other{{count} min ago}}",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeHoursAgo": "{count, plural, =1{1 h ago} other{{count} h ago}}",
+  "@timeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeDaysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@timeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeWeeksAgo": "{count, plural, =1{1 week ago} other{{count} weeks ago}}",
+  "@timeWeeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeMonthsAgo": "{count, plural, =1{1 mo ago} other{{count} mo ago}}",
+  "@timeMonthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceMeters": "{meters} m",
+  "@distanceMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceKm": "{km} km",
+  "@distanceKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "walkMinutes": "{count, plural, =1{1 min walk} other{{count} min walk}}",
+  "@walkMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walkHours": "{hours} h walk",
+  "@walkHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "statusWorking": "Working",
+  "statusEmpty": "Empty",
+  "statusBroken": "Broken",
+  "statusPendingReview": "{status} (pending review)",
+  "@statusPendingReview": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "reportWorking": "Report working",
+  "reportEmpty": "Report empty",
+  "reportBroken": "Report broken",
+  "cupsUnknown": "Cups: unknown",
+  "cupsNone": "No cups",
+  "cupsShared": "Shared cup",
+  "cupsDisposable": "Disposable cups",
+  "cupsAvailable": "Cups available",
+  "authTitle": "Log in to contribute",
+  "authSubtitle": "Browsing is free. An account lets you add coolers, report status and earn trust points.",
+  "authLogin": "Log in",
+  "authRegister": "Create account",
+  "authUsername": "Username",
+  "authPassword": "Password",
+  "authUsernameTooShort": "At least 3 characters",
+  "authUsernameChars": "English letters, numbers and _ only",
+  "authPasswordTooShort": "At least 8 characters",
+  "searchHint": "Search coolers",
+  "searchClear": "Clear",
+  "searchNoResults": "No coolers found",
+  "profile": "Profile",
+  "myLocation": "My location",
+  "addCooler": "Add cooler",
+  "locationOff": "Location is turned off.",
+  "locationBlocked": "Location permission is blocked.",
+  "locationDenied": "Location permission was denied.",
+  "locationUnavailable": "Could not find your location. Try again outside.",
+  "mapOffline": "Offline: showing saved coolers.",
+  "mapEmpty": "No coolers here yet. Be the first to add one!",
+  "placePinHint": "Move the map to put the pin on the cooler",
+  "confirmLocation": "Confirm location",
+  "coolerAddedLive": "Cooler added and live on the map. +50 points",
+  "coolerSubmitted": "Submitted! It will appear after review (+50 points when approved).",
+  "guestLogin": "Log in or create account",
+  "directions": "Directions",
+  "lastConfirmed": "Last confirmed {time}",
+  "@lastConfirmed": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "addPhoto": "Add photo",
+  "uploading": "Uploading…",
+  "photoAdded": "Photo added. Thank you!",
+  "photoSentForReview": "Photo sent for review. Thank you!",
+  "verifiedSponsor": "Verified patron",
+  "photoWhat": "What does the photo show?",
+  "photoCooler": "The cooler",
+  "photoCups": "The cups",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "addTitle": "Add a water cooler",
+  "addNameLabel": "Name or landmark",
+  "addNameHint": "e.g. Next to El-Tawheed Mosque",
+  "addNameRequired": "Please describe where it is",
+  "addNameInvalid": "Please remove < and >",
+  "addWorkingNow": "Is it working right now?",
+  "addCupsQuestion": "Are there cups?",
+  "addPhotos": "Photos (recommended, up to 3)",
+  "uploadingPhoto": "Uploading photo {current} of {total}…",
+  "@uploadingPhoto": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "photosFailed": "{count, plural, =1{1 photo could not be uploaded. You can add it later.} other{{count} photos could not be uploaded. You can add them later.}}",
+  "@photosFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pointsUntilTrusted": "{count} points until your additions go live instantly",
+  "@pointsUntilTrusted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trustedNote": "Your additions and reports go live instantly.",
+  "pointsShort": "pts",
+  "pointsValue": "{count} pts",
+  "@pointsValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statCoolers": "Coolers added",
+  "statConfirmations": "Confirmations",
+  "statPhotos": "Photos",
+  "mySubmissions": "My submissions",
+  "logout": "Log out",
+  "topContributors": "Top contributors",
+  "you": "{name} (you)",
+  "@you": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "levelChampion": "Community champion",
+  "levelVerified": "Verified contributor",
+  "levelTrusted": "Trusted",
+  "levelContributor": "Contributor",
+  "levelNewcomer": "Newcomer",
+  "submissionsEmpty": "Nothing yet. Add a cooler from the map to help others find water.",
+  "subRejected": "Rejected",
+  "subUnderReview": "Under review",
+  "subStatusPending": "Status change pending",
+  "subLive": "Live on the map",
+  "subAdded": "{state} · added {time}",
+  "@subAdded": {
+    "placeholders": {
+      "state": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sponsorTitle": "Patron",
+  "sponsorTypeMosque": "Mosque",
+  "sponsorTypeNgo": "NGO",
+  "sponsorTypeBusiness": "Local business",
+  "sponsorThanks": "This patron helps keep free drinking water available here. Thank you!",
+  "language": "Language",
+  "languageSystem": "Phone default",
+  "languageEnglish": "English",
+  "languageArabic": "العربية",
+  "onbSkip": "Skip",
+  "onbNext": "Next",
+  "onbStart": "Get started",
+  "onb1Title": "Find clean water,\nsimple and free",
+  "onb1Body": "Nwasy shows the public water coolers near you, reported by people in the area, with up-to-date status.",
+  "onb2Title": "Add and update\ncoolers around you",
+  "onb2Body": "Spotted a public water cooler? Tap \"Add cooler\" to list it. Empty or broken? Report it so others know.",
+  "onb3Title": "Earn trust\nand level up",
+  "onb3Body": "Earn +50 points for each approved cooler. At 500 points your additions go live instantly.",
+  "thanksConfirmPoints": "Thanks for confirming! +{points} points",
+  "@thanksConfirmPoints": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "thanksConfirmNoPoints": "Thanks for confirming!",
+  "statusUpdated": "Status updated. Thank you!",
+  "reportReviewed": "Thanks! Your report will be reviewed. You earn 10 points if it is accepted.",
+  "errTooManyAttempts": "Too many attempts. Try again in {minutes} min.",
+  "@errTooManyAttempts": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "errWrongPassword": "Wrong password.",
+  "errStatusUnchanged": "The cooler already has this status.",
+  "deleteAccount": "Delete account",
+  "deleteAccountTitle": "Delete your account?",
+  "deleteAccountBody": "This permanently deletes your account, points and history. Coolers and photos you added stay on the map. Enter your password to confirm.",
+  "deleteAccountDone": "Your account was deleted.",
+  "privacyPolicy": "Privacy policy",
+  "errOpenLink": "Could not open the page.",
+  "navMap": "Map",
+  "navReports": "My reports",
+  "navAccount": "Account",
+  "filterAll": "All",
+  "filterWorking": "Working",
+  "filterCups": "Has cups",
+  "filterPatron": "With patron",
+  "nearestWorking": "Nearest working cooler",
+  "patronBadge": "Patron",
+  "details": "Details",
+  "distance": "Distance",
+  "cups": "Cups",
+  "stepOf": "Step {current} of {total}",
+  "@stepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "placeTitle": "Put the pin on the cooler",
+  "placeFree": "Move the map until the pin is on the cooler.",
+  "placeInRange": "Within reach: {meters} m from where you stand",
+  "@placeInRange": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "placeTooFar": "Too far ({distance}). Stand within {max} m of the cooler.",
+  "@placeTooFar": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "rangeLocating": "Getting an accurate location…",
+  "rangeNeedLocation": "Turn on location to contribute.",
+  "rangeNear": "You are at this cooler ({meters} m). You can confirm it now.",
+  "@rangeNear": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "rangeFar": "Get within {max} m to confirm. You are {distance} away.",
+  "@rangeFar": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "rangeInaccurate": "Your location is not accurate enough yet. Step into the open and try again.",
+  "errTooFar": "You are {distance} m away. Get within {max} m of the cooler.",
+  "@errTooFar": {
+    "placeholders": {
+      "distance": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "stillWorkingPoints": "Still working (+5 points)",
+  "confirmedTimes": "{count, plural, =0{Not confirmed yet} =1{Confirmed working once} other{Confirmed working {count} times}}",
+  "@confirmedTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "photosTitle": "Photos ({count})",
+  "@photosTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waitingReview": "Waiting for review. Only you can see this cooler for now.",
+  "patronFamily": "Family dedication",
+  "patronImpact": "Impact",
+  "lastChecked": "Last confirmed",
+  "viewOnMap": "Back to the map",
+  "cupsDisposableHint": "Single-use cups are provided",
+  "cupsSharedHint": "One cup shared by everyone",
+  "cupsNoneHint": "Bring your own bottle",
+  "cupsUnknownHint": "I did not check",
+  "submitCooler": "Submit (+50 points when approved)",
+  "reviewNote": "Every new cooler is reviewed before it appears on the map for everyone.",
+  "locationConfirmed": "Location confirmed",
+  "trustScore": "Trust score",
+  "trustTrack": "Verified contributor track",
+  "myActivity": "My activity",
+  "leaderboard": "Leaderboard",
+  "rankValue": "#{rank}",
+  "@rankValue": {
+    "placeholders": {
+      "rank": {
+        "type": "int"
+      }
+    }
+  },
+  "preferences": "Settings",
+  "missionTitle": "Why Nwasy",
+  "missionBody": "Nwasy maps the useful things on every street corner, starting with free cold drinking water, and keeps the map accurate with the help of people nearby.",
+  "signInPrompt": "Log in to see the coolers you added and the reports you sent.",
+  "onbAllowTitle": "Allow location to find water nearby",
+  "onbAllowBody": "Nwasy uses your location only while you use the app: to show coolers near you and the walking distance, and to check you are at a cooler when you confirm it.",
+  "onbAllow": "Allow location access",
+  "onbNotNow": "Not now",
+  "onbNoTracking": "No tracking in the background",
+  "onbFifty": "Checked within 50 m"
+}

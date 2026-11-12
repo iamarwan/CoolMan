@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block header %}<header><div class="wrap"><span class="brand">Nwasy admin</span></div></header>{% endblock %}
+{% block content %}
+<div class="card" style="max-width:380px;margin:40px auto">
+  <h1>Log in</h1>
+  {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+  <form method="post" action="/admin/login">
+    <input type="hidden" name="next" value="{{ next }}">
+    <p><label>Username<br><input name="username" autocomplete="username" required style="width:100%"></label></p>
+    <p><label>Password<br><input name="password" type="password" autocomplete="current-password" required style="width:100%"></label></p>
+    <button class="primary" style="width:100%">Log in</button>
+  </form>
+</div>
+{% endblock %}

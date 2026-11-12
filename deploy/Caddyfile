@@ -1,0 +1,23 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# INACTIVE UNTIL DEPLOYMENT. Used only by docker-compose.prod.yml.
+# Caddy gets and renews a free HTTPS certificate for API_DOMAIN automatically
+# (the domain's DNS "A" record must point at the server first).
+# ─────────────────────────────────────────────────────────────────────────────
+{$API_DOMAIN} {
+	encode zstd gzip
+
+	# Browsers must always use HTTPS for this domain (1 year).
+	header Strict-Transport-Security "max-age=31536000"
+	header -Server
+
+	# Uploaded photos never change once written: cache them for a long time.
+	@uploads path /uploads/*
+	header @uploads Cache-Control "public, max-age=2592000, immutable"
+
+	# Limit request size (photos are capped at 8 MB by the API too).
+	request_body {
+		max_size 10MB
+	}
+
+	reverse_proxy api:8000
+}

@@ -1,34 +1,44 @@
-// lib/main.dart
+// Start-up rule: nothing here waits on the network. The only await is local
+// storage (bounded to 3 s), during which Android shows the native splash.
 
-import 'services/api_service.dart';
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'screens/map_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/onboarding_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await ApiService.restoreSession();
-  final prefs = await SharedPreferences.getInstance();
-  final onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
-  runApp(SabilApp(showOnboarding: !onboardingComplete));
-}
+import 'app/app.dart';
+import 'core/cache_store.dart';
+import 'core/providers.dart';
 
-class SabilApp extends StatelessWidget {
-  final bool showOnboarding;
-  const SabilApp({super.key, this.showOnboarding = false});
+Future<void> main() async {
+  await runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      debugPrint('FlutterError: ${details.exceptionAsString()}');
+    };
+    if (kReleaseMode) {
+      // A broken widget shows a readable message instead of a grey box.
+      ErrorWidget.builder = (_) => const Material(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Text('Something went wrong.\nحدث خطأ ما.', textAlign: TextAlign.center),
+              ),
+            ),
+          );
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sabil',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: const Color(0xFF0F766E), // Elegant Ocean Teal
-        useMaterial3: true,
-        brightness: Brightness.light,
-      ),
-      home: showOnboarding ? const OnboardingScreen() : const MapScreen(),
-    );
-  }
+    final cache = await CacheStore.open();
+    runApp(ProviderScope(
+      overrides: [cacheStoreProvider.overrideWithValue(cache)],
+      // Network errors are shown to the user with a retry button instead of
+      // silently retrying in the background.
+      retry: (_, _) => null,
+      child: const NwasyApp(),
+    ));
+  }, (error, stack) {
+    debugPrint('Uncaught error: $error\n$stack');
+  });
 }
