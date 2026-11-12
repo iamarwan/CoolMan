@@ -9,8 +9,8 @@ notes from the first phone test.
 
 | Check | Result |
 |---|---|
-| Backend tests | 47 pass (API, trust rules, photos, admin panel, 15 attack tests) |
-| App tests | 24 pass (network errors, map loading logic, saved-data restore, Arabic, cooler sheet) |
+| Backend tests | 55 pass (API, trust rules, photos, admin panel, 15 attack tests, the 50 m rule) |
+| App tests | 34 pass (network errors, map loading, saved-data restore, Arabic, cooler sheet, near/far/no-GPS states) |
 | Automatic checks on every push | Running on GitHub and passing |
 | Known vulnerabilities in backend packages | None in 40 pinned packages |
 | Map speed with 100,000 coolers | Query uses the map index; a screen of about 200 pins returns in about 6 ms, 7.5 KB compressed; about 340 requests per second on a 4-core machine |
@@ -48,6 +48,8 @@ None of these stop testing. All of them stop a public release.
 | B9 | No backups | server | Nightly database dump and photo copy; commands are in `deploy/DEPLOY.md`. |
 
 ## Open: things users will notice
+
+**Update after the redesign (same day):** U1, U2, U4, U5 and U10 are done and checked in a browser with a simulated GPS position. U3 and U6 to U9 and U11 remain.
 
 Ordered by how soon a new user hits them.
 
@@ -99,5 +101,5 @@ Ordered by how soon a new user hits them.
 2. Add the Android build to CI (H5) before the redesign touches native files.
 3. Take B1 to B3 together with the identity, on the owner's PC, with a build
    after each change.
-4. U1 to U5 go into the redesign; they are already in the Stitch prompt except
-   U2, which I have added to the backlog.
+4. Build the redesigned app on the phone and walk to a real cooler: the 50 m
+   rule has only been tested with a simulated position.

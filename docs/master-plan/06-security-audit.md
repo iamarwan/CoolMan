@@ -6,8 +6,9 @@ deploy files. Method: read every route and state change, write each suspected
 attack as a test, run it against the code, fix, re-run.
 
 **Result:** 14 attacks worked before this pass. All 14 are fixed and covered by
-tests in `tests/test_security.py`. 12 known risks remain open; they are listed
-at the end with what closes each one.
+tests in `tests/test_security.py`. A 15th, confirming from far away, was closed
+later the same day with the 50 m rule (`tests/test_distance.py`). 11 known
+risks remain open; they are listed at the end with what closes each one.
 
 What I could not test: the Android build (no Android SDK in my workspace), a
 real HTTPS deployment, and attacks that need a real phone (GPS spoofing, a
@@ -61,7 +62,7 @@ Ordered by what I would close first.
 
 | # | Risk | Why it is still open | What closes it |
 |---|---|---|---|
-| R1 | **Confirming from far away.** The server does not check where the user is. The daily cap limits the damage to 100 points a day, so a patient attacker still reaches "trusted" in 5 days. | Parked by the owner until the redesign (backlog item 2: 50 m rule). | Send location with each action; server rejects beyond 50 m or with poor GPS accuracy. |
+| R1 | ~~Confirming from far away~~ | **Closed 2026-11-11.** The server refuses confirmations, reports, photos and new coolers beyond 50 m or with GPS less accurate than 40 m. A phone with a faked GPS position can still pass; see R2 and the daily cap. | Done. Next: flag accounts whose positions jump impossibly fast. |
 | R2 | **A trusted account going rogue.** At 500 points an account can change any cooler's status and publish coolers with no review. | Needs product decisions. | Daily limits for trusted accounts, an activity log with one-click undo in the admin panel, and loss of trusted status after a rejected action. |
 | R3 | **No account recovery.** There is no email or phone on an account, so a forgotten password means a lost account, and there is no "change password". | Needs a login redesign. | Phone number with one-time code (the norm in Egypt), which also raises the cost of fake accounts. |
 | R4 | **Logins last 30 days and cannot be cancelled from the server.** A stolen token works until it expires. | Low likelihood at this stage. | A per-user token version that is bumped on password change or "log out everywhere". |
@@ -79,7 +80,7 @@ Ordered by what I would close first.
 ## What to do next
 
 1. Set a real admin password in `.env` on the development PC (R11).
-2. When the redesign starts, do R1 first. It is the last cheap way to defeat
-   the trust system.
+2. R1 is closed. The remaining cheap abuse path is a faked GPS position
+   combined with patience; R2's limits and undo are the answer.
 3. Before any public release: R6, R7, R9, R10.
 4. Before the first hire or a second admin: R5.
