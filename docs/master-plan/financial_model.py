@@ -1,4 +1,4 @@
-"""Sabil financial model. Change the numbers in ASSUMPTIONS and run:
+"""Nwasy financial model. Change the numbers in ASSUMPTIONS and run:
 
     python docs/master-plan/financial_model.py
 
@@ -32,6 +32,13 @@ ASSUMPTIONS = {
     "new_care_plans": [40, 200, 500],       # existing coolers joining a care plan
     "corporate_sabils": [0, 40, 300],
     "new_plan_year_share": 0.5,             # a plan sold mid-year earns half a year
+    # ── Street vendors (food trucks, coffee carts): monthly subscription ────
+    # Free listing for everyone; paid plan adds a highlighted pin, menu,
+    # photos and "open now" alerts to followers. Charged only in districts
+    # where the app already has an audience (so: nothing for most of year 1).
+    "vendor_price_month": 250,
+    "vendor_avg_paying": [10, 360, 2100],   # average number of paying vendors across the year
+    "vendor_direct_share": 0.20,            # payment fees, support, sales commission
     # ── Running costs per year (not tied to a cooler) ───────────────────────
     "team": [90_000, 1_010_000, 2_600_000],
     "marketing": [120_000, 400_000, 900_000],
@@ -50,8 +57,10 @@ def model(a: dict) -> list[dict]:
         sabils, plans, corp = a["new_sabils"][y], a["new_care_plans"][y], a["corporate_sabils"][y]
         renewals = under_care_last_year * a["renewal_rate"]
 
+        vendor_revenue = a["vendor_avg_paying"][y] * a["vendor_price_month"] * 12
         revenue = (
-            sabils * a["price_sabil"]
+            vendor_revenue
+            + sabils * a["price_sabil"]
             + corp * a["price_corporate_sabil"]
             + plans * a["price_care_year"] * a["new_plan_year_share"]
             + renewals * a["price_care_year"]
@@ -60,7 +69,8 @@ def model(a: dict) -> list[dict]:
             (sabils + corp) * (setup + care)
             + plans * care * a["new_plan_year_share"]
             + renewals * care
-            + revenue * a["payment_fee"]
+            + (revenue - vendor_revenue) * a["payment_fee"]
+            + vendor_revenue * a["vendor_direct_share"]
         )
         running = sum(a[k][y] for k in ("team", "marketing", "technology", "legal_admin", "other"))
         under_care = sabils + corp + plans + renewals
@@ -72,6 +82,9 @@ def model(a: dict) -> list[dict]:
                 "new_care_plans": plans,
                 "renewals": round(renewals),
                 "coolers_under_care": round(under_care),
+                "paying_vendors_avg": a["vendor_avg_paying"][y],
+                "revenue_water": round(revenue - vendor_revenue),
+                "revenue_vendors": round(vendor_revenue),
                 "revenue": round(revenue),
                 "direct_costs": round(direct),
                 "gross_profit": round(revenue - direct),
