@@ -20,7 +20,7 @@ from app.config import get_settings
 from app.db import engine
 from app.errors import install_error_handlers
 from app.public_web import routes as public_web
-from app.routers import auth, coolers, sponsors, users
+from app.routers import auth, coolers, requests, sponsors, users
 
 logging.basicConfig(level=logging.INFO)
 
@@ -72,7 +72,7 @@ def create_app() -> FastAPI:
             response.headers["Cache-Control"] = "no-store"
         return response
 
-    for module in (auth, users, coolers, sponsors):
+    for module in (auth, users, coolers, sponsors, requests):
         app.include_router(module.router)
     app.include_router(admin_web.router)  # web admin panel at /admin
     app.include_router(public_web.router)  # /privacy and /account/delete

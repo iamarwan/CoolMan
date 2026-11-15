@@ -20,6 +20,8 @@ from app.models import (
     CoolerPhoto,
     CoolerStatus,
     PhotoCategory,
+    RequestStatus,
+    SabilRequest,
     Sponsor,
     SponsorType,
     User,
@@ -30,6 +32,7 @@ from app.security import authenticate_admin, create_admin_token
 from app.services import moderation, ratelimit
 from app.services.coolers import get_cooler
 
+from . import request_labels
 from .auth import COOKIE, admin_action, admin_page, csrf_for, safe_next
 
 router = APIRouter(prefix="/admin", include_in_schema=False)
@@ -52,6 +55,9 @@ def _ago(value: datetime | None) -> str:
 
 
 templates.env.filters["ago"] = _ago
+templates.env.globals["label"] = request_labels.label
+templates.env.globals["extras_list"] = request_labels.extras_list
+templates.env.globals["request_status_label"] = request_labels.STATUS
 
 
 def _back(next_url: str | None, msg: str, error: bool = False) -> RedirectResponse:
@@ -89,7 +95,10 @@ async def _queue_counts(db: AsyncSession) -> dict[str, int]:
         .join(WaterCooler, CoolerPhoto.cooler_id == WaterCooler.id)
         .where(CoolerPhoto.is_approved.is_(False), WaterCooler.is_approved)
     )
-    return {"new": new or 0, "status": status or 0, "photos": photos or 0}
+    requests = await db.scalar(
+        select(func.count(SabilRequest.id)).where(SabilRequest.status == RequestStatus.new)
+    )
+    return {"new": new or 0, "status": status or 0, "photos": photos or 0, "requests": requests or 0}
 
 
 def _render(request: Request, name: str, csrf: str, counts: dict, **ctx) -> HTMLResponse:
@@ -391,3 +400,88 @@ async def verify_sponsor(
 @router.post("/sponsors/{sponsor_id}/delete", dependencies=[Depends(admin_action)])
 async def delete_sponsor(sponsor_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     return await _run(moderation.delete_sponsor(db, sponsor_id), "/admin/sponsors", "Sponsor deleted.")
+
+
+# ── Build-a-sabil requests ───────────────────────────────────────────────────
+
+OPEN_STATES = [RequestStatus.new, RequestStatus.contacted, RequestStatus.site_visit, RequestStatus.quoted]
+
+
+@router.get("/requests", response_class=HTMLResponse)
+async def requests_list(
+    request: Request,
+    state: str = Query("open"),
+    csrf: str = Depends(admin_page),
+    db: AsyncSession = Depends(get_db),
+):
+    conds = []
+    if state == "open":
+        conds.append(SabilRequest.status.in_(OPEN_STATES))
+    elif state in {s.value for s in RequestStatus}:
+        conds.append(SabilRequest.status == RequestStatus(state))
+    rows = (
+        await db.execute(
+            select(SabilRequest).where(*conds).order_by(SabilRequest.created_at.desc()).limit(500)
+        )
+    ).scalars().all()
+    per_status = dict(
+        (await db.execute(select(SabilRequest.status, func.count()).group_by(SabilRequest.status))).all()
+    )
+    tabs = [("open", "Open", sum(per_status.get(s, 0) for s in OPEN_STATES))] + [
+        (s.value, request_labels.STATUS[s], per_status.get(s, 0)) for s in RequestStatus
+    ] + [("all", "All", sum(per_status.values()))]
+    return _render(
+        request, "requests.html", csrf, await _queue_counts(db), rows=rows, state=state, tabs=tabs,
+    )
+
+
+@router.get("/requests/{request_id}", response_class=HTMLResponse)
+async def request_detail(
+    request: Request,
+    request_id: uuid.UUID,
+    csrf: str = Depends(admin_page),
+    db: AsyncSession = Depends(get_db),
+):
+    req = await db.get(SabilRequest, request_id)
+    if req is None:
+        return _back("/admin/requests", "Request not found.", error=True)
+    users = await _usernames(db, [req.user_id])
+    return _render(
+        request, "request.html", csrf, await _queue_counts(db),
+        r=req, users=users, statuses=list(RequestStatus),
+    )
+
+
+@router.post("/requests/{request_id}", dependencies=[Depends(admin_action)])
+async def update_request(
+    request_id: uuid.UUID,
+    status: RequestStatus = Form(...),
+    quote_egp: str = Form("", max_length=12),
+    admin_notes: str = Form("", max_length=2000),
+    db: AsyncSession = Depends(get_db),
+):
+    here = f"/admin/requests/{request_id}"
+    req = await db.get(SabilRequest, request_id)
+    if req is None:
+        return _back("/admin/requests", "Request not found.", error=True)
+    quote = quote_egp.replace(",", "").strip()
+    if quote and (not quote.isdigit() or int(quote) > 100_000_000):
+        return _back(here, "The quote must be a whole number of pounds.", error=True)
+    notes = admin_notes.strip()
+    if "\x00" in notes:
+        return _back(here, "Notes contain characters that are not allowed.", error=True)
+    req.status = status
+    req.quote_egp = int(quote) if quote else None
+    req.admin_notes = notes or None
+    req.updated_at = datetime.now(timezone.utc)
+    await db.commit()
+    return _back(here, "Request updated.")
+
+
+@router.post("/requests/{request_id}/delete", dependencies=[Depends(admin_action)])
+async def delete_request(request_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+    req = await db.get(SabilRequest, request_id)
+    if req is not None:
+        await db.delete(req)
+        await db.commit()
+    return _back("/admin/requests", "Request deleted.")

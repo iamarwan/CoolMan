@@ -21,6 +21,7 @@ String errorText(AppLocalizations l, Object error) {
     'photo_too_large' => l.errPhotoTooLarge,
     'photo_invalid' => l.errPhotoInvalid,
     'validation_error' => l.errValidation,
+    'too_many_requests' => l.reqTooMany,
     'too_many_attempts' || 'rate_limited' => l.errTooManyAttempts(error.retryAfterMinutes ?? 15),
     'wrong_password' => l.errWrongPassword,
     'status_unchanged' => l.errStatusUnchanged,

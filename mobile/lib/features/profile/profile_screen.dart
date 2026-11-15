@@ -12,6 +12,8 @@ import '../../shared/language_picker.dart';
 import '../../shared/ui.dart';
 import '../auth/auth_sheet.dart';
 import '../home/home_shell.dart';
+import '../sabil_request/my_requests_screen.dart';
+import '../sabil_request/sabil_request_screen.dart';
 import 'delete_account_dialog.dart';
 import 'leaderboard_screen.dart';
 import 'profile_repository.dart';
@@ -67,6 +69,8 @@ class _SignedOut extends ConsumerWidget {
       const SizedBox(height: 8),
       SectionLabel(l.preferences),
       const AppCard(padding: EdgeInsets.zero, child: _SettingsRows()),
+      const SizedBox(height: 16),
+      const _BuildSabilCard(),
       const SizedBox(height: 16),
       const _MissionCard(),
     ]);
@@ -210,8 +214,17 @@ class _SignedIn extends ConsumerWidget {
               onTap: () => Navigator.of(context)
                   .push(MaterialPageRoute(builder: (_) => const LeaderboardScreen())),
             ),
+            const Divider(indent: 68),
+            _Row(
+              icon: Icons.volunteer_activism_outlined,
+              title: l.myRequests,
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const MyRequestsScreen())),
+            ),
           ]),
         ),
+        const SizedBox(height: 16),
+        const _BuildSabilCard(),
         const SizedBox(height: 8),
         SectionLabel(l.preferences),
         const AppCard(padding: EdgeInsets.zero, child: _SettingsRows()),
@@ -270,6 +283,39 @@ class _SettingsRows extends ConsumerWidget {
         },
       ),
     ]);
+  }
+}
+
+/// The way in to the build-a-sabil request form.
+class _BuildSabilCard extends ConsumerWidget {
+  const _BuildSabilCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    return AppCard(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const IconBadge(Icons.water_drop_outlined,
+              color: Colors.white, background: AppColors.patron),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(l.reqEntryTitle, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              const SizedBox(height: 4),
+              Text(l.reqEntryBody, style: const TextStyle(color: AppColors.muted, height: 1.5)),
+            ]),
+          ),
+        ]),
+        const SizedBox(height: 14),
+        FilledButton.icon(
+          onPressed: () => openSabilRequest(context, ref),
+          icon: const Icon(Icons.arrow_forward),
+          label: Text(l.reqEntryButton),
+          style: FilledButton.styleFrom(backgroundColor: AppColors.patron),
+        ),
+      ]),
+    );
   }
 }
 

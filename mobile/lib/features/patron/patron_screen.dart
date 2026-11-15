@@ -2,6 +2,7 @@
 // Opened only from that cooler's sheet; there is no list of patrons.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/format.dart';
@@ -9,6 +10,7 @@ import '../../core/locale.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/cooler.dart';
 import '../../shared/ui.dart';
+import '../sabil_request/sabil_request_screen.dart';
 
 IconData patronTypeIcon(String type) => switch (type) {
       'Mosque' => Icons.mosque_outlined,
@@ -122,6 +124,19 @@ class PatronScreen extends StatelessWidget {
             style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
           ),
         ],
+        const SizedBox(height: 10),
+        Consumer(
+          builder: (context, ref, _) => OutlinedButton.icon(
+            onPressed: () => openSabilRequest(context, ref),
+            icon: const Icon(Icons.volunteer_activism_outlined),
+            label: Text(l.patronBuildOne),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+              foregroundColor: AppColors.patron,
+              side: const BorderSide(color: AppColors.patron),
+            ),
+          ),
+        ),
         const SizedBox(height: 10),
         OutlinedButton.icon(
           onPressed: () => Navigator.of(context).pop(),

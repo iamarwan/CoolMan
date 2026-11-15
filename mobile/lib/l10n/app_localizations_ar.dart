@@ -762,4 +762,305 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onbFifty => 'تحقق في حدود 50 م';
+
+  @override
+  String get reqEntryTitle => 'ابنِ سبيلًا';
+
+  @override
+  String get reqEntryBody =>
+      'مبرّد مياه باسم من تحب، نركّبه ونعتني به. أخبرنا بما تريد وسنتصل بك.';
+
+  @override
+  String get reqEntryButton => 'اطلب سبيلًا';
+
+  @override
+  String get reqTitle => 'بناء سبيل';
+
+  @override
+  String get reqIntro =>
+      'املأ هذه البيانات وسيتصل بك فريقنا خلال يومي عمل ومعه السعر. لا تدفع شيئًا الآن.';
+
+  @override
+  String get reqStepWhat => 'ماذا نبني';
+
+  @override
+  String get reqStepWho => 'لمن السبيل';
+
+  @override
+  String get reqStepWhere => 'المكان';
+
+  @override
+  String get reqStepContact => 'طريقة التواصل';
+
+  @override
+  String get reqPkgFull => 'سبيل كامل';
+
+  @override
+  String get reqPkgFullBody =>
+      'مبرّد وتركيب ولوحة وسنة من الرعاية، وتتابع تأكيده في التطبيق.';
+
+  @override
+  String get reqPkgCare => 'خطة رعاية';
+
+  @override
+  String get reqPkgCareBody =>
+      'لديك مبرّد بالفعل. ننظفه ونصلحه ونتابعه لمدة سنة.';
+
+  @override
+  String get reqPkgCompany => 'شبكة لشركة';
+
+  @override
+  String get reqPkgCompanyBody =>
+      'عدة مبرّدات لشركة أو مؤسسة، واسمكم على كل منها.';
+
+  @override
+  String get reqQuantity => 'عدد المبرّدات';
+
+  @override
+  String get reqTaps => 'عدد الحنفيات';
+
+  @override
+  String get reqExtras => 'إضافات';
+
+  @override
+  String get reqExtraFilter => 'فلتر مياه';
+
+  @override
+  String get reqExtraShade => 'مظلة أو غطاء';
+
+  @override
+  String get reqExtraCups => 'حامل أكواب';
+
+  @override
+  String get reqExtraLight => 'إضاءة ليلية';
+
+  @override
+  String get reqTiming => 'متى تريده؟';
+
+  @override
+  String get reqTimingAsap => 'في أقرب وقت';
+
+  @override
+  String get reqTimingMonth => 'خلال شهر';
+
+  @override
+  String get reqTimingQuarter => 'خلال 3 أشهر';
+
+  @override
+  String get reqTimingFlexible => 'غير مستعجل';
+
+  @override
+  String get reqPurpose => 'ما الغرض منه؟';
+
+  @override
+  String get reqPurposeMemorial => 'على روح شخص';
+
+  @override
+  String get reqPurposeCharity => 'صدقة جارية';
+
+  @override
+  String get reqPurposeBusiness => 'من شركة أو محل';
+
+  @override
+  String get reqPurposeCommunity => 'مسجد أو مدرسة أو منطقة';
+
+  @override
+  String get reqPurposeOther => 'أخرى';
+
+  @override
+  String get reqDedication => 'الاسم على السبيل (اختياري)';
+
+  @override
+  String get reqDedicationHint => 'مثال: على روح الحاج محمود';
+
+  @override
+  String get reqPlaque => 'نص اللوحة (اختياري)';
+
+  @override
+  String get reqPlaqueHint => 'مثال: اشرب وادعُ له';
+
+  @override
+  String get reqShowPublicly => 'إظهار الاسم في التطبيق';
+
+  @override
+  String get reqShowPubliclyBody => 'سيظهر لمن يفتح صفحة المبرّد.';
+
+  @override
+  String get reqGovernorate => 'المحافظة';
+
+  @override
+  String get reqArea => 'المنطقة أو الحي';
+
+  @override
+  String get reqAreaHint => 'مثال: المعادي';
+
+  @override
+  String get reqAddress => 'الشارع وعلامة مميزة (اختياري)';
+
+  @override
+  String get reqUseLocation => 'أضف موقعي الحالي';
+
+  @override
+  String get reqLocationAdded => 'تمت إضافة موقعك';
+
+  @override
+  String get reqLocationRemove => 'إزالة';
+
+  @override
+  String get reqLocationFailed => 'تعذّر تحديد موقعك. يمكنك إرسال الطلب بدونه.';
+
+  @override
+  String get reqPlaceType => 'نوع المكان';
+
+  @override
+  String get reqPlaceStreet => 'شارع أو رصيف';
+
+  @override
+  String get reqPlaceMosque => 'مسجد';
+
+  @override
+  String get reqPlaceSchool => 'مدرسة أو جامعة';
+
+  @override
+  String get reqPlaceHospital => 'مستشفى أو عيادة';
+
+  @override
+  String get reqPlaceShop => 'أمام محل';
+
+  @override
+  String get reqPlaceWorkplace => 'مقر عمل أو مصنع';
+
+  @override
+  String get reqPlaceOther => 'أخرى';
+
+  @override
+  String get reqPermission => 'تصريح المكان';
+
+  @override
+  String get reqPermOwner => 'المكان ملكي';
+
+  @override
+  String get reqPermHas => 'معي موافقة المالك';
+
+  @override
+  String get reqPermAsking => 'أطلب الموافقة';
+
+  @override
+  String get reqPermNotYet => 'ليس بعد';
+
+  @override
+  String get reqElectricity => 'كهرباء قريبة؟';
+
+  @override
+  String get reqWaterLine => 'ماسورة مياه قريبة؟';
+
+  @override
+  String get reqYes => 'نعم';
+
+  @override
+  String get reqNo => 'لا';
+
+  @override
+  String get reqUnsure => 'لست متأكدًا';
+
+  @override
+  String get reqName => 'اسمك';
+
+  @override
+  String get reqPhone => 'رقم الموبايل';
+
+  @override
+  String get reqPhoneInvalid => 'أدخل رقم موبايل مصري، مثال: 010 1234 5678.';
+
+  @override
+  String get reqContactMethod => 'تواصلوا معي عبر';
+
+  @override
+  String get reqCall => 'مكالمة';
+
+  @override
+  String get reqWhatsapp => 'واتساب';
+
+  @override
+  String get reqBestTime => 'أفضل وقت للاتصال';
+
+  @override
+  String get reqMorning => 'صباحًا';
+
+  @override
+  String get reqAfternoon => 'ظهرًا';
+
+  @override
+  String get reqEvening => 'مساءً';
+
+  @override
+  String get reqAnyTime => 'أي وقت';
+
+  @override
+  String get reqNotes => 'ملاحظات أخرى؟ (اختياري)';
+
+  @override
+  String get reqPrivacy => 'نستخدم رقمك فقط لمتابعة هذا الطلب.';
+
+  @override
+  String get reqSubmit => 'إرسال الطلب';
+
+  @override
+  String get reqRequired => 'مطلوب';
+
+  @override
+  String get reqChoose => 'اختر';
+
+  @override
+  String get reqFixErrors => 'بعض البيانات ناقصة. راجع الحقول المحددة.';
+
+  @override
+  String get reqSentTitle => 'تم إرسال الطلب';
+
+  @override
+  String get reqSentBody =>
+      'شكرًا لك. سيتصل بك فريقنا خلال يومي عمل، ويمكنك متابعة طلبك من صفحة الحساب.';
+
+  @override
+  String get reqDone => 'تم';
+
+  @override
+  String get reqTooMany => 'أرسلت عدة طلبات اليوم. سنتصل بك بخصوصها قريبًا.';
+
+  @override
+  String get myRequests => 'طلبات السبيل';
+
+  @override
+  String get myRequestsEmpty => 'لم تطلب سبيلًا بعد.';
+
+  @override
+  String get reqStatusNew => 'تم الاستلام';
+
+  @override
+  String get reqStatusContacted => 'تواصلنا معك';
+
+  @override
+  String get reqStatusSiteVisit => 'زيارة الموقع';
+
+  @override
+  String get reqStatusQuoted => 'تم إرسال السعر';
+
+  @override
+  String get reqStatusWon => 'تم التأكيد';
+
+  @override
+  String get reqStatusLost => 'مغلق';
+
+  @override
+  String get patronBuildOne => 'ابنِ سبيلًا مثله';
+
+  @override
+  String reqTapsValue(int count) {
+    return '$count حنفيات';
+  }
+
+  @override
+  String reqQuote(String amount) {
+    return 'السعر: $amount جنيه';
+  }
 }

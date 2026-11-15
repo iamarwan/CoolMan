@@ -8,7 +8,7 @@ import asyncio
 import subprocess
 import sys
 
-from sqlalchemy import text
+from sqlalchemy import Enum, text
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.config import get_settings
@@ -18,7 +18,10 @@ from app.db import Base  # noqa: E402
 
 # Every table the app defines, plus Alembic's bookkeeping table.
 TABLES = [t.name for t in Base.metadata.sorted_tables] + ["alembic_version"]
-TYPES = ["actiontype", "photocategory", "cupstype", "coolerstatus", "sponsortype"]
+# Every enum type the models use (found from the models, so new ones are never missed).
+TYPES = sorted(
+    {c.type.name for t in Base.metadata.sorted_tables for c in t.columns if isinstance(c.type, Enum)}
+)
 
 
 async def drop_everything() -> None:

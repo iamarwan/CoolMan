@@ -1327,6 +1327,588 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Checked within 50 m'**
   String get onbFifty;
+
+  /// No description provided for @reqEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a sabil'**
+  String get reqEntryTitle;
+
+  /// No description provided for @reqEntryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A cooler in someone\'s name, installed and looked after by our team. Tell us what you have in mind and we will call you.'**
+  String get reqEntryBody;
+
+  /// No description provided for @reqEntryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a sabil'**
+  String get reqEntryButton;
+
+  /// No description provided for @reqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a sabil'**
+  String get reqTitle;
+
+  /// No description provided for @reqIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill this in and our team will call you within 2 working days with a price. Nothing is paid now.'**
+  String get reqIntro;
+
+  /// No description provided for @reqStepWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'What to build'**
+  String get reqStepWhat;
+
+  /// No description provided for @reqStepWho.
+  ///
+  /// In en, this message translates to:
+  /// **'Who it is for'**
+  String get reqStepWho;
+
+  /// No description provided for @reqStepWhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get reqStepWhere;
+
+  /// No description provided for @reqStepContact.
+  ///
+  /// In en, this message translates to:
+  /// **'How to reach you'**
+  String get reqStepContact;
+
+  /// No description provided for @reqPkgFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full sabil'**
+  String get reqPkgFull;
+
+  /// No description provided for @reqPkgFullBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooler, installation, a plaque and a year of care. You see it confirmed in the app.'**
+  String get reqPkgFullBody;
+
+  /// No description provided for @reqPkgCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Care plan'**
+  String get reqPkgCare;
+
+  /// No description provided for @reqPkgCareBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a cooler. We clean, repair and check it for a year.'**
+  String get reqPkgCareBody;
+
+  /// No description provided for @reqPkgCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company network'**
+  String get reqPkgCompany;
+
+  /// No description provided for @reqPkgCompanyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Several coolers for a company or organisation, with your name on each.'**
+  String get reqPkgCompanyBody;
+
+  /// No description provided for @reqQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of coolers'**
+  String get reqQuantity;
+
+  /// No description provided for @reqTaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of taps'**
+  String get reqTaps;
+
+  /// No description provided for @reqExtras.
+  ///
+  /// In en, this message translates to:
+  /// **'Extras'**
+  String get reqExtras;
+
+  /// No description provided for @reqExtraFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Water filter'**
+  String get reqExtraFilter;
+
+  /// No description provided for @reqExtraShade.
+  ///
+  /// In en, this message translates to:
+  /// **'Shade or cover'**
+  String get reqExtraShade;
+
+  /// No description provided for @reqExtraCups.
+  ///
+  /// In en, this message translates to:
+  /// **'Cup holder'**
+  String get reqExtraCups;
+
+  /// No description provided for @reqExtraLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Night light'**
+  String get reqExtraLight;
+
+  /// No description provided for @reqTiming.
+  ///
+  /// In en, this message translates to:
+  /// **'When do you want it?'**
+  String get reqTiming;
+
+  /// No description provided for @reqTimingAsap.
+  ///
+  /// In en, this message translates to:
+  /// **'As soon as possible'**
+  String get reqTimingAsap;
+
+  /// No description provided for @reqTimingMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Within a month'**
+  String get reqTimingMonth;
+
+  /// No description provided for @reqTimingQuarter.
+  ///
+  /// In en, this message translates to:
+  /// **'Within 3 months'**
+  String get reqTimingQuarter;
+
+  /// No description provided for @reqTimingFlexible.
+  ///
+  /// In en, this message translates to:
+  /// **'No rush'**
+  String get reqTimingFlexible;
+
+  /// No description provided for @reqPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'What is it for?'**
+  String get reqPurpose;
+
+  /// No description provided for @reqPurposeMemorial.
+  ///
+  /// In en, this message translates to:
+  /// **'In memory of someone'**
+  String get reqPurposeMemorial;
+
+  /// No description provided for @reqPurposeCharity.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing charity'**
+  String get reqPurposeCharity;
+
+  /// No description provided for @reqPurposeBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'From a business'**
+  String get reqPurposeBusiness;
+
+  /// No description provided for @reqPurposeCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Mosque, school or community'**
+  String get reqPurposeCommunity;
+
+  /// No description provided for @reqPurposeOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reqPurposeOther;
+
+  /// No description provided for @reqDedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Name on the sabil (optional)'**
+  String get reqDedication;
+
+  /// No description provided for @reqDedicationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. In memory of Hagg Mahmoud'**
+  String get reqDedicationHint;
+
+  /// No description provided for @reqPlaque.
+  ///
+  /// In en, this message translates to:
+  /// **'Text on the plaque (optional)'**
+  String get reqPlaque;
+
+  /// No description provided for @reqPlaqueHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Drink, and say a prayer for him'**
+  String get reqPlaqueHint;
+
+  /// No description provided for @reqShowPublicly.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this name in the app'**
+  String get reqShowPublicly;
+
+  /// No description provided for @reqShowPubliclyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'People who open the cooler will see it on its page.'**
+  String get reqShowPubliclyBody;
+
+  /// No description provided for @reqGovernorate.
+  ///
+  /// In en, this message translates to:
+  /// **'Governorate'**
+  String get reqGovernorate;
+
+  /// No description provided for @reqArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Area or district'**
+  String get reqArea;
+
+  /// No description provided for @reqAreaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Maadi'**
+  String get reqAreaHint;
+
+  /// No description provided for @reqAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Street and landmarks (optional)'**
+  String get reqAddress;
+
+  /// No description provided for @reqUseLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Add my current location'**
+  String get reqUseLocation;
+
+  /// No description provided for @reqLocationAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location is added'**
+  String get reqLocationAdded;
+
+  /// No description provided for @reqLocationRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get reqLocationRemove;
+
+  /// No description provided for @reqLocationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get your location. You can still send the request.'**
+  String get reqLocationFailed;
+
+  /// No description provided for @reqPlaceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type of place'**
+  String get reqPlaceType;
+
+  /// No description provided for @reqPlaceStreet.
+  ///
+  /// In en, this message translates to:
+  /// **'Street or pavement'**
+  String get reqPlaceStreet;
+
+  /// No description provided for @reqPlaceMosque.
+  ///
+  /// In en, this message translates to:
+  /// **'Mosque'**
+  String get reqPlaceMosque;
+
+  /// No description provided for @reqPlaceSchool.
+  ///
+  /// In en, this message translates to:
+  /// **'School or university'**
+  String get reqPlaceSchool;
+
+  /// No description provided for @reqPlaceHospital.
+  ///
+  /// In en, this message translates to:
+  /// **'Hospital or clinic'**
+  String get reqPlaceHospital;
+
+  /// No description provided for @reqPlaceShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Outside a shop'**
+  String get reqPlaceShop;
+
+  /// No description provided for @reqPlaceWorkplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Workplace or factory'**
+  String get reqPlaceWorkplace;
+
+  /// No description provided for @reqPlaceOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reqPlaceOther;
+
+  /// No description provided for @reqPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission for the spot'**
+  String get reqPermission;
+
+  /// No description provided for @reqPermOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'I own the place'**
+  String get reqPermOwner;
+
+  /// No description provided for @reqPermHas.
+  ///
+  /// In en, this message translates to:
+  /// **'I have the owner\'s permission'**
+  String get reqPermHas;
+
+  /// No description provided for @reqPermAsking.
+  ///
+  /// In en, this message translates to:
+  /// **'I am asking for it'**
+  String get reqPermAsking;
+
+  /// No description provided for @reqPermNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get reqPermNotYet;
+
+  /// No description provided for @reqElectricity.
+  ///
+  /// In en, this message translates to:
+  /// **'Electricity nearby?'**
+  String get reqElectricity;
+
+  /// No description provided for @reqWaterLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Water pipe nearby?'**
+  String get reqWaterLine;
+
+  /// No description provided for @reqYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get reqYes;
+
+  /// No description provided for @reqNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get reqNo;
+
+  /// No description provided for @reqUnsure.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure'**
+  String get reqUnsure;
+
+  /// No description provided for @reqName.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get reqName;
+
+  /// No description provided for @reqPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number'**
+  String get reqPhone;
+
+  /// No description provided for @reqPhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an Egyptian mobile number, e.g. 010 1234 5678.'**
+  String get reqPhoneInvalid;
+
+  /// No description provided for @reqContactMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact me by'**
+  String get reqContactMethod;
+
+  /// No description provided for @reqCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone call'**
+  String get reqCall;
+
+  /// No description provided for @reqWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get reqWhatsapp;
+
+  /// No description provided for @reqBestTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Best time to call'**
+  String get reqBestTime;
+
+  /// No description provided for @reqMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get reqMorning;
+
+  /// No description provided for @reqAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get reqAfternoon;
+
+  /// No description provided for @reqEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening'**
+  String get reqEvening;
+
+  /// No description provided for @reqAnyTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Any time'**
+  String get reqAnyTime;
+
+  /// No description provided for @reqNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything else? (optional)'**
+  String get reqNotes;
+
+  /// No description provided for @reqPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'We use your number only to follow up on this request.'**
+  String get reqPrivacy;
+
+  /// No description provided for @reqSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send request'**
+  String get reqSubmit;
+
+  /// No description provided for @reqRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get reqRequired;
+
+  /// No description provided for @reqChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get reqChoose;
+
+  /// No description provided for @reqFixErrors.
+  ///
+  /// In en, this message translates to:
+  /// **'Some answers are missing. Check the marked fields.'**
+  String get reqFixErrors;
+
+  /// No description provided for @reqSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent'**
+  String get reqSentTitle;
+
+  /// No description provided for @reqSentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you. Our team will call you within 2 working days. You can follow your request under Account.'**
+  String get reqSentBody;
+
+  /// No description provided for @reqDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get reqDone;
+
+  /// No description provided for @reqTooMany.
+  ///
+  /// In en, this message translates to:
+  /// **'You have sent several requests today. We will call you about them soon.'**
+  String get reqTooMany;
+
+  /// No description provided for @myRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'My sabil requests'**
+  String get myRequests;
+
+  /// No description provided for @myRequestsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You have not requested a sabil yet.'**
+  String get myRequestsEmpty;
+
+  /// No description provided for @reqStatusNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get reqStatusNew;
+
+  /// No description provided for @reqStatusContacted.
+  ///
+  /// In en, this message translates to:
+  /// **'We contacted you'**
+  String get reqStatusContacted;
+
+  /// No description provided for @reqStatusSiteVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Site visit'**
+  String get reqStatusSiteVisit;
+
+  /// No description provided for @reqStatusQuoted.
+  ///
+  /// In en, this message translates to:
+  /// **'Price sent'**
+  String get reqStatusQuoted;
+
+  /// No description provided for @reqStatusWon.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get reqStatusWon;
+
+  /// No description provided for @reqStatusLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get reqStatusLost;
+
+  /// No description provided for @patronBuildOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Build one like this'**
+  String get patronBuildOne;
+
+  /// No description provided for @reqTapsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} taps'**
+  String reqTapsValue(int count);
+
+  /// No description provided for @reqQuote.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: EGP {amount}'**
+  String reqQuote(String amount);
 }
 
 class _AppLocalizationsDelegate

@@ -58,6 +58,17 @@ class ActionType(str, enum.Enum):
     status_report = "status_report"
 
 
+class RequestStatus(str, enum.Enum):
+    """Where a "build a sabil" request is in the sales follow-up."""
+
+    new = "new"
+    contacted = "contacted"
+    site_visit = "site_visit"
+    quoted = "quoted"
+    won = "won"
+    lost = "lost"
+
+
 class User(Base):
     __tablename__ = "users"
     # Usernames are unique ignoring case ("Alice" blocks "alice").
@@ -181,3 +192,59 @@ class RateHit(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     bucket: Mapped[str] = mapped_column(String(200))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class SabilRequest(Base):
+    """A request, sent from the app, to build (or look after) a sabil.
+
+    Choice fields are plain strings checked by the API schema, so new options
+    need no database migration."""
+
+    __tablename__ = "sabil_requests"
+    __table_args__ = (Index("ix_sabil_requests_status_created", "status", "created_at"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    # Deleting an account deletes its requests (and the contact details in them).
+    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    status: Mapped[RequestStatus] = mapped_column(
+        SAEnum(RequestStatus, name="requeststatus"), default=RequestStatus.new
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    # What to build
+    package: Mapped[str] = mapped_column(String(32))
+    quantity: Mapped[int] = mapped_column(Integer, default=1)
+    taps: Mapped[int] = mapped_column(Integer, default=2)
+    extras: Mapped[str] = mapped_column(String(200), default="", server_default="")
+    timing: Mapped[str] = mapped_column(String(32))
+
+    # Who it is for
+    purpose: Mapped[str] = mapped_column(String(32))
+    dedication_name: Mapped[Optional[str]] = mapped_column(String(120))
+    plaque_text: Mapped[Optional[str]] = mapped_column(String(200))
+    show_publicly: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    # Where
+    governorate: Mapped[str] = mapped_column(String(32))
+    area: Mapped[str] = mapped_column(String(120))
+    address_notes: Mapped[Optional[str]] = mapped_column(String(300))
+    latitude: Mapped[Optional[float]] = mapped_column(Numeric(10, 7))
+    longitude: Mapped[Optional[float]] = mapped_column(Numeric(10, 7))
+    place_type: Mapped[str] = mapped_column(String(32))
+    permission: Mapped[str] = mapped_column(String(32))
+    electricity: Mapped[str] = mapped_column(String(16))
+    water_line: Mapped[str] = mapped_column(String(16))
+
+    # Contact
+    contact_name: Mapped[str] = mapped_column(String(120))
+    phone: Mapped[str] = mapped_column(String(20))
+    contact_method: Mapped[str] = mapped_column(String(16))
+    best_time: Mapped[str] = mapped_column(String(16))
+    notes: Mapped[Optional[str]] = mapped_column(String(1000))
+
+    # Filled in by the team in the admin panel
+    quote_egp: Mapped[Optional[int]] = mapped_column(Integer)
+    admin_notes: Mapped[Optional[str]] = mapped_column(String(2000))

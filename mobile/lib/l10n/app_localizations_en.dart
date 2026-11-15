@@ -747,4 +747,311 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbFifty => 'Checked within 50 m';
+
+  @override
+  String get reqEntryTitle => 'Build a sabil';
+
+  @override
+  String get reqEntryBody =>
+      'A cooler in someone\'s name, installed and looked after by our team. Tell us what you have in mind and we will call you.';
+
+  @override
+  String get reqEntryButton => 'Request a sabil';
+
+  @override
+  String get reqTitle => 'Build a sabil';
+
+  @override
+  String get reqIntro =>
+      'Fill this in and our team will call you within 2 working days with a price. Nothing is paid now.';
+
+  @override
+  String get reqStepWhat => 'What to build';
+
+  @override
+  String get reqStepWho => 'Who it is for';
+
+  @override
+  String get reqStepWhere => 'Where';
+
+  @override
+  String get reqStepContact => 'How to reach you';
+
+  @override
+  String get reqPkgFull => 'Full sabil';
+
+  @override
+  String get reqPkgFullBody =>
+      'Cooler, installation, a plaque and a year of care. You see it confirmed in the app.';
+
+  @override
+  String get reqPkgCare => 'Care plan';
+
+  @override
+  String get reqPkgCareBody =>
+      'You already have a cooler. We clean, repair and check it for a year.';
+
+  @override
+  String get reqPkgCompany => 'Company network';
+
+  @override
+  String get reqPkgCompanyBody =>
+      'Several coolers for a company or organisation, with your name on each.';
+
+  @override
+  String get reqQuantity => 'Number of coolers';
+
+  @override
+  String get reqTaps => 'Number of taps';
+
+  @override
+  String get reqExtras => 'Extras';
+
+  @override
+  String get reqExtraFilter => 'Water filter';
+
+  @override
+  String get reqExtraShade => 'Shade or cover';
+
+  @override
+  String get reqExtraCups => 'Cup holder';
+
+  @override
+  String get reqExtraLight => 'Night light';
+
+  @override
+  String get reqTiming => 'When do you want it?';
+
+  @override
+  String get reqTimingAsap => 'As soon as possible';
+
+  @override
+  String get reqTimingMonth => 'Within a month';
+
+  @override
+  String get reqTimingQuarter => 'Within 3 months';
+
+  @override
+  String get reqTimingFlexible => 'No rush';
+
+  @override
+  String get reqPurpose => 'What is it for?';
+
+  @override
+  String get reqPurposeMemorial => 'In memory of someone';
+
+  @override
+  String get reqPurposeCharity => 'Ongoing charity';
+
+  @override
+  String get reqPurposeBusiness => 'From a business';
+
+  @override
+  String get reqPurposeCommunity => 'Mosque, school or community';
+
+  @override
+  String get reqPurposeOther => 'Other';
+
+  @override
+  String get reqDedication => 'Name on the sabil (optional)';
+
+  @override
+  String get reqDedicationHint => 'e.g. In memory of Hagg Mahmoud';
+
+  @override
+  String get reqPlaque => 'Text on the plaque (optional)';
+
+  @override
+  String get reqPlaqueHint => 'e.g. Drink, and say a prayer for him';
+
+  @override
+  String get reqShowPublicly => 'Show this name in the app';
+
+  @override
+  String get reqShowPubliclyBody =>
+      'People who open the cooler will see it on its page.';
+
+  @override
+  String get reqGovernorate => 'Governorate';
+
+  @override
+  String get reqArea => 'Area or district';
+
+  @override
+  String get reqAreaHint => 'e.g. Maadi';
+
+  @override
+  String get reqAddress => 'Street and landmarks (optional)';
+
+  @override
+  String get reqUseLocation => 'Add my current location';
+
+  @override
+  String get reqLocationAdded => 'Your location is added';
+
+  @override
+  String get reqLocationRemove => 'Remove';
+
+  @override
+  String get reqLocationFailed =>
+      'Could not get your location. You can still send the request.';
+
+  @override
+  String get reqPlaceType => 'Type of place';
+
+  @override
+  String get reqPlaceStreet => 'Street or pavement';
+
+  @override
+  String get reqPlaceMosque => 'Mosque';
+
+  @override
+  String get reqPlaceSchool => 'School or university';
+
+  @override
+  String get reqPlaceHospital => 'Hospital or clinic';
+
+  @override
+  String get reqPlaceShop => 'Outside a shop';
+
+  @override
+  String get reqPlaceWorkplace => 'Workplace or factory';
+
+  @override
+  String get reqPlaceOther => 'Other';
+
+  @override
+  String get reqPermission => 'Permission for the spot';
+
+  @override
+  String get reqPermOwner => 'I own the place';
+
+  @override
+  String get reqPermHas => 'I have the owner\'s permission';
+
+  @override
+  String get reqPermAsking => 'I am asking for it';
+
+  @override
+  String get reqPermNotYet => 'Not yet';
+
+  @override
+  String get reqElectricity => 'Electricity nearby?';
+
+  @override
+  String get reqWaterLine => 'Water pipe nearby?';
+
+  @override
+  String get reqYes => 'Yes';
+
+  @override
+  String get reqNo => 'No';
+
+  @override
+  String get reqUnsure => 'Not sure';
+
+  @override
+  String get reqName => 'Your name';
+
+  @override
+  String get reqPhone => 'Mobile number';
+
+  @override
+  String get reqPhoneInvalid =>
+      'Enter an Egyptian mobile number, e.g. 010 1234 5678.';
+
+  @override
+  String get reqContactMethod => 'Contact me by';
+
+  @override
+  String get reqCall => 'Phone call';
+
+  @override
+  String get reqWhatsapp => 'WhatsApp';
+
+  @override
+  String get reqBestTime => 'Best time to call';
+
+  @override
+  String get reqMorning => 'Morning';
+
+  @override
+  String get reqAfternoon => 'Afternoon';
+
+  @override
+  String get reqEvening => 'Evening';
+
+  @override
+  String get reqAnyTime => 'Any time';
+
+  @override
+  String get reqNotes => 'Anything else? (optional)';
+
+  @override
+  String get reqPrivacy =>
+      'We use your number only to follow up on this request.';
+
+  @override
+  String get reqSubmit => 'Send request';
+
+  @override
+  String get reqRequired => 'Required';
+
+  @override
+  String get reqChoose => 'Choose';
+
+  @override
+  String get reqFixErrors =>
+      'Some answers are missing. Check the marked fields.';
+
+  @override
+  String get reqSentTitle => 'Request sent';
+
+  @override
+  String get reqSentBody =>
+      'Thank you. Our team will call you within 2 working days. You can follow your request under Account.';
+
+  @override
+  String get reqDone => 'Done';
+
+  @override
+  String get reqTooMany =>
+      'You have sent several requests today. We will call you about them soon.';
+
+  @override
+  String get myRequests => 'My sabil requests';
+
+  @override
+  String get myRequestsEmpty => 'You have not requested a sabil yet.';
+
+  @override
+  String get reqStatusNew => 'Received';
+
+  @override
+  String get reqStatusContacted => 'We contacted you';
+
+  @override
+  String get reqStatusSiteVisit => 'Site visit';
+
+  @override
+  String get reqStatusQuoted => 'Price sent';
+
+  @override
+  String get reqStatusWon => 'Confirmed';
+
+  @override
+  String get reqStatusLost => 'Closed';
+
+  @override
+  String get patronBuildOne => 'Build one like this';
+
+  @override
+  String reqTapsValue(int count) {
+    return '$count taps';
+  }
+
+  @override
+  String reqQuote(String amount) {
+    return 'Price: EGP $amount';
+  }
 }

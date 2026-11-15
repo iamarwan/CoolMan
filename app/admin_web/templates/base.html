@@ -43,6 +43,18 @@
   .flash.error { background:#FEE2E2; color:#991B1B; }
   .empty { color:var(--muted); padding:8px 0; }
   .table-wrap { overflow-x:auto; }
+  .r-new { background:#DBEAFE; color:var(--info); } .r-contacted, .r-site_visit { background:#FEF3C7; color:var(--warn); }
+  .r-quoted { background:#EDE9FE; color:#7C3AED; } .r-won { background:#D1FAE5; color:var(--ok); }
+  .r-lost { background:#F1F5F9; color:var(--muted); }
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+  .tabs a { padding:5px 12px; border-radius:20px; border:1px solid var(--line); background:#fff; text-decoration:none; color:var(--ink); font-size:14px; }
+  .tabs a.on { background:var(--primary); border-color:var(--primary); color:#fff; }
+  dl.facts { display:grid; grid-template-columns:minmax(90px, 38%) 1fr; gap:6px 14px; margin:0; }
+  dl.facts dt { color:var(--muted); font-size:13px; } dl.facts dd { margin:0; overflow-wrap:anywhere; }
+  .grid2 { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px; }
+  .grid2 > .card { margin:0; }
+  textarea { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; width:100%; min-height:110px; }
+  .pre { white-space:pre-wrap; }
 </style>
 </head>
 <body>
@@ -52,6 +64,7 @@
   {% set total = counts.new + counts.status + counts.photos %}
   <a href="/admin/queue" class="{{ 'on' if request.url.path.startswith('/admin/queue') }}">Review queue {% if total %}<span class="badge">{{ total }}</span>{% endif %}</a>
   <a href="/admin/coolers" class="{{ 'on' if request.url.path.startswith('/admin/coolers') }}">Coolers</a>
+  <a href="/admin/requests" class="{{ 'on' if request.url.path.startswith('/admin/requests') }}">Requests {% if counts.requests %}<span class="badge">{{ counts.requests }}</span>{% endif %}</a>
   <a href="/admin/sponsors" class="{{ 'on' if request.url.path.startswith('/admin/sponsors') }}">Sponsors</a>
   <form method="post" action="/admin/logout"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Log out</button></form>
 </div></header>
