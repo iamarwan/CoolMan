@@ -1,0 +1,64 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# INACTIVE UNTIL DEPLOYMENT. Local development uses ../docker-compose.yml.
+#
+# Production stack: PostGIS database + API + Caddy (automatic HTTPS).
+# On the server, from the repository root:
+#   cp deploy/.env.production.example deploy/.env.production   # then fill it in
+#   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production up -d --build
+# Full guide: deploy/DEPLOY.md
+# ─────────────────────────────────────────────────────────────────────────────
+name: sabil
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    # No "ports:" - the database is only reachable from the API container.
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env.production
+    environment:
+      SABIL_ENV: production
+      SABIL_DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      SABIL_UPLOAD_DIR: /srv/uploads
+    volumes:
+      - uploads:/srv/uploads
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      API_DOMAIN: ${API_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:

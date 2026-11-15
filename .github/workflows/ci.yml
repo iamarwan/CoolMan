@@ -1,0 +1,69 @@
+# Runs on every push and pull request:
+#   backend: 47+ API and security tests against a real PostGIS database,
+#            plus a scan of the pinned packages for known vulnerabilities
+#   mobile:  static analysis and the Flutter test suite
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: sabil
+          POSTGRES_PASSWORD: sabil_pass
+          POSTGRES_DB: sabil_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sabil -d sabil_test"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      SABIL_TEST_DATABASE_URL: postgresql+asyncpg://sabil:sabil_pass@localhost:5432/sabil_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements-dev.txt -c constraints.txt
+      - name: Tests
+        run: python -m pytest -q
+      - name: Migrations apply cleanly and match the models
+        env:
+          SABIL_DATABASE_URL: postgresql+asyncpg://sabil:sabil_pass@localhost:5432/sabil_test
+        run: |
+          python -m scripts.reset_db --yes
+          python -m alembic check
+      - name: Known-vulnerability scan
+        run: |
+          pip install pip-audit
+          pip-audit -r constraints.txt --disable-pip --no-deps
+
+  mobile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% from "_macros.html" import post, who with context %}
+{% block title %}Request from {{ r.contact_name }}{% endblock %}
+{% block content %}
+<p><a href="/admin/requests">← All requests</a></p>
+<div class="row">
+  <h1 class="grow">{{ r.contact_name }} <span class="pill r-{{ r.status.value }}">{{ request_status_label[r.status] }}</span></h1>
+</div>
+<p class="muted">Received {{ r.created_at.strftime('%d %b %Y, %H:%M') }} UTC ({{ r.created_at | ago }}) · last update {{ r.updated_at | ago }} · app user {{ who(users, r.user_id) }}</p>
+
+<div class="card row">
+  <a class="btn" href="tel:{{ r.phone }}">📞 Call {{ r.phone }}</a>
+  <a class="btn" href="https://wa.me/2{{ r.phone }}" target="_blank" rel="noopener">WhatsApp</a>
+  <span class="muted">Prefers {{ label('contact_method', r.contact_method) | lower }}, {{ label('best_time', r.best_time) | lower }}.</span>
+</div>
+
+<div class="grid2">
+  <section class="card">
+    <h2 style="margin-top:0">What to build</h2>
+    <dl class="facts">
+      <dt>Package</dt><dd>{{ label('package', r.package) }}</dd>
+      {% if r.package == 'company' %}<dt>Number of coolers</dt><dd>{{ r.quantity }}</dd>{% endif %}
+      <dt>Taps</dt><dd>{{ r.taps }}</dd>
+      <dt>Extras</dt><dd>{{ extras_list(r.extras) | join(', ') or 'None' }}</dd>
+      <dt>When</dt><dd>{{ label('timing', r.timing) }}</dd>
+    </dl>
+  </section>
+
+  <section class="card">
+    <h2 style="margin-top:0">Who it is for</h2>
+    <dl class="facts">
+      <dt>Purpose</dt><dd>{{ label('purpose', r.purpose) }}</dd>
+      <dt>Name on the sabil</dt><dd>{{ r.dedication_name or '-' }}</dd>
+      <dt>Plaque text</dt><dd class="pre">{{ r.plaque_text or '-' }}</dd>
+      <dt>Show name in app</dt><dd>{{ 'Yes' if r.show_publicly else 'No, keep it private' }}</dd>
+    </dl>
+  </section>
+
+  <section class="card">
+    <h2 style="margin-top:0">Where</h2>
+    <dl class="facts">
+      <dt>Area</dt><dd>{{ r.area }}, {{ label('governorate', r.governorate) }}</dd>
+      <dt>Address notes</dt><dd class="pre">{{ r.address_notes or '-' }}</dd>
+      <dt>Pin</dt><dd>{% if r.latitude is not none %}<a href="https://www.openstreetmap.org/?mlat={{ r.latitude }}&mlon={{ r.longitude }}#map=18/{{ r.latitude }}/{{ r.longitude }}" target="_blank" rel="noopener">{{ '%.5f' % r.latitude }}, {{ '%.5f' % r.longitude }} ↗</a>{% else %}Not shared{% endif %}</dd>
+      <dt>Type of place</dt><dd>{{ label('place_type', r.place_type) }}</dd>
+      <dt>Permission</dt><dd>{{ label('permission', r.permission) }}</dd>
+      <dt>Electricity nearby</dt><dd>{{ label('yes_no', r.electricity) }}</dd>
+      <dt>Water line nearby</dt><dd>{{ label('yes_no', r.water_line) }}</dd>
+    </dl>
+  </section>
+
+  <section class="card">
+    <h2 style="margin-top:0">Their notes</h2>
+    <p class="pre" style="margin:0">{{ r.notes or 'No notes.' }}</p>
+  </section>
+</div>
+
+<h2>Follow-up</h2>
+<form class="card" method="post" action="/admin/requests/{{ r.id }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div class="row" style="margin-bottom:10px">
+    <label>Status
+      <select name="status">{% for s in statuses %}<option value="{{ s.value }}" {{ 'selected' if s == r.status }}>{{ request_status_label[s] }}</option>{% endfor %}</select>
+    </label>
+    <label>Quote (EGP) <input name="quote_egp" inputmode="numeric" value="{{ r.quote_egp or '' }}" placeholder="e.g. 24900" size="10"></label>
+  </div>
+  <label class="muted" for="admin_notes">Team notes (not shown to the customer)</label>
+  <textarea id="admin_notes" name="admin_notes" maxlength="2000">{{ r.admin_notes or '' }}</textarea>
+  <p class="muted">The customer sees the status and the quote under Account → My sabil requests.</p>
+  <button class="primary">Save</button>
+</form>
+<p>{{ post('/admin/requests/%s/delete' % r.id, 'Delete request', 'danger', confirm='Delete this request for good?') }}</p>
+{% endblock %}

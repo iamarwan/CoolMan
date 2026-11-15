@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Requests{% endblock %}
+{% block content %}
+<h1>Build-a-sabil requests</h1>
+<p class="muted">Sent from the app's "Build a sabil" form. Call the person, then move the request along.</p>
+<nav class="tabs">
+  {% for key, name, n in tabs %}<a href="/admin/requests?state={{ key }}" class="{{ 'on' if state == key }}">{{ name }} ({{ n }})</a>{% endfor %}
+</nav>
+<div class="table-wrap"><table>
+  <tr><th>Received</th><th>Status</th><th>Name</th><th>Phone</th><th>What</th><th>Where</th><th>For</th><th>When</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td><a href="/admin/requests/{{ r.id }}">{{ r.created_at | ago }}</a></td>
+    <td><span class="pill r-{{ r.status.value }}">{{ request_status_label[r.status] }}</span></td>
+    <td><a href="/admin/requests/{{ r.id }}">{{ r.contact_name }}</a></td>
+    <td><a href="tel:{{ r.phone }}">{{ r.phone }}</a></td>
+    <td>{{ label('package', r.package) }}{% if r.quantity > 1 %} × {{ r.quantity }}{% endif %}</td>
+    <td>{{ r.area }}, {{ label('governorate', r.governorate) }}</td>
+    <td>{{ label('purpose', r.purpose) }}</td>
+    <td>{{ label('timing', r.timing) }}</td>
+  </tr>
+  {% else %}<tr><td colspan="8" class="empty">No requests here.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

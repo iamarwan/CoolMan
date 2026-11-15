@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{% endblock %} · Nwasy</title>
+<style>
+  body { margin:0; font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",sans-serif; color:#1E293B; background:#F8FAFC; }
+  main { max-width:720px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:26px; } h2 { font-size:19px; margin-top:28px; }
+  .card { background:#fff; border:1px solid #E2E8F0; border-radius:12px; padding:18px; margin:16px 0; }
+  .note { background:#FEF3C7; border-radius:10px; padding:10px 14px; }
+  .error { background:#FEE2E2; color:#991B1B; border-radius:10px; padding:10px 14px; }
+  .ok { background:#D1FAE5; color:#065F46; border-radius:10px; padding:10px 14px; }
+  input { font:inherit; width:100%; box-sizing:border-box; padding:10px; border:1px solid #CBD5E1; border-radius:8px; margin:4px 0 12px; }
+  button { font:inherit; font-weight:700; background:#DC2626; color:#fff; border:0; border-radius:8px; padding:12px 16px; width:100%; }
+  [dir=rtl] { text-align:right; }
+</style>
+</head>
+<body><main>{% block content %}{% endblock %}</main></body>
+</html>

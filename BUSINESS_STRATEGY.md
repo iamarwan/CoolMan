@@ -1,3 +1,5 @@
+> **Outdated.** This was the first strategy note. The current plan is in `docs/master-plan/`.
+
 # SABIL (CoolMan) Startup Business Strategy
 
 Prepared for absolute market viability and steady monetization of localized water-point tracking networks.

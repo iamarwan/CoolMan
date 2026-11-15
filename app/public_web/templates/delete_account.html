@@ -1,0 +1,20 @@
+{% extends "base_public.html" %}
+{% block title %}Delete your account{% endblock %}
+{% block content %}
+<h1>Delete your Nwasy account</h1>
+{% if done %}
+  <p class="ok">Your account has been deleted. · تم حذف حسابك.</p>
+{% else %}
+  <p>This permanently deletes your account, your points and your activity history.
+     Coolers and photos you added stay on the map so others can still find water,
+     but they are no longer linked to you.</p>
+  <p dir="rtl">سيتم حذف حسابك ونقاطك وسجل نشاطك نهائيًا. تبقى المبردات والصور التي أضفتها على الخريطة ليستفيد منها الآخرون، لكنها لن تكون مرتبطة بك.</p>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+  <form class="card" method="post" action="/account/delete">
+    <label>Username · اسم المستخدم<input name="username" autocomplete="username" required maxlength="64"></label>
+    <label>Password · كلمة المرور<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label>
+    <button>Delete my account · حذف حسابي</button>
+  </form>
+  <p>You can also delete your account inside the app: Profile → Delete account.</p>
+{% endif %}
+{% endblock %}

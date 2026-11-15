@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "_macros.html" import post, status_pill, who, map_link with context %}
+{% block title %}Review queue{% endblock %}
+{% block content %}
+<h1>Review queue</h1>
+
+<h2>New coolers ({{ counts.new }})</h2>
+{% for c in new %}
+<div class="card row">
+  <div class="grow">
+    <strong><a href="/admin/coolers/{{ c.id }}">{{ c.name }}</a></strong> {{ status_pill(c.status) }}<br>
+    <span class="muted">by {{ who(users, c.user_id) }} · {{ c.created_at|ago }} · {{ map_link(c) }}
+    · cups: {{ 'yes' if c.has_cups else ('no' if c.has_cups == false else 'unknown') }}{% if c.cups_type %} ({{ c.cups_type.value }}){% endif %}
+    · {{ c.photos|length }} photo(s)</span>
+    {% if c.photos %}<div class="photos" style="margin-top:8px">{% for p in c.photos %}<a href="{{ p.file_path }}" target="_blank"><img src="{{ p.thumb_path or p.file_path }}" alt="" style="width:90px;height:68px;object-fit:cover;border-radius:6px"></a>{% endfor %}</div>{% endif %}
+  </div>
+  {{ post('/admin/coolers/%s/approve' % c.id, 'Approve (+50 pts)', 'ok') }}
+  {{ post('/admin/coolers/%s/reject' % c.id, 'Reject (−100 pts)', 'danger', confirm='Reject this cooler?') }}
+</div>
+{% else %}<p class="empty">Nothing waiting.</p>{% endfor %}
+
+<h2>Status changes ({{ counts.status }})</h2>
+{% for c in status_changes %}
+<div class="card row">
+  <div class="grow">
+    <strong><a href="/admin/coolers/{{ c.id }}">{{ c.name }}</a></strong>:
+    {{ status_pill(c.status) }} → {{ status_pill(c.pending_status) }}<br>
+    <span class="muted">reported by {{ who(users, c.pending_status_user_id) }} · last confirmed {{ c.last_verified_at|ago }} · {{ map_link(c) }}</span>
+  </div>
+  {{ post('/admin/coolers/%s/approve' % c.id, 'Accept change', 'ok') }}
+  {{ post('/admin/coolers/%s/reject-status' % c.id, 'Dismiss', 'danger') }}
+</div>
+{% else %}<p class="empty">Nothing waiting.</p>{% endfor %}
+
+<h2>Photos ({{ counts.photos }})</h2>
+<div class="photos">
+{% for p, cooler_name in photos %}
+  <div class="card photo">
+    <a href="{{ p.file_path }}" target="_blank"><img src="{{ p.thumb_path or p.file_path }}" alt=""></a>
+    <div class="muted" style="margin:6px 0">{{ p.photo_category.value }} · <a href="/admin/coolers/{{ p.cooler_id }}">{{ cooler_name }}</a><br>by {{ who(users, p.user_id) }}</div>
+    {{ post('/admin/photos/%s/approve' % p.id, 'Approve', 'ok') }}
+    {{ post('/admin/photos/%s/delete' % p.id, 'Delete', 'danger', confirm='Delete this photo?') }}
+  </div>
+{% else %}<p class="empty">Nothing waiting.</p>{% endfor %}
+</div>
+{% endblock %}

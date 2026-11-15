@@ -1,20 +1,12 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Nwasy (نواصي)
 
-# Run and deploy your AI Studio app
+A map of the useful things on every street corner, starting with free public
+drinking-water coolers in Egypt. (The repository is still named CoolMan; the
+product was called Sabil before.)
 
-This contains everything you need to run your app locally.
+- `mobile/` – Flutter Android app
+- `app/` – FastAPI + PostgreSQL/PostGIS backend and the web admin panel
+- `docs/master-plan/` – business plan, identity, audits and roadmap
+- `docs/` – design notes, backlog and prompts
 
-View your app in AI Studio: https://ai.studio/apps/6c668ed1-4c2e-49cf-953e-968840990fd6
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+**Start here:** [GETTING_STARTED.md](GETTING_STARTED.md)
